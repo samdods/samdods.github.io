@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content=" Blog Archives Recent Posts ">
+  <meta name="description" content="I started learning Swift the day it was announced and read Apple&rsquo;s The Swift Programming Language in the first couple of days. I began writing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,7 +66,391 @@
       <div class="blog-index">
   
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/21/some-swift-best-practices/">Swift Best Practices (Part I)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T08:00:37+01:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>8:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
+
+<p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
+
+<p>Read on for some of my observations &ndash; some are obvious and common, but hopefully some will be new to most people. Let me know if you have any of your own that I could add to the list!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/09/21/some-swift-best-practices/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-04T08:00:00+01:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When protocol extensions were first mentioned at WWDC in June, they immediately stood out as a necessary feature. But it was only after I started playing around with them that I realised the true value these bring to the language.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-02T11:50:25+01:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>11:50 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It&rsquo;s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
+
+<p>Once you&rsquo;ve used <a href="/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>
+
+<p>It really adds benefit when there&rsquo;s a particular class that you commonly subclass, especially if the new subclass requires an interface builder counterpart.</p>
+
+<p>Of course you would want to document your project to explain that you have defined custom templates, which can be used with the <a href="/stencil-xcode-plugin/">Stencil</a> plugin. But if one of your co-workers doesn&rsquo;t have the plugin, then it doesn&rsquo;t matter. No harm done, it just means they won&rsquo;t reap the benefits. And you can spend longer on your tea break, while they&rsquo;re spending longer doing things manually!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/02/stencil-xcode-plugin/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">Swift Alternatives to C Macros (Part I)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-06T22:05:57+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:05 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you&rsquo;ve ever used <code>NSAssert</code>, then you&rsquo;ve used a macro. (And if you haven&rsquo;t, then what have you been doing?!)</p>
+
+<p>Now please bear with me&hellip; before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I&rsquo;ve seen in other recent posts within the community.</p>
+
+<p>In this short series, I&rsquo;m going to look at some of the more creative uses of C macros and investigate how we could use some of Swift&rsquo;s advanced language features to accomplish the same results.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/06/swift-alternatives-to-c-macros/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/secondary-delegate/">How to Intercept Delegate Messages if You Are Not the Delegate</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-03T13:45:25+01:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>1:45 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
+
+<p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>
+
+<p>So, the question is: how can we listen out for the delegate messages from a UIScrollView, when we are not acting as the delegate?</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/secondary-delegate/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/26/theming/">Theming</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-26T08:03:03+01:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:03 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Many of the projects on which I&rsquo;ve worked have had the problem of &ldquo;theming&rdquo;, because it&rsquo;s difficult to keep a project&rsquo;s codebase clean when dealing with multiple themes. When I refer to a &ldquo;theme&rdquo; I mean something that only affects the look and feel of an app, but not the functionality.</p>
+
+<p>By &ldquo;theming&rdquo;, I&rsquo;m referring to a project that might have different targets, each with different colour schemes, fonts, sizes, etc. to deliver a different user experience with the same functionality.</p>
+
+<p>But theming can be extended to a single app, with a single theme, where different interface builder (nib/xib) files are backed by a single class. This might be as simple as having a different interface file (or nib) for iPad as opposed to iPhone, where each nib is backed by the same class.</p>
+
+<p>Theming is often even more complex. For example, I might have an app that can display the same content in various forms. A news app, for example, might have a timeline in which it displays article teasers as either: a small widget with headline only; a double-height, more-impactful widget with headline and thumbnail image; a double-height widget with headline and article summary. That&rsquo;s three nibs, and I&rsquo;ll also need each one styled slightly differently whether it&rsquo;s on iPad or iPhone. So that&rsquo;s six nibs all backed by a single class!</p>
+
+<p>In this article, I&rsquo;ll discuss my latest solution to &ldquo;theming&rdquo; using <a href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">User Defined Runtime Attributes</a>. </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/26/theming/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/25/collection-operators-done-properly/">Collection Operators Done Properly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-25T21:33:59+01:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:33 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>The Problem</h1>
+
+<p>Foundation&rsquo;s <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html">KVC Collection Operators</a> are often overlooked and underused, but for those in the know they are a powerful tool to have in your Cocoa shed.
+The obvious advantage is their consicion, but the big disadvantage is that we don&rsquo;t get compile-time errors when we misuse them and nor do we get code-completion. And herein lies the problem.
+In this article I&rsquo;ll discuss KVC Collection Operators in more detail and propose a solution to this problem.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/25/collection-operators-done-properly/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">Pushing the Limits of User-Defined Runtime Attributes in Interface Builder</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-08T19:16:47+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>User-defined runtimes attributes in Xcode&rsquo;s Interface Builder are a great way to keep view controller and view code clean, while obeying Separation of Concerns.
+They allow you to configure properties on the view or view controller that you are unable to configure from within Interface Builder&rsquo;s <em>Attributes Inspector</em> or <em>Size Inspector</em>.</p>
+
+<p>But sometimes you may want to setup from Interface Builder a scenario which you can&rsquo;t do from simple KVC-compliant property manipulation.</p>
+
+<p>One example I ran into recently was trying to set the content insets on a collection view in a normal view controller in an iPhone-specific storyboard. In Xcode 5.1 you are unable to set the content insets of a collection view (I&rsquo;m not sure in which Xcode version this was first missing - I&rsquo;m sure you used to be able to do it).
+So with this feature missinh, it would be nice to be able to do the same thing using user-defined runtime attributes.</p>
+
+<p>Because contentInset is of <code>UIEdgeInsets</code> type, this isn&rsquo;t possible with any of the types defined in Interface Builder under user-defined runtime attributes. But it can be done!</p>
+
+<p>Another example I will show below is how to set the borderColor property of a <code>CALayer</code>, even though the runtime attributes don&rsquo;t support <code>CGColorRef</code> type. All will be explained!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/10/modal-view-in-front-of-the-status-bar/">Modal View in Front of the Status Bar</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-02-10T07:55:28+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:55 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/10/modal-view-in-front-of-the-status-bar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/">Enumerated Types and Checking Their Values</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-02-01T11:06:27+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>11:06 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Enumerated types are very useful and widely-used. Foundation framework gives us two macros to help give definition to an enumerated type: <a href="http://nshipster.com/ns_enum-ns_options/">NS_ENUM and NS_OPTIONS</a>. But their intended use &ndash; and correct use &ndash; isn&rsquo;t immediately obvious.</p>
+
+<p>First a bit of background: Enumerated types are a part of the ANSI C standard and, if I was a gambler, I would bet my entire future life&rsquo;s earnings on the fact that every single iOS or OS X programmer has encountered them and is very likely to use them daily, even if they are unaware of it. They are defined in a similar way to a struct and it&rsquo;s very common to <code>typedef</code> an enumerated type for easier use.</p>
+
+<p>In this post I will discuss the Objective-C macros <code>NS_ENUM</code> and <code>NS_OPTIONS</code>, their origins and, most importantly, the correct way to check the value of a variable of an enumerated type.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/2">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -77,6 +461,26 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift Best Practices (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">Swift Alternatives to C Macros (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to Intercept Delegate Messages if You Are Not the Delegate</a>
+      </li>
     
   </ul>
 </section>

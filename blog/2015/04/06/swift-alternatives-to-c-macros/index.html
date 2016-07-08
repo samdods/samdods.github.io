@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Swift Alternatives to C Macros (Part I) - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="samdods.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Swift Alternatives to C Macros (Part I)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-06T22:05:57+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:05 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you&rsquo;ve ever used <code>NSAssert</code>, then you&rsquo;ve used a macro. (And if you haven&rsquo;t, then what have you been doing?!)</p>
+
+<p>Now please bear with me&hellip; before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I&rsquo;ve seen in other recent posts within the community.</p>
+
+<p>In this short series, I&rsquo;m going to look at some of the more creative uses of C macros and investigate how we could use some of Swift&rsquo;s advanced language features to accomplish the same results.</p>
+
+<!-- More -->
+
+
+<h1>Misuse of macros</h1>
+
+<p>I have come across a few blog posts recently which take various types of Objective-C macro and find alternative solutions in Swift. But every macro discussed could have been written as a function (or even worse declared as a constant) in Objective-C in the first place, so would be trivial to convert to Swift. I was going crazy staring at the screen in disbelief of people converting macros such as the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define SQUARE_NUMBER(n) n * n</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The blog post failed to point out that the Objective-C developer that wrote this macro in the first place should have been shot in the head with a <a href="http://nerf.hasbro.com/en-us">Nerf</a> gun and sent back to junior school. There is so much wrong with that macro, I don&rsquo;t want to waste any more of my life discussing it.</p>
+
+<p>I don&rsquo;t condone or encourage the use of macros in Objective-C where functions or constants could be used instead, and I don&rsquo;t think that any other iOS developer should do so either. And I certainly don&rsquo;t think the Objective-C community should be encouraging this by promoting or linking to this type of blog post.</p>
+
+<p>There is never a need to write a function-like macro in Objective-C. If you&rsquo;re worried about performance (of calling out to a function), then there&rsquo;s no need. Cocoa provides the macros <code>NS_INLINE</code>, <code>CF_INLINE</code>, etc. which mean that your friend the compiler will decide whether it&rsquo;s appropriate to expand the function definition in-line. See the definition of the <code>CGRectMake</code> function for example. And there is certainly no need to <code>#define</code> primitive constants!</p>
+
+<p>Yet even <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithCAPIs.html#//apple_ref/doc/uid/TP40014216-CH8-XID_19">Apple&rsquo;s documentation</a> seems to condone the use of primitive constants being declared as a macro. By the time I read this, I was getting pretty fed up. Why is everyone, including Apple, encouraging the misuse of macros?!</p>
+
+<p>Apple&rsquo;s example below should never have been written as a macro in the first place.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define FADE_ANIMATION_DURATION 0.35</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It provides no type-safety and it won&rsquo;t be available to interrogate in the debugger. There&rsquo;s a real danger this type of macro could be misused and lead to hard-to-diagnose bugs. In short, it&rsquo;s code smell that should be avoided at all times, with no excuses.</p>
+
+<h1>So are macros ever acceptable?</h1>
+
+<p>Some people would probably argue the fact that it&rsquo;s never acceptable to use macros. I would encourage those people to read on because you might discover some cool tricks!</p>
+
+<p>I wrote recently about KVC collection operators and <a href="/blog/2014/07/25/collection-operators-done-properly/">how to use them safely</a>. In that post, I discuss the use of macros to provide compile-time checking on the keys used in key-value coding.</p>
+
+<p>Consider the following example interfaces:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">Account</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">double</span> <span class="n">balance</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Transaction</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="n">Account</span> <span class="o">*</span><span class="n">account</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can use KVC collection operators to simplify retrieval of transaction characteristicts from an array of <code>Transaction *</code> objects:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">double</span> <span class="n">minimumValue</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;@min.value&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="kt">double</span> <span class="n">maximumAccountBalance</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;@max.account.balance&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;unionOfObjects.account&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKey</span><span class="p">:</span><span class="s">@&quot;account&quot;</span><span class="p">];</span> <span class="c1">// same as above</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I haven&rsquo;t used a macro yet! But I can use macros as defined in <a href="/blog/2014/07/25/collection-operators-done-properly/">my other post</a> to perform these operations and get compile-time checking of the key paths with code-completion <em>and</em> syntax highlighting! (The highlighter on my blog doesn&rsquo;t display it as nicely as Xcode does.)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">double</span> <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">DZLMinimum</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span><span class='line'><span class="kt">double</span> <span class="n">maximumAccountBalance</span> <span class="o">=</span> <span class="n">DZLMaximum</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">account</span><span class="p">.</span><span class="n">balance</span><span class="p">);</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">accounts</span> <span class="o">=</span> <span class="n">DZLUnionOfObjects</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">account</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that the key paths are not enclosed in quotes. This is due to how they are expanded at compile time to be verified and then turned into strings to pass to <code>-valueForKeyPath:</code>.</p>
+
+<p>So a macro that adds compile-time validation and code-completion to an otherwise crash-prone interface is, in my opinion, a decent example of when to use macros in Objective-C.</p>
+
+<h1>How does this type of macro translate to Swift?</h1>
+
+<p>In the macros above, we pass the type expected in the array, namely <code>Transaction *</code> and pass the key path that we want to extract. In Swift, the type of objects in an array is mandatory when you declare the array, and we can extract information using the <code>map</code> or <code>reduce</code> functions.</p>
+
+<p>For example, the above can be re-written in Swift as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">var</span> <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">map</span><span class="p">({</span><span class="err">$</span><span class="mf">0.</span><span class="n">value</span><span class="p">}).</span><span class="n">reduce</span><span class="p">(</span><span class="n">Int</span><span class="p">.</span><span class="n">min</span><span class="p">,</span> <span class="p">{</span><span class="n">max</span><span class="p">(</span><span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="err">$</span><span class="mi">1</span><span class="p">)})</span>
+</span><span class='line'><span class="k">var</span> <span class="n">maximumValue</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">map</span><span class="p">({</span><span class="err">$</span><span class="mf">0.</span><span class="n">account</span><span class="p">.</span><span class="n">balance</span><span class="p">}).</span><span class="n">reduce</span><span class="p">(</span><span class="n">Int</span><span class="p">.</span><span class="n">max</span><span class="p">,</span> <span class="p">{</span><span class="n">min</span><span class="p">(</span><span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="err">$</span><span class="mi">1</span><span class="p">)})</span>
+</span><span class='line'><span class="k">var</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span><span class="err">$</span><span class="mf">0.</span><span class="n">account</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can read up on these functions in <a href="https://developer.apple.com/library/ios/documentation/General/Reference/SwiftStandardLibraryReference/Array.html">Apple&rsquo;s documentation</a>. I also use the shorthand name of the first closure argument <code>$0</code>, which is also discussed in <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html">Apple&rsquo;s documentation</a>.</p>
+
+<p>But you could easily argue that the above is a little long-winded, in which case you could simplify it by extending <code>Array</code>. I&rsquo;ve shown how to do this for the <code>minimum</code> below, but it could be easily modified for <code>maximum</code>, or <code>average</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">extension</span> <span class="n">Array</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">func</span> <span class="n">mapMinimum</span><span class="o">&lt;</span><span class="nl">U</span> <span class="p">:</span><span class="n">Comparable</span><span class="o">&gt;</span><span class="p">(</span><span class="nl">transform</span><span class="p">:</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="nl">mapped</span><span class="p">:</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mapped</span><span class="p">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="nb">nil</span> <span class="o">:</span> <span class="n">mapped</span><span class="p">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">mapped</span><span class="p">.</span><span class="n">first</span><span class="o">!</span><span class="p">,</span> <span class="p">{</span> <span class="n">max</span><span class="p">(</span><span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="p">})</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above extension, I&rsquo;m defining the <code>mapMinimum</code> function, which can be invoked on an array whose members all conform to the <code>Comparable</code> protocol (in order to be passed into the <code>max</code> function). It returns the minimum of the members of the array resulting from calling <code>transform(x)</code> on all members <code>x</code> of <code>self</code>. In other words, it performs the <code>map</code> function with the given closure, and then returns the minimum of the resulting array.</p>
+
+<p>Having declared the same for maximum, I can now use them as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">var</span> <span class="n">minimumValue</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">mapMinimum</span> <span class="p">{</span><span class="err">$</span><span class="mf">0.</span><span class="n">value</span><span class="p">}</span>
+</span><span class='line'><span class="n">var</span> <span class="n">maximumAccountBalance</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">mapMaximum</span> <span class="p">{</span><span class="err">$</span><span class="mf">0.</span><span class="n">account</span><span class="p">.</span><span class="n">balance</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the syntax is actually improved in Swift compared to the macros I defined in Objective-C. The key path is validated by the compiler, because it knows what types of object are contained in the <code>transactions</code> array.</p>
+
+<h1>Next time&hellip;</h1>
+
+<p>I&rsquo;ll be investigating more of what I consider &ldquo;valid&rdquo; uses of macros and how we can achieve the same result using the advanced language features of Swift.</p>
+
+<p>If you&rsquo;ve enjoyed reading this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I&rsquo;m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-04-06T22:05:57+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:05 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/osx/'>osx</a>, <a class='category' href='/blog/categories/swift/'>swift</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros/" data-via="" data-counturl="http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/03/secondary-delegate/" title="Previous Post: How to intercept delegate messages if you are not the delegate">&laquo; How to intercept delegate messages if you are not the delegate</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/05/02/stencil-xcode-plugin/" title="Next Post: Introducing Stencil">Introducing Stencil &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift Best Practices (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">Swift Alternatives to C Macros (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to Intercept Delegate Messages if You Are Not the Delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

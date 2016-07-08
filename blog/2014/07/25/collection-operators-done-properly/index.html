@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Collection Operators Done Properly - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="The Problem Foundation&rsquo;s KVC Collection Operators are often overlooked and underused, but for those in the know they are a powerful tool to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="samdods.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Collection Operators Done Properly</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-25T21:33:59+01:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:33 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>The Problem</h1>
+
+<p>Foundation&rsquo;s <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html">KVC Collection Operators</a> are often overlooked and underused, but for those in the know they are a powerful tool to have in your Cocoa shed.
+The obvious advantage is their consicion, but the big disadvantage is that we don&rsquo;t get compile-time errors when we misuse them and nor do we get code-completion. And herein lies the problem.
+In this article I&rsquo;ll discuss KVC Collection Operators in more detail and propose a solution to this problem.</p>
+
+<!-- more -->
+
+
+<h1>The Desirables</h1>
+
+<p>Firstly, we should be explicit about what types of objects we expect to be in the collection. This should give us code-completion on the key path and an error if the key path doesn&rsquo;t exist on objects of the pre-specified type.</p>
+
+<p>Secondly, some collection operators demand that the key path leads to a specific type of object. For example, <code>@maximum</code> and <code>@minimum</code> require the objects to implement the <code>-compare:</code> method. In these cases, we should get a compile-time error if the key path leads to an object of an invalid type.</p>
+
+<p>Finally, we should only be allowed to use the documented collection operators, and we should get compile-time errors if we try to use an undefined operator.</p>
+
+<h1>Some Background</h1>
+
+<p>Collection operators have been talked about a lot, but still I see them rarely used. Do people just forget about them? <a href="http://nshipster.com/kvc-collection-operators/">NSHipster</a> has given an overview of them and Nicolas Bouilleaud has gone into tremendous detail and even <a href="http://bou.io/KVCCustomOperators.html">implemented his own</a>, albeit using an undocumented &lsquo;feature&rsquo; of Cocoa.</p>
+
+<p>I&rsquo;m not going to repeat what everyone else has written about, and I&rsquo;m not going to compete with NSHipster :)</p>
+
+<p>As always <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html">the documentation</a> is a great place to read up on the topic.</p>
+
+<h1>Proposing A Solution</h1>
+
+<h2><strong>Attempt #1</strong></h2>
+
+<p>I had a few different ideas about how I would like to make this more explicit and achieve what I set out in The Desirables.</p>
+
+<p>The first approach was using a proxy object and a category on <code>NSArray</code> like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">transactions</span> <span class="o">=</span> <span class="p">...;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// traditional way</span>
+</span><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">total</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;@sum.amount&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// my new way:</span>
+</span><span class='line'><span class="n">DZLCollectionProxy</span> <span class="o">*</span><span class="n">sumProxy</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">sum</span><span class="p">;</span>
+</span><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">total</span> <span class="o">=</span> <span class="n">sumProxy</span><span class="p">[</span><span class="s">@&quot;amount&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// or more simply:</span>
+</span><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">total</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">sum</span><span class="p">[</span><span class="s">@&quot;amount&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// and we could get all the payees&#39; distinct accounts like so:</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">payees</span> <span class="o">=</span> <span class="n">transactions</span><span class="p">.</span><span class="n">distinctUnionOfObjects</span><span class="p">[</span><span class="s">@&quot;payee.account&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This requires <code>-sum</code>, <code>-unionOfObjects</code> and all other collection operators to be defined in the category on <code>NSArray</code>, <code>NSSet</code>, etc.</p>
+
+<p>These methods return a proxy object which internally knows which collection operator to perform. The proxy class implements <code>-objectForKeyedSubscript:</code>, which allows us to pass the key path in square brackets. See NSHipster&rsquo;s explanation of <a href="http://nshipster.com/object-subscripting/">Custom Object Subscripting</a>.</p>
+
+<p>The nice thing about this is that it is explicit in its use of the collection operator and for that we will get a compile-time error. But the key path can still be undefined.</p>
+
+<h2><strong>Attempt #2</strong></h2>
+
+<p>I want the key path to be written outside of a string so that we can get code-completion and compile-time errors if the key path is undefined on the objects of a pre-specified type.</p>
+
+<p>Assuming I create my proxy object with the <code>-each</code> method, what about if we cast the proxy object to the type of object inside the collection? Then we can specify at the end of the key path which operator to use. Something like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">payees</span> <span class="o">=</span> <span class="p">[(</span><span class="kt">id</span><span class="p">)((</span><span class="n">Transaction</span> <span class="o">*</span><span class="p">)</span><span class="n">transactions</span><span class="p">.</span><span class="n">each</span><span class="p">).</span><span class="n">payee</span> <span class="n">unionOfObjects</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>I convert to <code>id</code> here so that the compiler will allow me to send <code>-unionOfObjects</code> to a <code>Payee *</code>, but I could also declare this method in a category on <code>NSObject</code>.</p></blockquote>
+
+<p>This approach would return a new proxy object for each key in the path, storing the original collection object and keeping a track of the key path. It achieves this by implementing <code>-resolveInstanceMethod:</code>, and methods for all collection operators: <code>-unionOfObjects</code>, etc.</p>
+
+<p>I like this solution, because it provides code-completion and compile-time errors. But it has a major disadvantage&hellip;</p>
+
+<p>Collection operators treat methods (including property getters) that return <code>NSNumber *</code> and <code>double</code> as if they were the same. For example, if the <code>Transaction *</code> class had the following properties:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">amount</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSNumber</span> <span class="o">*</span><span class="n">value</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I could use collection operators on a group of transactions like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">totalAmount</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;@sum.amount&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">totalValue</span> <span class="o">=</span> <span class="p">[</span><span class="n">transactions</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="s">@&quot;@sum.value&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now if I want to use my new solution on the <code>value</code> object I can do so like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">totalValue</span> <span class="o">=</span> <span class="p">((</span><span class="n">Transaction</span> <span class="o">*</span><span class="p">)</span><span class="n">transactions</span><span class="p">.</span><span class="n">each</span><span class="p">).</span><span class="n">value</span><span class="p">.</span><span class="n">sum</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Looks great right? Simple, explicit, consice. Does what it says on the tin.</p>
+
+<p>But this won&rsquo;t work with the <code>amount</code> property. Even though at runtime it would be fine (because the <code>value</code> method would be implemented dynamically by my proxy object and return another proxy object), the compiler is never going to let me send the <code>-sum</code> message to something of type <code>CGFloat</code>.</p>
+
+<p>I can get around this by having another class that does the operations and takes proxy objects as parameters to its methods. For example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">totalValue</span> <span class="o">=</span> <span class="p">[</span><span class="n">DZLCollectionOperator</span> <span class="nl">sumNumber</span><span class="p">:((</span><span class="n">Transaction</span> <span class="o">*</span><span class="p">)</span><span class="n">transactions</span><span class="p">.</span><span class="n">each</span><span class="p">).</span><span class="n">value</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">totalAmount</span> <span class="o">=</span> <span class="p">[</span><span class="n">DZLCollectionOperator</span> <span class="nl">sumDouble</span><span class="p">:((</span><span class="n">Transaction</span> <span class="o">*</span><span class="p">)</span><span class="n">transactions</span><span class="p">.</span><span class="n">each</span><span class="p">).</span><span class="n">amount</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At runtime, the pointer for the proxy object returned by the <code>-amount</code> method will be passed to the <code>-sumFloat:</code> method as a <code>double</code>. But it can be used by converting it as so, although admittedly it&rsquo;s massively hacky!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">id</span> <span class="n">proxyObj</span> <span class="o">=</span> <span class="p">(</span><span class="k">__bridge</span> <span class="kt">id</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)(</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">aDouble</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This solution now also has the advantage of checking at compile-time that the properties are of the correct type for these methods.</p>
+
+<p>But it&rsquo;s a really hacky approach and we still don&rsquo;t get validation on objects that must implement the <code>-compare:</code> method.</p>
+
+<h2><strong>Attempt #3 (Final)</strong></h2>
+
+<p>Macros. It&rsquo;s simple, all we need to do is define some macros that do all the validation and are written in such a way that Xcode will give us code-completion on the key path.</p>
+
+<p>We can use the fact that Xcode is constantly compiling your code as you write it to check for errors. This means that as we use a macro, its already going through the preprocessor as we write it.</p>
+
+<p>My finally proposed solution looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSNumber</span> <span class="o">*</span><span class="n">average</span> <span class="o">=</span> <span class="n">DZLAverage</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">amount</span><span class="p">);</span>
+</span><span class='line'><span class="bp">NSDate</span> <span class="o">*</span><span class="n">latestDate</span> <span class="o">=</span> <span class="n">DZLMaximum</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">date</span><span class="p">);</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">accounts</span> <span class="o">=</span> <span class="n">DZLUnionOfObjects</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">payee</span><span class="p">.</span><span class="n">account</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Checks are automatically carried out on <code>DZLMinimum</code> and <code>DZLMaximum</code>. But I provide extra macros for extra checks for the operators that can process numeric values:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">DZLSumDouble</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">amount</span><span class="p">);</span>
+</span><span class='line'><span class="n">DZLSumNumber</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">DZLAverageDouble</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">amount</span><span class="p">);</span>
+</span><span class='line'><span class="n">DZLAverageNumber</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">Transaction</span> <span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because of the way the macros are written, we get code-completion, nice syntax highlighting in Xcode, warnings and errors as we write the code, and it is simple, explicit and consice.</p>
+
+<h1>Adopt these macros in your project</h1>
+
+<p>These macros are <a href="https://github.com/samdods/DZLCollectionOperators">avilable on GitHub here</a>, they come as a single header file, so they&rsquo;re super easy to install in your own project.</p>
+
+<p>You can also install it as <a href="http://cocoapods.org/?q=dzlcollectionoperators">a cocoapod</a>!</p>
+
+<p>As always, I love discussing things like this in more depth, so <a href="http://twitter.com/dodsios">tweet me</a>, <a href="http://twitter.com/dodsios">follow me</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same :)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-07-25T21:33:59+01:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:33 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/objective-c/'>objective-c</a>, <a class='category' href='/blog/categories/osx/'>osx</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/" data-via="" data-counturl="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/" title="Previous Post: Pushing the Limits of User-Defined Runtime Attributes in Interface Builder">&laquo; Pushing the Limits of User-Defined Runtime Attributes in Interface Builder</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/26/theming/" title="Next Post: Theming">Theming &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift Best Practices (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">Swift Alternatives to C Macros (Part I)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to Intercept Delegate Messages if You Are Not the Delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
