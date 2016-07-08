@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Osx | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/osx/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Osx | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/osx/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Swift Best Practices (Part I)]]></title>
-    <link href="http://samdods.github.io/blog/2015/09/21/some-swift-best-practices/"/>
+    <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
     <updated>2015-09-21T08:00:37+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/09/21/some-swift-best-practices</id>
+    <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
     <content type="html"><![CDATA[<p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
 
 <p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
@@ -208,9 +208,9 @@ guard let authors = json["authors"] else {
   
   <entry>
     <title type="html"><![CDATA[Why I Love Swift's Protocol Extensions]]></title>
-    <link href="http://samdods.github.io/blog/2015/08/04/why-i-love-swift-protocol-extensions/"/>
+    <link href="http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions/"/>
     <updated>2015-08-04T08:00:00+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/08/04/why-i-love-swift-protocol-extensions</id>
+    <id>http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions</id>
     <content type="html"><![CDATA[<p>When protocol extensions were first mentioned at WWDC in June, they immediately stood out as a necessary feature. But it was only after I started playing around with them that I realised the true value these bring to the language.</p>
 
 <!-- More -->
@@ -373,9 +373,9 @@ video.share()
   
   <entry>
     <title type="html"><![CDATA[Introducing Stencil]]></title>
-    <link href="http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin/"/>
+    <link href="http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin/"/>
     <updated>2015-05-02T11:50:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin</id>
+    <id>http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin</id>
     <content type="html"><![CDATA[<p><a href="/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It&rsquo;s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
 
 <p>Once you&rsquo;ve used <a href="/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>
@@ -464,9 +464,9 @@ video.share()
   
   <entry>
     <title type="html"><![CDATA[Swift Alternatives to C Macros (Part I)]]></title>
-    <link href="http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros/"/>
+    <link href="http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros/"/>
     <updated>2015-04-06T22:05:57+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros</id>
+    <id>http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros</id>
     <content type="html"><![CDATA[<p>Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you&rsquo;ve ever used <code>NSAssert</code>, then you&rsquo;ve used a macro. (And if you haven&rsquo;t, then what have you been doing?!)</p>
 
 <p>Now please bear with me&hellip; before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I&rsquo;ve seen in other recent posts within the community.</p>
@@ -578,9 +578,9 @@ var maximumAccountBalance = transactions.mapMaximum {$0.account.balance}
   
   <entry>
     <title type="html"><![CDATA[How to Intercept Delegate Messages if You Are Not the Delegate]]></title>
-    <link href="http://samdods.github.io/blog/2014/08/03/secondary-delegate/"/>
+    <link href="http://sam.dods.co/blog/2014/08/03/secondary-delegate/"/>
     <updated>2014-08-03T13:45:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/08/03/secondary-delegate</id>
+    <id>http://sam.dods.co/blog/2014/08/03/secondary-delegate</id>
     <content type="html"><![CDATA[<p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
 
 <p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Objective-c-runtime | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/objective-c-runtime/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Objective-c-runtime | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/objective-c-runtime/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Dynamic Accessors for Category Properties]]></title>
-    <link href="http://samdods.github.io/blog/2014/01/04/dynamic-accessors-for-category-properties/"/>
+    <link href="http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties/"/>
     <updated>2014-01-04T10:06:30+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/01/04/dynamic-accessors-for-category-properties</id>
+    <id>http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties</id>
     <content type="html"><![CDATA[<h1>The Problem</h1>
 
 <p>Repetition, repetition, repetition. I don&rsquo;t like it. I like code to be as <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">dry</a> as it can possibly be without affecting readability, so as soon as I find myself repeating code in a project I immediately refactor. And if I find myself repeatedly writing what many would consider boilerplate code, I begin to wonder how I can avoid doing this in the future.</p>

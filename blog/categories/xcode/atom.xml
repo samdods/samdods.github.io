@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Xcode | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/xcode/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Xcode | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/xcode/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Introducing Stencil]]></title>
-    <link href="http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin/"/>
+    <link href="http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin/"/>
     <updated>2015-05-02T11:50:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin</id>
+    <id>http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin</id>
     <content type="html"><![CDATA[<p><a href="/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It&rsquo;s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
 
 <p>Once you&rsquo;ve used <a href="/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Programming | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/programming/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Programming | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/programming/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Enumerated Types and Checking Their Values]]></title>
-    <link href="http://samdods.github.io/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/"/>
+    <link href="http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/"/>
     <updated>2014-02-01T11:06:27+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/02/01/checking-for-a-value-in-a-bit-mask</id>
+    <id>http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask</id>
     <content type="html"><![CDATA[<p>Enumerated types are very useful and widely-used. Foundation framework gives us two macros to help give definition to an enumerated type: <a href="http://nshipster.com/ns_enum-ns_options/">NS_ENUM and NS_OPTIONS</a>. But their intended use &ndash; and correct use &ndash; isn&rsquo;t immediately obvious.</p>
 
 <p>First a bit of background: Enumerated types are a part of the ANSI C standard and, if I was a gambler, I would bet my entire future life&rsquo;s earnings on the fact that every single iOS or OS X programmer has encountered them and is very likely to use them daily, even if they are unaware of it. They are defined in a similar way to a struct and it&rsquo;s very common to <code>typedef</code> an enumerated type for easier use.</p>

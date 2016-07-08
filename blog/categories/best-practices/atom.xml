@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Best-practices | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/best-practices/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Best-practices | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/best-practices/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Swift Best Practices (Part I)]]></title>
-    <link href="http://samdods.github.io/blog/2015/09/21/some-swift-best-practices/"/>
+    <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
     <updated>2015-09-21T08:00:37+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/09/21/some-swift-best-practices</id>
+    <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
     <content type="html"><![CDATA[<p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
 
 <p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>

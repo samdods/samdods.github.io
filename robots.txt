@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://samdods.github.io/sitemap.xml 
+Sitemap: http://sam.dods.co/sitemap.xml 

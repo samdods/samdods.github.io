@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[]]></title>
+  <link href="http://sam.dods.co/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
   
   <entry>
-    <title type="html"><![CDATA[Swift Best Practices (Part I)]]></title>
-    <link href="http://samdods.github.io/blog/2015/09/21/some-swift-best-practices/"/>
+    <title type="html"><![CDATA[Swift best practices (part i)]]></title>
+    <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
     <updated>2015-09-21T08:00:37+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/09/21/some-swift-best-practices</id>
+    <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
     <content type="html"><![CDATA[<p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
 
 <p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
@@ -264,9 +264,9 @@
   
   <entry>
     <title type="html"><![CDATA[Why I Love Swift's Protocol Extensions]]></title>
-    <link href="http://samdods.github.io/blog/2015/08/04/why-i-love-swift-protocol-extensions/"/>
+    <link href="http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions/"/>
     <updated>2015-08-04T08:00:00+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/08/04/why-i-love-swift-protocol-extensions</id>
+    <id>http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions</id>
     <content type="html"><![CDATA[<p>When protocol extensions were first mentioned at WWDC in June, they immediately stood out as a necessary feature. But it was only after I started playing around with them that I realised the true value these bring to the language.</p>
 
 <!-- More -->
@@ -500,16 +500,16 @@
   
   <entry>
     <title type="html"><![CDATA[Introducing Stencil]]></title>
-    <link href="http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin/"/>
+    <link href="http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin/"/>
     <updated>2015-05-02T11:50:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/05/02/stencil-xcode-plugin</id>
-    <content type="html"><![CDATA[<p><a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It&rsquo;s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
+    <id>http://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin</id>
+    <content type="html"><![CDATA[<p><a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It&rsquo;s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
 
-<p>Once you&rsquo;ve used <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>
+<p>Once you&rsquo;ve used <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>
 
 <p>It really adds benefit when there&rsquo;s a particular class that you commonly subclass, especially if the new subclass requires an interface builder counterpart.</p>
 
-<p>Of course you would want to document your project to explain that you have defined custom templates, which can be used with the <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> plugin. But if one of your co-workers doesn&rsquo;t have the plugin, then it doesn&rsquo;t matter. No harm done, it just means they won&rsquo;t reap the benefits. And you can spend longer on your tea break, while they&rsquo;re spending longer doing things manually!</p>
+<p>Of course you would want to document your project to explain that you have defined custom templates, which can be used with the <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> plugin. But if one of your co-workers doesn&rsquo;t have the plugin, then it doesn&rsquo;t matter. No harm done, it just means they won&rsquo;t reap the benefits. And you can spend longer on your tea break, while they&rsquo;re spending longer doing things manually!</p>
 
 <!-- More -->
 
@@ -545,11 +545,11 @@
 
 <h2>Simplifying repetitive tasks</h2>
 
-<p>This is where <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> comes in. We can create a template based on an existing subclass of <code>SectionViewController</code>, to simplify adding a new section in the future. This will not only save my time, but make it much easier for a new joiner to get up to speed with the project and get stuck in making a new section, following the pattern that already exists in the project.</p>
+<p>This is where <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> comes in. We can create a template based on an existing subclass of <code>SectionViewController</code>, to simplify adding a new section in the future. This will not only save my time, but make it much easier for a new joiner to get up to speed with the project and get stuck in making a new section, following the pattern that already exists in the project.</p>
 
 <p>Simply select the files that you wish to base your template upon, and select the new option to <em>New Template from Selection</em>, as in the image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/create-new-template.jpg" title="Create File Template from Group" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/create-new-template.jpg" title="Create File Template from Group" alt="images"></p>
 
 <p>In the options window that is presented, I&rsquo;ll leave the <em>Interface or protocol</em> option as &ldquo;interface FriendsSectionViewController&rdquo;, because this is the interface I wish to make a template from (it&rsquo;s the only interface defined in the selected files).</p>
 
@@ -557,17 +557,17 @@
 
 <p>The <em>Template name</em> is defaulted to &ldquo;SectionViewController&rdquo; so I&rsquo;ll leave that, and I&rsquo;ll add a useful description so people know what it is in the future. I&rsquo;ll leave all other options as the defaults. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/create-template-options.jpg" title="Template Creation Options" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/create-template-options.jpg" title="Template Creation Options" alt="images"></p>
 
 <p>You will then be presented with the template files for you to edit. Ensure you don&rsquo;t modify the parts of the code that have references like <code>___FILEBASENAMEASIDENTIFIER___</code>, as this is what Xcode will replace when you use your template in the future.</p>
 
 <p>Remove any functionality that is specific to the class you used to create the template. Leave stubs of methods that you expect to be implemented in new classes that you create based on your template. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/editing-new-template.jpg" title="Editing The Template" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/editing-new-template.jpg" title="Editing The Template" alt="images"></p>
 
 <p>If your template includes an Interface Builder file, the template file will be presented in a separate window. Remove any views or controllers that are specific to the class you used to create the template. You can leave outlets connected and don&rsquo;t modify the custom class <code>___FILEBASENAMEASIDENTIFIER___</code>. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/editing-ui-template.jpg" title="Editing Interface Builder Template" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/editing-ui-template.jpg" title="Editing Interface Builder Template" alt="images"></p>
 
 <p>After following the instructions that are presented to you in an Xcode window, make your changes to the template files, close the window(s) and return to your project.</p>
 
@@ -577,31 +577,31 @@
 
 <p>So far in my project, I only have a <code>FriendsSectionViewController</code>. Now it&rsquo;s time to add a <code>GroupsSectionViewController</code>. To use the template created above, simply right-click in the Project Navigator and select <em>New File from Custom Template&hellip;</em>. This will present all templates that are associated with this project. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/new-from-template.jpg" title="New File from Custom Template" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/new-from-template.jpg" title="New File from Custom Template" alt="images"></p>
 
 <p>Select the <code>SectionViewController</code> template created previously. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/select-custom-template.jpg" title="Selecting Custom Template" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/select-custom-template.jpg" title="Selecting Custom Template" alt="images"></p>
 
 <p>Give your new class a name, in my case this will be <code>GroupsSectionViewController</code>. Your new files will be created, just like usual. You&rsquo;ll see the code files and the Interface Builder files all present in the Project Navigator. The storyboard file has the <code>UITableView</code> hooked up, as well as its <code>delegate</code> and <code>dataSource</code>. The code files have stubs of the methods that I&rsquo;m expected to implement in the new subclass. See image below.</p>
 
-<p><img class="center" src="http://samdods.github.io/images/stencil/new-files-created.jpg" title="New Files Created" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/stencil/new-files-created.jpg" title="New Files Created" alt="images"></p>
 
 <h1>Conclusion</h1>
 
-<p><a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> may not provide benefit to every kind of project. But generally &ndash; if extending the app means that you frequently subclass a particular class &ndash; then you can find benefits in using the <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> plugin. You might find yourself subclassing a <code>WidgetView</code> for example, it&rsquo;s much quicker to use <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> to produce your new files, which may include a <code>.xib</code> file. And it makes it immediately clear to people joining the project in the future what methods are expected to be implemented in new subclasses.</p>
+<p><a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> may not provide benefit to every kind of project. But generally &ndash; if extending the app means that you frequently subclass a particular class &ndash; then you can find benefits in using the <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> plugin. You might find yourself subclassing a <code>WidgetView</code> for example, it&rsquo;s much quicker to use <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> to produce your new files, which may include a <code>.xib</code> file. And it makes it immediately clear to people joining the project in the future what methods are expected to be implemented in new subclasses.</p>
 
 <h1>Get Stencil</h1>
 
-<p>See the <a href="http://samdods.github.io/stencil-xcode-plugin/">Stencil</a> website.</p>
+<p>See the <a href="http://sam.dods.co/stencil-xcode-plugin/">Stencil</a> website.</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Swift Alternatives to C Macros (Part I)]]></title>
-    <link href="http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros/"/>
+    <title type="html"><![CDATA[swift alternatives to c macros (part i)]]></title>
+    <link href="http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros/"/>
     <updated>2015-04-06T22:05:57+01:00</updated>
-    <id>http://samdods.github.io/blog/2015/04/06/swift-alternatives-to-c-macros</id>
+    <id>http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros</id>
     <content type="html"><![CDATA[<p>Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you&rsquo;ve ever used <code>NSAssert</code>, then you&rsquo;ve used a macro. (And if you haven&rsquo;t, then what have you been doing?!)</p>
 
 <p>Now please bear with me&hellip; before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I&rsquo;ve seen in other recent posts within the community.</p>
@@ -641,7 +641,7 @@
 
 <p>Some people would probably argue the fact that it&rsquo;s never acceptable to use macros. I would encourage those people to read on because you might discover some cool tricks!</p>
 
-<p>I wrote recently about KVC collection operators and <a href="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/">how to use them safely</a>. In that post, I discuss the use of macros to provide compile-time checking on the keys used in key-value coding.</p>
+<p>I wrote recently about KVC collection operators and <a href="http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly/">how to use them safely</a>. In that post, I discuss the use of macros to provide compile-time checking on the keys used in key-value coding.</p>
 
 <p>Consider the following example interfaces:</p>
 
@@ -677,7 +677,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I haven&rsquo;t used a macro yet! But I can use macros as defined in <a href="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/">my other post</a> to perform these operations and get compile-time checking of the key paths with code-completion <em>and</em> syntax highlighting! (The highlighter on my blog doesn&rsquo;t display it as nicely as Xcode does.)</p>
+<p>I haven&rsquo;t used a macro yet! But I can use macros as defined in <a href="http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly/">my other post</a> to perform these operations and get compile-time checking of the key paths with code-completion <em>and</em> syntax highlighting! (The highlighter on my blog doesn&rsquo;t display it as nicely as Xcode does.)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -748,10 +748,10 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[How to Intercept Delegate Messages if You Are Not the Delegate]]></title>
-    <link href="http://samdods.github.io/blog/2014/08/03/secondary-delegate/"/>
+    <title type="html"><![CDATA[How to intercept delegate messages if you are not the delegate]]></title>
+    <link href="http://sam.dods.co/blog/2014/08/03/secondary-delegate/"/>
     <updated>2014-08-03T13:45:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/08/03/secondary-delegate</id>
+    <id>http://sam.dods.co/blog/2014/08/03/secondary-delegate</id>
     <content type="html"><![CDATA[<p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
 
 <p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>
@@ -954,9 +954,9 @@
   
   <entry>
     <title type="html"><![CDATA[Theming]]></title>
-    <link href="http://samdods.github.io/blog/2014/07/26/theming/"/>
+    <link href="http://sam.dods.co/blog/2014/07/26/theming/"/>
     <updated>2014-07-26T08:03:03+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/07/26/theming</id>
+    <id>http://sam.dods.co/blog/2014/07/26/theming</id>
     <content type="html"><![CDATA[<p>Many of the projects on which I&rsquo;ve worked have had the problem of &ldquo;theming&rdquo;, because it&rsquo;s difficult to keep a project&rsquo;s codebase clean when dealing with multiple themes. When I refer to a &ldquo;theme&rdquo; I mean something that only affects the look and feel of an app, but not the functionality.</p>
 
 <p>By &ldquo;theming&rdquo;, I&rsquo;m referring to a project that might have different targets, each with different colour schemes, fonts, sizes, etc. to deliver a different user experience with the same functionality.</p>
@@ -965,7 +965,7 @@
 
 <p>Theming is often even more complex. For example, I might have an app that can display the same content in various forms. A news app, for example, might have a timeline in which it displays article teasers as either: a small widget with headline only; a double-height, more-impactful widget with headline and thumbnail image; a double-height widget with headline and article summary. That&rsquo;s three nibs, and I&rsquo;ll also need each one styled slightly differently whether it&rsquo;s on iPad or iPhone. So that&rsquo;s six nibs all backed by a single class!</p>
 
-<p>In this article, I&rsquo;ll discuss my latest solution to &ldquo;theming&rdquo; using <a href="http://samdods.github.io/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">User Defined Runtime Attributes</a>. <!--more--></p>
+<p>In this article, I&rsquo;ll discuss my latest solution to &ldquo;theming&rdquo; using <a href="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">User Defined Runtime Attributes</a>. <!--more--></p>
 
 <h1>Theming with User Defined Runtime Attributes</h1>
 
@@ -973,7 +973,7 @@
 
 <p>The objective is to be able to do something like so to specify how the app should display my view:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/interface-builder-guidance.png" title="Configuring a themed view in Interface Builder" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/interface-builder-guidance.png" title="Configuring a themed view in Interface Builder" alt="images"></p>
 
 <p>In the example above, I&rsquo;ve set the value of the &ldquo;themeTextAttributes&rdquo; key to <code>articleWidgetTitle.iPhone.large</code>. I&rsquo;ll use this key-value pair later, but what&rsquo;s important at this stage is that this can be configured differently for each nib.</p>
 
@@ -989,7 +989,7 @@
 
 <p>Now consider the fictional apps <em>Sam&rsquo;s Mega Lucky Bingo</em> and <em>Jurassic Bingo Legends</em>, which are both built from the same codebase with exactly the same user interface. Their only difference is the colour scheme and fonts used throughout each app. For these apps, I would create a different plist for each app and compile the corresponding plist into the bundle at build time, resulting in a different look and feel. An example plist file might look like so:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/plist-example.png" title="Example Theme Plist" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/plist-example.png" title="Example Theme Plist" alt="images"></p>
 
 <p>I think this is a realy nicely structured plist, in which I can group components at various levels, so they can be easily located, along with the device type on which it will appear, and the form it will take.</p>
 
@@ -1051,7 +1051,7 @@
 
 <p>That&rsquo;s when we get back to user defined runtime attributes. As shown before, I&rsquo;ve configured my view in Interface Builder with the following runtime attributes:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/runtime-attributes.png" title="Runtime Attributes in Interface Builder" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/runtime-attributes.png" title="Runtime Attributes in Interface Builder" alt="images"></p>
 
 <p>Now as soon as I run this project, it&rsquo;s going to crash:</p>
 
@@ -1120,9 +1120,9 @@
   
   <entry>
     <title type="html"><![CDATA[Collection Operators Done Properly]]></title>
-    <link href="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/"/>
+    <link href="http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly/"/>
     <updated>2014-07-25T21:33:59+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly</id>
+    <id>http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly</id>
     <content type="html"><![CDATA[<h1>The Problem</h1>
 
 <p>Foundation&rsquo;s <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html">KVC Collection Operators</a> are often overlooked and underused, but for those in the know they are a powerful tool to have in your Cocoa shed.
@@ -1305,9 +1305,9 @@ In this article I&rsquo;ll discuss KVC Collection Operators in more detail and p
   
   <entry>
     <title type="html"><![CDATA[Pushing the Limits of User-Defined Runtime Attributes in Interface Builder]]></title>
-    <link href="http://samdods.github.io/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/"/>
+    <link href="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/"/>
     <updated>2014-04-08T19:16:47+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder</id>
+    <id>http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder</id>
     <content type="html"><![CDATA[<p>User-defined runtimes attributes in Xcode&rsquo;s Interface Builder are a great way to keep view controller and view code clean, while obeying Separation of Concerns.
 They allow you to configure properties on the view or view controller that you are unable to configure from within Interface Builder&rsquo;s <em>Attributes Inspector</em> or <em>Size Inspector</em>.</p>
 
@@ -1327,7 +1327,7 @@ So with this feature missinh, it would be nice to be able to do the same thing u
 
 <p>First a bit of background: user-defined runtime attributes can be set from the <em>Identity Inspector</em> tab in Interface Builder utilities, as shown below:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/user-defined-runtime-attributes.png" title="s Interface Builder" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/user-defined-runtime-attributes.png" title="s Interface Builder" alt="images"></p>
 
 <p>They are defined as a set of key-value pairs. The key is actually a <em>key path</em>, which is a powerful, especially in Interface Builder where you don&rsquo;t have direct access to the underlying <code>CALayer</code> of a <code>UIView</code> (more on this below).</p>
 
@@ -1359,7 +1359,7 @@ So with this feature missinh, it would be nice to be able to do the same thing u
 
 <p>A great example of using runtime attributes is to configure a <code>UIView</code>&rsquo;s underlying <code>CALayer</code>. For example, we can set the layer&rsquo;s border width and corner radius as follows:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/calayer-setup.png" title="s underlying layer" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/calayer-setup.png" title="s underlying layer" alt="images"></p>
 
 <p>Unfortunately, Interface Builder doesn&rsquo;t allow us to set the color of a CALayer, because the <strong>Color</strong> type doesn&rsquo;t translate to properties of <code>CGColorRef *</code> type (workaround discussed below).</p>
 
@@ -1370,7 +1370,7 @@ This kind of control would be useful for setting a minimum price and maximum pri
 
 <p>Using user-defined runtime attributes, you can configure such a control right from within Interface Builder. Taking the example of <a href="https://github.com/muZZkat/NMRangeSlider">NMRangeSlider</a>, you could configure the minimum and maximum values for the slider as follows:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/custom-control-setup.png" title="Configuring a custom control" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/custom-control-setup.png" title="Configuring a custom control" alt="images"></p>
 
 <p>The main benefit of Interface Builder in my opinion is that it keeps all the UI configuration logic in one place outside of the view controller. By configuring your controls in Interface Builder, this is yet more code that can be removed from your view controller. After all, you would configure your <code>UIButton</code> and <code>UISlider</code> controls in Interface Builder, so why not configure your custom controls too?</p>
 
@@ -1417,7 +1417,7 @@ This kind of control would be useful for setting a minimum price and maximum pri
 
 <p>Now we can set the user-defined runtime attributes in Interface Builder like so:</p>
 
-<p><img class="center" src="http://samdods.github.io/images/content-inset-from-string.png" title="Configuring content inset" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/content-inset-from-string.png" title="Configuring content inset" alt="images"></p>
 
 <p>The <strong>Key Path</strong> must match the name of the setter method in the category, but without the <strong>set</strong> prefix and with lowercase first letter.</p>
 
@@ -1452,7 +1452,7 @@ This kind of control would be useful for setting a minimum price and maximum pri
 
 <h3>Configure the Interface</h3>
 
-<p><img class="center" src="http://samdods.github.io/images/calayer-border-color.png" title="s border color" alt="images"></p>
+<p><img class="center" src="http://sam.dods.co/images/calayer-border-color.png" title="s border color" alt="images"></p>
 
 <h1>Considerations</h1>
 
@@ -1469,10 +1469,10 @@ This kind of control would be useful for setting a minimum price and maximum pri
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Modal View in Front of the Status Bar]]></title>
-    <link href="http://samdods.github.io/blog/2014/02/10/modal-view-in-front-of-the-status-bar/"/>
+    <title type="html"><![CDATA[Modal View In Front of the Status Bar]]></title>
+    <link href="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/"/>
     <updated>2014-02-10T07:55:28+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/02/10/modal-view-in-front-of-the-status-bar</id>
+    <id>http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar</id>
     <content type="html"><![CDATA[<p>This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.</p>
 
 <!-- more -->
@@ -1548,9 +1548,9 @@ This kind of control would be useful for setting a minimum price and maximum pri
   
   <entry>
     <title type="html"><![CDATA[Enumerated Types and Checking Their Values]]></title>
-    <link href="http://samdods.github.io/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/"/>
+    <link href="http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/"/>
     <updated>2014-02-01T11:06:27+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/02/01/checking-for-a-value-in-a-bit-mask</id>
+    <id>http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask</id>
     <content type="html"><![CDATA[<p>Enumerated types are very useful and widely-used. Foundation framework gives us two macros to help give definition to an enumerated type: <a href="http://nshipster.com/ns_enum-ns_options/">NS_ENUM and NS_OPTIONS</a>. But their intended use &ndash; and correct use &ndash; isn&rsquo;t immediately obvious.</p>
 
 <p>First a bit of background: Enumerated types are a part of the ANSI C standard and, if I was a gambler, I would bet my entire future life&rsquo;s earnings on the fact that every single iOS or OS X programmer has encountered them and is very likely to use them daily, even if they are unaware of it. They are defined in a similar way to a struct and it&rsquo;s very common to <code>typedef</code> an enumerated type for easier use.</p>
@@ -1787,9 +1787,9 @@ This kind of control would be useful for setting a minimum price and maximum pri
   
   <entry>
     <title type="html"><![CDATA[Dynamic Accessors for Category Properties]]></title>
-    <link href="http://samdods.github.io/blog/2014/01/04/dynamic-accessors-for-category-properties/"/>
+    <link href="http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties/"/>
     <updated>2014-01-04T10:06:30+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/01/04/dynamic-accessors-for-category-properties</id>
+    <id>http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties</id>
     <content type="html"><![CDATA[<h1>The Problem</h1>
 
 <p>Repetition, repetition, repetition. I don&rsquo;t like it. I like code to be as <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">dry</a> as it can possibly be without affecting readability, so as soon as I find myself repeating code in a project I immediately refactor. And if I find myself repeatedly writing what many would consider boilerplate code, I begin to wonder how I can avoid doing this in the future.</p>

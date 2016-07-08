@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Objective-c | My Octopress Blog]]></title>
-  <link href="http://samdods.github.io/blog/categories/objective-c/atom.xml" rel="self"/>
-  <link href="http://samdods.github.io/"/>
-  <updated>2016-07-08T07:12:45+01:00</updated>
-  <id>http://samdods.github.io/</id>
+  <title><![CDATA[Category: Objective-c | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/objective-c/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:47:24+01:00</updated>
+  <id>http://sam.dods.co/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Sam Dods]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[How to Intercept Delegate Messages if You Are Not the Delegate]]></title>
-    <link href="http://samdods.github.io/blog/2014/08/03/secondary-delegate/"/>
+    <link href="http://sam.dods.co/blog/2014/08/03/secondary-delegate/"/>
     <updated>2014-08-03T13:45:25+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/08/03/secondary-delegate</id>
+    <id>http://sam.dods.co/blog/2014/08/03/secondary-delegate</id>
     <content type="html"><![CDATA[<p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
 
 <p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>
@@ -152,9 +152,9 @@
   
   <entry>
     <title type="html"><![CDATA[Theming]]></title>
-    <link href="http://samdods.github.io/blog/2014/07/26/theming/"/>
+    <link href="http://sam.dods.co/blog/2014/07/26/theming/"/>
     <updated>2014-07-26T08:03:03+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/07/26/theming</id>
+    <id>http://sam.dods.co/blog/2014/07/26/theming</id>
     <content type="html"><![CDATA[<p>Many of the projects on which I&rsquo;ve worked have had the problem of &ldquo;theming&rdquo;, because it&rsquo;s difficult to keep a project&rsquo;s codebase clean when dealing with multiple themes. When I refer to a &ldquo;theme&rdquo; I mean something that only affects the look and feel of an app, but not the functionality.</p>
 
 <p>By &ldquo;theming&rdquo;, I&rsquo;m referring to a project that might have different targets, each with different colour schemes, fonts, sizes, etc. to deliver a different user experience with the same functionality.</p>
@@ -276,9 +276,9 @@ this class is not key value coding-compliant for the key themeTextAttributes.'
   
   <entry>
     <title type="html"><![CDATA[Collection Operators Done Properly]]></title>
-    <link href="http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly/"/>
+    <link href="http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly/"/>
     <updated>2014-07-25T21:33:59+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/07/25/collection-operators-done-properly</id>
+    <id>http://sam.dods.co/blog/2014/07/25/collection-operators-done-properly</id>
     <content type="html"><![CDATA[<h1>The Problem</h1>
 
 <p>Foundation&rsquo;s <a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html">KVC Collection Operators</a> are often overlooked and underused, but for those in the know they are a powerful tool to have in your Cocoa shed.
@@ -421,9 +421,9 @@ DZLAverageNumber(self.transactions, Transaction *, value);
   
   <entry>
     <title type="html"><![CDATA[Pushing the Limits of User-Defined Runtime Attributes in Interface Builder]]></title>
-    <link href="http://samdods.github.io/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/"/>
+    <link href="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/"/>
     <updated>2014-04-08T19:16:47+01:00</updated>
-    <id>http://samdods.github.io/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder</id>
+    <id>http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder</id>
     <content type="html"><![CDATA[<p>User-defined runtimes attributes in Xcode&rsquo;s Interface Builder are a great way to keep view controller and view code clean, while obeying Separation of Concerns.
 They allow you to configure properties on the view or view controller that you are unable to configure from within Interface Builder&rsquo;s <em>Attributes Inspector</em> or <em>Size Inspector</em>.</p>
 
@@ -568,9 +568,9 @@ This kind of control would be useful for setting a minimum price and maximum pri
   
   <entry>
     <title type="html"><![CDATA[Modal View in Front of the Status Bar]]></title>
-    <link href="http://samdods.github.io/blog/2014/02/10/modal-view-in-front-of-the-status-bar/"/>
+    <link href="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/"/>
     <updated>2014-02-10T07:55:28+00:00</updated>
-    <id>http://samdods.github.io/blog/2014/02/10/modal-view-in-front-of-the-status-bar</id>
+    <id>http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar</id>
     <content type="html"><![CDATA[<p>This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.</p>
 
 <!-- more -->
