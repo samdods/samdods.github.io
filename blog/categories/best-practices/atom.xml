@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Best-practices | ]]></title>
+  <title><![CDATA[Category: best-practices | ]]></title>
   <link href="http://sam.dods.co/blog/categories/best-practices/atom.xml" rel="self"/>
   <link href="http://sam.dods.co/"/>
-  <updated>2016-07-08T08:47:24+01:00</updated>
+  <updated>2016-07-08T08:55:00+01:00</updated>
   <id>http://sam.dods.co/</id>
   <author>
     <name><![CDATA[Sam Dods]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Swift Best Practices (Part I)]]></title>
+    <title type="html"><![CDATA[Swift best practices (part i)]]></title>
     <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
     <updated>2015-09-21T08:00:37+01:00</updated>
     <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>

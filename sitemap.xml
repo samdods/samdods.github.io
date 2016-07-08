@@ -51,6 +51,9 @@
 <loc>http://sam.dods.co/</loc>
 </url>
 <url>
+<loc>http://sam.dods.co/about/</loc>
+</url>
+<url>
 <loc>http://sam.dods.co/blog/categories/objective-c-runtime/</loc>
 </url>
 <url>
@@ -76,9 +79,6 @@
 </url>
 <url>
 <loc>http://sam.dods.co/blog/categories/best-practices/</loc>
-</url>
-<url>
-<loc>http://sam.dods.co/posts/2/</loc>
 </url>
 <url>
 <loc>http://sam.dods.co/better-together/index.html</loc>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Objective-c | ]]></title>
+  <title><![CDATA[Category: objective-c | ]]></title>
   <link href="http://sam.dods.co/blog/categories/objective-c/atom.xml" rel="self"/>
   <link href="http://sam.dods.co/"/>
-  <updated>2016-07-08T08:47:24+01:00</updated>
+  <updated>2016-07-08T08:55:00+01:00</updated>
   <id>http://sam.dods.co/</id>
   <author>
     <name><![CDATA[Sam Dods]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[How to Intercept Delegate Messages if You Are Not the Delegate]]></title>
+    <title type="html"><![CDATA[How to intercept delegate messages if you are not the delegate]]></title>
     <link href="http://sam.dods.co/blog/2014/08/03/secondary-delegate/"/>
     <updated>2014-08-03T13:45:25+01:00</updated>
     <id>http://sam.dods.co/blog/2014/08/03/secondary-delegate</id>
@@ -567,7 +567,7 @@ This kind of control would be useful for setting a minimum price and maximum pri
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Modal View in Front of the Status Bar]]></title>
+    <title type="html"><![CDATA[Modal View In Front of the Status Bar]]></title>
     <link href="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/"/>
     <updated>2014-02-10T07:55:28+00:00</updated>
     <id>http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar</id>

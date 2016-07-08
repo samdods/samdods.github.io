@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Objective-c-runtime | ]]></title>
+  <title><![CDATA[Category: objective-c-runtime | ]]></title>
   <link href="http://sam.dods.co/blog/categories/objective-c-runtime/atom.xml" rel="self"/>
   <link href="http://sam.dods.co/"/>
-  <updated>2016-07-08T08:47:24+01:00</updated>
+  <updated>2016-07-08T08:55:00+01:00</updated>
   <id>http://sam.dods.co/</id>
   <author>
     <name><![CDATA[Sam Dods]]></name>
