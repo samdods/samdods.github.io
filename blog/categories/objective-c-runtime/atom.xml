@@ -4,7 +4,7 @@
   <title><![CDATA[Category: objective-c-runtime | ]]></title>
   <link href="http://sam.dods.co/blog/categories/objective-c-runtime/atom.xml" rel="self"/>
   <link href="http://sam.dods.co/"/>
-  <updated>2016-07-08T08:55:00+01:00</updated>
+  <updated>2016-12-01T22:11:58+00:00</updated>
   <id>http://sam.dods.co/</id>
   <author>
     <name><![CDATA[Sam Dods]]></name>
@@ -156,7 +156,7 @@ All I&rsquo;m doing here is iterating over the properties of <code>self</code>, 
 }
 </code>
 The method above defines the getter using the property name or a custom getter name if specified. It then calls another method to create the implementation based on the block specified. The block returns the associated object using the key as the reference.
-```
+&#8220;`
 + (void)implementSetterIfNecessaryForPropertyName:(char const <em>)propertyName customSetterName:(NSString </em>)customSetterName key:(const void <em>)key attributes:(NSArray </em>)attributes
 {
   BOOL isCopy = [attributes containsObject:@&ldquo;C&rdquo;];

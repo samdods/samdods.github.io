@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios | ]]></title>
   <link href="http://sam.dods.co/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://sam.dods.co/"/>
-  <updated>2016-07-08T08:55:00+01:00</updated>
+  <updated>2016-12-01T22:11:58+00:00</updated>
   <id>http://sam.dods.co/</id>
   <author>
     <name><![CDATA[Sam Dods]]></name>
@@ -14,7 +14,177 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Swift best practices (part i)]]></title>
+    <title type="html"><![CDATA[Delegate Pattern in Swift]]></title>
+    <link href="http://sam.dods.co/blog/2016/12/01/delegate-pattern-swift/"/>
+    <updated>2016-12-01T21:39:37+00:00</updated>
+    <id>http://sam.dods.co/blog/2016/12/01/delegate-pattern-swift</id>
+    <content type="html"><![CDATA[<h1>Delegate Pattern in Swift</h1>
+
+<p>I started a long and mostly one-sided debate in the office last week, by suggesting that we should <em>not</em> change our delegate method signatures to conform to the Swift principle of <strong>omitting needless words</strong>.</p>
+
+<p>My side of the debate was that we should follow the convention of prefixing delegate methods with the name of the delegating class, as follows:</p>
+
+<pre><code class="swift">func scrollViewDidScroll(_ scrollView: UIScrollView)
+</code></pre>
+
+<p>The other side of the debate was, “Come on, man, this is Swift 3. Those words are not needed, so omit them! It’s more clear at the point of use!” And this side of the debate suggested we adopt the following naming convention:</p>
+
+<pre><code class="swift">func didScroll(in scrollView: UIScrollView)
+</code></pre>
+
+<p>In this article, I’ll rationalise my side of the debate, but also ask the question: is delegation even the right pattern?</p>
+
+<!-- More -->
+
+
+<h2>Clarity at the point of use</h2>
+
+<p>A large part of writing an API is to allow others to invoke our method implementations. We provide an interface to our code. And we should make is as simple as possible to interface with. We’ll write a method once, but many people will call our method, possibly many times. So clarity at the point of use is more important than at the point of declaration. This is also referred to as clarity at the call site.</p>
+
+<p>Delegate methods are different to typical methods in our interface. By declaring a delegate protocol, we are writing a contract. This contract defines an interface to code that we expect others to implement. The roles are reversed for delegate methods. Instead of inviting someone to invoke a method that we implemented, we’re asking them to implement the method, so that we can call it. So the guidelines should be reversed too. We will call the method once, but many people will implement that method, possibly many times. The “point of use” now refers to where the method is implemented by those using our API. I’ll refer to this as the implementation site.</p>
+
+<p>The most important thing is still clarity at the point of use, only that point of use is now the implementation site. And the most important thing to ensure clarity around is that the method &ldquo;belongs to&rdquo; our API. That is to say, &ldquo;you implement it, but don&rsquo;t call it. We&rsquo;ll call it.&rdquo; The best way to make this clear is to prefix the method with the name of the delegating class.</p>
+
+<p><em>As as aside, even if the guidelines were not reversed, I still don&rsquo;t agree that <code>didScroll(in:)</code> is clearer at the call site. <code>delegate?.didScroll(in: self)</code> is misleading. It wasn&rsquo;t the delegate that scrolled in self – it was self that scrolled!</em></p>
+
+<h2>Passing a reference to the sender</h2>
+
+<p>While this debate was taking place, it was also touted that you needn&rsquo;t pass the reference to the sender. &ldquo;If you don&rsquo;t need it, don&rsquo;t send it!&rdquo;</p>
+
+<p>Actually, the delegate pattern is defined such that the delegate can implement the method on behalf of the delegating class, with the full original context of the sender. This is achieved in Swift by sending a reference to <code>self</code>. And when defining an API for others to consume, one should stick to the definition of the delegate pattern by providing the original context.</p>
+
+<p>Moreover, you risk taking brevity too far and instead of having:</p>
+
+<pre><code class="swift">func didScroll(in scrollView: UIScrollView)
+</code></pre>
+
+<p>you&rsquo;ll end up with just:</p>
+
+<pre><code class="swift">func didScroll()
+</code></pre>
+
+<p>And where&rsquo;s the sense in that?!</p>
+
+<p>A lot of people are suggesting that Apple just haven&rsquo;t updated their <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingMethods.html#//apple_ref/doc/uid/20001282-1001803-BCIDAIJE">Coding Guidelines for Delegate Methods</a> since Objective-C. And if they did, perhaps they would review it with Swift&rsquo;s <a href="https://swift.org/documentation/api-design-guidelines/">API Design Guidelines</a> in mind.</p>
+
+<p>However, I disagree again. Apple provided documentation on <a href="https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-ID276">Delegation</a> in the book <em>The Swift Programming Language (updated for Swift 3.0.1)</em>. It doesn&rsquo;t explicitly state that a reference to the sender must be passed as an argument, but they do follow that convention in all of their examples. They also (almost) follow the convention of prefixing all the delegate methods with the name of the delegating class. (Although in their examples, it&rsquo;s actually a delegating protocol type <code>DiceGame</code> and the delegate methods each have the consistent prefix <code>game</code>.)</p>
+
+<h2>Following convention</h2>
+
+<p>Conventions are there to be followed. But rules are there to be broken, right? Otherwise how would we innovate? I agree with this, but I don&rsquo;t agree with breaking convention to end up with something that&rsquo;s <em>less</em> clear.</p>
+
+<p>In <a href="https://twitter.com/khanlou">Soroush Khanlou</a>&rsquo;s article about <a href="http://khanlou.com/2016/09/swifty-delegates/">Swifty Delegates</a>, he suggests that in an ideal future Apple would update UIKit to follow a more &lsquo;Swifty&rsquo; delegate method signature. UIKit already strays from convention with the <code>UITableViewDataSource</code> method <code>numberOfSections(in:)</code>.</p>
+
+<p>While I respect Soroush&rsquo;s opinion, and have thoroughly enjoyed many of his articles, I disagree that this is the future. I actually think UIKit would be better if anomolies like this were corrected. So this example would become <code>tableViewNumberOfSections(_:)</code>.</p>
+
+<p>The prefix is there to distinguish between other methods that the delegate might want to implement. Apple is delegating this functionality to the consumer of its API. They are asking the consumer to implement this method. I don&rsquo;t want to implement it, but I have to, because Apple expects me to. And as such, I&rsquo;d prefer it to have the <code>tableView</code> prefix, so I know – and others after me know – that this method belongs to the delegating class, and it&rsquo;s not just some method I&rsquo;ve implemented for my own benefit.</p>
+
+<p>But of course, that&rsquo;s just my opinion. I&rsquo;ve expressed my will and desire.</p>
+
+<p>But what is ultimately much more important, is this:</p>
+
+<p>If you want to later query the number of sections in the table, from your delegate (say, a view controller), are you going to call:</p>
+
+<pre><code class="swift">self.numberOfSections(in: tableView) // Swifty-style delegate method implemented on the view controller
+</code></pre>
+
+<p>or the following?</p>
+
+<pre><code class="swift">self.tableView.numberOfSections
+</code></pre>
+
+<p>I&rsquo;d recommend the latter, although with the number of sections it&rsquo;s <em>probably</em> safe to call either. But what if you want to find the cell for a given row? Assuming UIKit had taken Soroush&rsquo;s advice, then which of the following would you call?</p>
+
+<pre><code class="swift">self.cellForRow(at: indexPath, in: tableView) // Swifty-style delegate method implemented on the view controller
+</code></pre>
+
+<p>or</p>
+
+<pre><code class="swift">self.tableView.cellForRow(at: indexPath)
+</code></pre>
+
+<p>It might be tempting to call the former because you start typing <code>cell...</code> and auto-complete serves it to you on a plate. But my advice would be to call the latter, given that only the <em>delegating class</em> should ever call the <em>delegate method</em>.</p>
+
+<p>But wouldn&rsquo;t it be really confusing if those <code>UITableViewDataSource</code> methods were really declared as Soroush suggested? And if we all stray from convention – to make our delegate method signatures more &lsquo;Swifty&#8217; – then we risk making our APIs confusing. The prefix convention highlights that this method should only be called by the delegating class.</p>
+
+<h2>But is delegation even the correct pattern?</h2>
+
+<p>If you strictly follow the <a href="https://www.objc.io/issues/7-foundation/communication-patterns/">guidelines laid out by the objc.io guys</a>, then you might find yourself using delegation a lot less. But their article isn&rsquo;t new, so is the delegate pattern still overused? Probably, yes. But then if we&rsquo;re drawing inspiration from UIKit et al, then it&rsquo;s obvious why.</p>
+
+<p>But blocks weren&rsquo;t present at the birth of UIKit. They came on the scene with iOS 4, and quickly gained popularity with many open source libraries extending UIKit to provide block-based APIs. Blocks, or now <em>closures</em>, may be much more appropriate in many of the places the delegate pattern is used.</p>
+
+<p>The dictionary definition of the verb <em>to delegate</em> is to:</p>
+
+<blockquote><p>entrust a task or responsibility to another entity, typically one who is less senior than oneself.</p></blockquote>
+
+<p>Now, I&rsquo;m not going to get into a debate about who&rsquo;s more senior: a view controller or a table view. But the important bit is that delegation is <em>entrusting a task</em> to another entity. It&rsquo;s <em>not</em> about notifying!</p>
+
+<p>Some examples that came up during our debate were similar to this:</p>
+
+<pre><code class="swift">func myCellDidTapAdd(_ cell: MyCell)
+</code></pre>
+
+<p>or</p>
+
+<pre><code>func didTapAdd(on cell: MyCell)
+</code></pre>
+
+<p>This is a prime example of when a closure would solve the problem better than the delegate pattern.</p>
+
+<h3>Closures</h3>
+
+<p>A closure may be better here because you&rsquo;ll typically have access to the cell&rsquo;s index path at the point at which you set the closure. The index path is much more useful than the cell itself, which would be passed to the delegate method implementation. This is because you&rsquo;re likely to look up an item from your data source using its index. It avoids having to call <code>tableView.indexPath(for: cell)</code> and guarding against a <code>nil</code> index path being returned. And within the closure you can call your own method, which <em>you&rsquo;ve</em> implemented because <em>you</em> want it to do something, with the arguments <em>you</em> need, rather than it being dictated by a delegating class that you <em>must</em> implement it.</p>
+
+<h3>Target/Action</h3>
+
+<p>And target/action might be better in many places too. Target/action is a great mechanism, which was vastly improved by the addition of <code>#selector</code> in Swift 2.2. If it&rsquo;s a simple case of delegating that something was tapped, why not make it a <code>UIControl</code> subclass and hook it up via target/action?</p>
+
+<p>I&rsquo;ve seen so many times a custom view with a <code>UITapGestureRecognizer</code>, where the method for the tap delegates its handling to the custom view&rsquo;s delegate. Have you ever seen something like this?</p>
+
+<pre><code class="swift">@IBAction private func handleTap(tap: UITapGestureRecognizer) {
+    delegate?.myCustomViewWasTapped(self)
+}
+</code></pre>
+
+<p>Why not try the following?</p>
+
+<pre><code class="swift">@IBAction private func handleTap(tap: UITapGestureRecognizer) {
+    sendActions(for: .touchUpInside)
+}
+</code></pre>
+
+<p>Now you can either set up the target/action in code, or hook it up in interface builder if appropriate.</p>
+
+<p>And, as mentioned above with closures, the method that&rsquo;s implemented by the consumer can be whatever they choose. Both with closures and target/action, we allow the consumer of our API to write whatever methods they please, and they will still be &ldquo;notified&rdquo; by our object.</p>
+
+<p>This means as a consumer we can hook the API into a method like <code>dismissCustomView()</code> instead of having to implement the delegate method <code>customViewDidTapDismiss(_:)</code>. This also means we don&rsquo;t need a separate method if we want to call this from somewhere else in our own code.</p>
+
+<p>Furthermore, with target/action, it&rsquo;s the receiver that decides whether or not they need a reference to the sender. And if they want it, they&rsquo;ve got it. And if they don&rsquo;t, they can implement a method that takes no arguments.</p>
+
+<h2>Conclusion</h2>
+
+<p>I do think delegate methods are overused, but if we continue to use them then I think we should stick to convention. Mainly to avoid confusion, but also out of respect for the consumers of ones API – even if those consumers are only ones colleagues, or even oneself!</p>
+
+<p>So when is it right to use the delegate pattern?</p>
+
+<p>Typically I find that if you want something returned, then the delegate pattern is probably a good shout. Say, if you want to check if you should do something, then you&rsquo;ll expect a <code>Bool</code> to be returned. And this makes sense with the definition of delegation too. You&rsquo;re entrusting someone else to provide some information that you need.</p>
+
+<p>And I&rsquo;d suggest avoiding the delegate pattern if you&rsquo;re simply notifying another object of an action.</p>
+
+<p>But of course, there are no hard and fast rules, and that&rsquo;s what&rsquo;s so great about programming – we can always find better ways of doing things, and <a href="https://8thlight.com/blog/daniel-irvine/2016/11/11/perfect-code-is-an-illusion.html?utm_campaign=iOS%2BDev%2BWeekly&amp;utm_medium=email&amp;utm_source=iOS_Dev_Weekly_Issue_277">we don&rsquo;t need to get it right first time</a>!</p>
+
+<p>And if we continue to ask questions like this, then we continue to improve as developers. And surely that&rsquo;s the most important thing.</p>
+
+<p>Thanks for reading!</p>
+
+<p><em>This article ended up being a bit longer than I&rsquo;d planned, so seriously, thanks for reading! If you&rsquo;re interested in continuous improvement and beating things up to find better solutions, then you might be interested in joining a great team at <a href="http://www.theappbusiness.com">The App Business</a>.</em></p>
+
+<p><em>If you enjoyed this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same.</em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Swift best practices]]></title>
     <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
     <updated>2015-09-21T08:00:37+01:00</updated>
     <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
@@ -492,7 +662,7 @@ video.share()
 <p>Yet even <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithCAPIs.html#//apple_ref/doc/uid/TP40014216-CH8-XID_19">Apple&rsquo;s documentation</a> seems to condone the use of primitive constants being declared as a macro. By the time I read this, I was getting pretty fed up. Why is everyone, including Apple, encouraging the misuse of macros?!</p>
 
 <p>Apple&rsquo;s example below should never have been written as a macro in the first place.
-```objc</p>
+&#8220;`objc</p>
 
 <h1>define FADE_ANIMATION_DURATION 0.35</h1>
 
@@ -573,143 +743,6 @@ var maximumAccountBalance = transactions.mapMaximum {$0.account.balance}
 <p>I&rsquo;ll be investigating more of what I consider &ldquo;valid&rdquo; uses of macros and how we can achieve the same result using the advanced language features of Swift.</p>
 
 <p>If you&rsquo;ve enjoyed reading this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I&rsquo;m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to intercept delegate messages if you are not the delegate]]></title>
-    <link href="http://sam.dods.co/blog/2014/08/03/secondary-delegate/"/>
-    <updated>2014-08-03T13:45:25+01:00</updated>
-    <id>http://sam.dods.co/blog/2014/08/03/secondary-delegate</id>
-    <content type="html"><![CDATA[<p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
-
-<p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>
-
-<p>So, the question is: how can we listen out for the delegate messages from a UIScrollView, when we are not acting as the delegate?</p>
-
-<!-- More -->
-
-
-<p>One solution would be to use KVO. But it wouldn&rsquo;t be possible to implement <code>-scrollViewWillEndDragging:withVelocity:targetContentOffset:</code> using KVO.</p>
-
-<h1>Secondary Delegate</h1>
-
-<p>So I propose adding a <code>secondaryDelegate</code> property in a category on UIScrollView. This category will implement the <code>-setSecondaryDelegate:</code> method, which can be called from the app (from a view controller, say).</p>
-
-<pre><code class="objc">@interface UIScrollView (SecondaryDelegate)
-
-@property (nonatomic, weak) id&lt;UIScrollViewDelegate&gt; secondaryDelegate;
-
-@end
-</code></pre>
-
-<p>So for example, my view controller can set itself as the “delegate” of its web view’s UIScrollView as follows:</p>
-
-<pre><code>- (void)viewDidLoad
-{
-  [super viewDidLoad];
-
-  self.webView.scrollView.secondaryDelegate = self;
-}
-</code></pre>
-
-<p>By setting the <code>secondaryDelegate</code> property, the category’s setter method actually overrides the <code>delegate</code> property with a <code>delegateProxy</code> object. This proxy object holds a weak reference to the original (overridden) delegate and to the secondary delegate provided.</p>
-
-<h1>Delegate Proxy</h1>
-
-<p>The delegate proxy is responsible for forwarding messages to the relevant delegates. The proxy holds a weak reference to each delegate. This means it is perfectly acceptable for the UIScrollView to hold a strong reference to the proxy by way of associated object (explained in more detail later).</p>
-
-<p>The proxy object is a subclass of NSProxy and conforms to the UIScrollViewDelegate protocol, so it must implement the following methods: <code>-methodSignatureForSelector:</code> and <code>-forwardInvocation:</code>.</p>
-
-<p>We’ll also implement the <code>-respondsToSelector:</code> method, because we know our proxy will be used as the delegate of a UIScrollView, which will check if the delegate responds to each selector before calling that selector.</p>
-
-<p>To determine the method signature for a selector, we can just ask each delegate and return when we find one that can provide what we need.</p>
-
-<pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
-{
-  NSObject *delegateForResonse = [self.primaryDelegate respondsToSelector:selector] ? self.primaryDelegate : self.secondaryDelegate;
-  return [delegateForResonse respondsToSelector:selector] ? [delegateForResonse methodSignatureForSelector:selector] : nil;
-}
-</code></pre>
-
-<p>To determine if the proxy can respond to a selector, again we just check each delegate and return <code>YES</code> if one of them can respond.</p>
-
-<p>Before calling one of its optional delegate methods the UIScrollView (or anyone else for that matter) asks its delegate if it can respond to the selector. If it replies with <code>YES</code>, then it will send the message. But because we have set the <code>delegate</code> property to our <code>delegateProxy</code> object, this message will arrive as an invocation in the <code>-forwardInvocation:</code> method.</p>
-
-<p>We should implement this method as follows in order to forward the invocation to each delegate in turn (if it can respond to the selector).</p>
-
-<pre><code>- (void)forwardInvocation:(NSInvocation *)invocation
-{
-  [self invokeInvocation:invocation onDelegate:self.primaryDelegate];
-  [self invokeInvocation:invocation onDelegate:self.secondaryDelegate];
-}
-
-- (void)invokeInvocation:(NSInvocation *)invocation onDelegate:(id&lt;UIScrollViewDelegate&gt;)delegate
-{
-  if ([delegate respondsToSelector:invocation.selector]) {
-    [invocation invokeWithTarget:delegate];
-  }
-}
-</code></pre>
-
-<h1>The UIScrollView Category</h1>
-
-<p>For completeness, I’ve added the code for the category, with comments below.</p>
-
-<pre><code>// 1. Private interface extension
-@interface UIScrollView ()
-@property (nonatomic, strong) TABScrollViewDelegateProxy *delegateProxy;
-@end
-
-@implementation UIScrollView (SecondaryDelegate)
-
-// 2. Setter
-- (void)setSecondaryDelegate:(id&lt;UIScrollViewDelegate&gt;)secondaryDelegate
-{
-  if (!self.delegateProxy) {
-    self.delegateProxy = [TABScrollViewDelegateProxy alloc];
-    self.delegateProxy.primaryDelegate = self.delegate;
-  }
-
-  self.delegateProxy.secondaryDelegate = secondaryDelegate;
-  self.delegate = self.delegateProxy;
-}
-
-// 3. Getter
-- (id&lt;UIScrollViewDelegate&gt;)secondaryDelegate
-{
-  return self.delegateProxy.secondaryDelegate;
-}
-
-// 4. Associated object
-- (void)setDelegateProxy:(TABScrollViewDelegateProxy *)delegateProxy
-{
-  objc_setAssociatedObject(self, @selector(delegateProxy), delegateProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (TABScrollViewDelegateProxy *)delegateProxy
-{
-  return objc_getAssociatedObject(self, @selector(delegateProxy));
-}
-</code></pre>
-
-<ol>
-<li>The <code>delegateProxy</code> property is added to the private interface extension. The fact that this category uses a proxy is an implementation detail and should therefore not be exposed in the public interface.</li>
-<li>The setter method for the <code>secondaryDelegate</code> property will create the <code>delegateProxy</code> object if it doesn’t already exist and assign it to the <code>delegateProxy</code> property. Next we the <code>primaryDelegate</code> to the original delegate held in <code>self.delegate</code>. Then we set the <code>delegateProxy.secondaryDelegate</code> and override the object held in <code>self.delegate</code>. (Notice how we only call <code>alloc</code> on the proxy class - this is because instances of NSProxy do not by default respond to <code>-init</code>.)</li>
-<li>We should provide the getter method for the object. It is just a wrapper around getting it from <code>self.delegateProxy</code>.</li>
-<li>We hold a strong reference to the <code>delegateProxy</code> object by using an associated object. The strong reference is fine, because it only holds weak references to each delegate. (Notice the use of <code>@selector(delegateProxy)</code> as the key for the associated object. This is fine because the pointer returned is unique.)</li>
-</ol>
-
-
-<h1>Conclusion</h1>
-
-<p>This solution is clean and robust. It doesn’t involve method swizzling - only message forwarding using a proxy object, which is fine. In fact the only reason we have to import <code>&lt;objc/runtime.h&gt;</code> is to use associated objects.</p>
-
-<p>The public interface is clean - it only provides a single extra property for UIScrollView - the <code>secondaryDelegate</code>.</p>
-
-<p>The only downside to this is that the original delegate must have been set (if it ever will be set) before you set the secondary delegate. Or rather, you cannot set the <code>delegate</code> property after setting the <code>secondaryDelegate</code>. This is because setting the <code>secondaryDelegate</code> overwrites the value of the <code>delegate</code> property. I thought about a solution that adds an observer to listen for changes to the <code>delegate</code> property, but removing the observer on deallocation was not trivial, so I settled on the solution described above, which will not allow the delegate to be set after having set the secondary delegate.</p>
-
-<p>If you found this interesting, please <a href="http://twitter.com/dodsios">follow me on twitter</a>, or <a href="http://samdods.github.io/atom.xml">subscribe to my RSS feed</a>.</p>
 ]]></content>
   </entry>
   
