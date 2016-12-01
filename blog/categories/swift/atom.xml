@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: swift | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/swift/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:55:00+01:00</updated>
+  <id>http://sam.dods.co/</id>
+  <author>
+    <name><![CDATA[Sam Dods]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Swift best practices (part i)]]></title>
+    <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
+    <updated>2015-09-21T08:00:37+01:00</updated>
+    <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
+    <content type="html"><![CDATA[<p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
+
+<p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
+
+<p>Read on for some of my observations &ndash; some are obvious and common, but hopefully some will be new to most people. Let me know if you have any of your own that I could add to the list!</p>
+
+<!-- More -->
+
+
+<h2>Prefer <code>let</code> over <code>var</code></h2>
+
+<p>Train your brain and your keyboard-bashing fingers to write <code>let</code> by default. There may be times when you know up-front you&rsquo;ll need a mutable variable, but I still recommend using <code>let</code> until you absolutely need to modify its value. This is the most obvious of my best practices, but it&rsquo;s super important, so still worth a mention.</p>
+
+<h2>Prefer <code>private</code> access control</h2>
+
+<p>Again, this one is obvious, but still worth pointing out. It&rsquo;s always better to keep as much of your implementation <code>private</code>, which means it can only be accessed from the same source file.</p>
+
+<h2>Prefer non-optionals</h2>
+
+<p>Optionals are great. This concept does exist in other languages (Scala, Haskell, etc.), but much respect has to go to Chris Lattner for bringing it to Swift.</p>
+
+<p>However, as useful as they can be, I would still try to avoid them where possible. It leads to much cleaner code if you have variables and properties that you know hold a value, or functions that you can guarantee return a non-nil value.</p>
+
+<p>For example, I would prefer a function to throw an exception if it is unable to return a non-nil value. Take the SDK&rsquo;s <code>NSJSONSerialization.JSONObjectWithData</code> function. It guarantees that if it returns anything, it will return a non-nil <code>AnyObject</code>, otherwise it throws an exception.</p>
+
+<h2>Prefer <code>guard let</code> over <code>if let</code></h2>
+
+<p>What can you do in an <code>if let</code> code block? I would <em>almost</em> always opt for a <code>guard let</code> and return early. Early return tends to make the code that follows easier to read because you can guarantee the state of variables at that point. If you can&rsquo;t calculate a required value, then return early.</p>
+
+<h2>Don&rsquo;t be afraid to <code>throw</code></h2>
+
+<p>Instead of returning early, consider throwing an error, which is an alternative exit point from the function. Exception handling in Objective-C (<code>@try @catch</code>) was always possible, but frowned upon. In Swift, throwing errors is a fundamental concept and should be embraced.</p>
+
+<p>I had a parsing function that returned an optional, returning <code>nil</code> if the data couldn&rsquo;t be parsed. This meant that the caller would have to check for <code>nil</code>. I refactored it to be a function that always returns a non-optional and <code>throws</code> an error if it can&rsquo;t do so (see above related to preferring non-optionals).</p>
+
+<h2>Never <code>guard</code> against multiple conditions</h2>
+
+<p>Consider the following code:</p>
+
+<pre><code class="swift">guard let data = data,
+          json = self.jsonFromData(data),
+          authors = json["authors"] else {
+  throw AuthorParserError
+}
+</code></pre>
+
+<p>The above avoids the repetition of throwing the <code>AuthorParserError</code> in three places, but in my opinion it would be much better written as follows:</p>
+
+<pre><code class="swift">guard let data = data else {
+  throw AuthorParserError
+}
+guard let json = self.jsonFromData(data) else {
+  throw AuthorParserError
+}
+guard let authors = json["authors"] else {
+  throw AuthorParserError
+}
+</code></pre>
+
+<p>The above is better because you can now test each case individually. And you can be sure that you&rsquo;ve covered each case, because Xcode 7&rsquo;s awesome code coverage facility will highlight any of the conditions that are not tested.</p>
+
+<h2>Always inject dependencies, even if only for testing purposes</h2>
+
+<p>The great thing about Swift&rsquo;s optional function arguments is that you can dictate how something should ordinarily be used but at the same time open up your classes for easy testing - in particular mocking of dependencies.</p>
+
+<p>If your class relies on something to handle network requests, for example, then why not pass that into the <code>init</code> function?</p>
+
+<p>This will make testing a doddle, because you can mock the dependency, ensuring that you are only testing the functionality of that individual class. (Of course you <em>can</em> write more integrated tests too.)</p>
+
+<p>For example:</p>
+
+<pre><code class="swift">public init(requestDelegate: MyClassRequestDelegate = RequestManager()) {
+  self.requestDelegate = requestDelegate
+}
+</code></pre>
+
+<p>The dependency in the above example is actually a protocol, which makes testing very simple, because we just need to mock an object that conforms to the protocol.</p>
+
+<p>(Some people might even demand that the dependency is always injected, instead of defining the defaul. But I feel the main purpose for this type of dependency injection is for easy testing. Unless you&rsquo;re building a library, your app will probably always use the same dependency, so it usually makes sense to have a default.)</p>
+
+<h2>Always <code>typealias</code> completion handlers (where possible)</h2>
+
+<p>Despite <a href="http://www.fuckingclosuresyntax.com">the syntax of closures being somewhat confusing</a>, the syntax for type aliasing a closure is unquestionably simpler than the equivalent <code>typedef</code> in Objective-C. So always define a <code>typealias</code> for your completion handlers (unless they contain generics, in which case you can&rsquo;t).</p>
+
+<pre><code>typealias SomethingCompletion = (result: SomeType) -&gt; Void
+</code></pre>
+
+<h2>Use <code>enum</code> to avoid ambiguity</h2>
+
+<p>Here I&rsquo;m referring to a tuple or a set of completion handler arguments that may give rise to ambiguity.</p>
+
+<p>Consider the following completion handler:</p>
+
+<pre><code>doSomething() { (output: NSData?, error: NSError?) in
+  // need to check if we have output or error
+}
+</code></pre>
+
+<blockquote><p>Note that I&rsquo;m still using NSError as part of the completion handler, rather than throwing an exception, because you can&rsquo;t throw an exception asynchronously.</p></blockquote>
+
+<p>The above shows a completion handler which takes two optional values as its arguments. This goes against one of my previous points of &ldquo;avoiding optionals&rdquo; where possible.</p>
+
+<p>What happens in the above if we have neither <code>output</code> nor <code>error</code>. Or what if we have both? Which do we handle?</p>
+
+<p>You should be clear about the arguments to your completion handler, and you can use <code>enum</code> to help. For example, you could define the following:</p>
+
+<pre><code>enum Result&lt;U&gt; {
+  case .Success(output: U)
+  case .Failure(error: NSError)
+}
+</code></pre>
+
+<p>Now we can rewrite the above use of the completion handler as:</p>
+
+<pre><code>doSomething() { result in
+  switch (result) {
+  case .Success(let output):
+    // use output
+  case .Failure(let error):
+    // handle error
+  }
+}
+</code></pre>
+
+<p>This is absolutely clear now that if it was successful, there will be a non-nil output. And we even know the type of it, assuming the <code>doSomething</code> function specialises the generic <code>Result</code>. And likewise it is clear that if it failed there will be a non-nil error. And it can only succeed or fail, so there is no ambiguity.</p>
+
+<h2>A trick for generic completion handling</h2>
+
+<p>Let&rsquo;s say you have a function declared in a protocol as follows:</p>
+
+<pre><code class="swift">protocol ServiceProvider {
+  func provideService&lt;U where U: AnyService&gt;(completion: (output: U) -&gt; Void)
+}
+</code></pre>
+
+<p>When making a class conform to the <code>ServiceProvider</code> protocol (i.e. when implementing this function), as long as we know how to instantiate an object of type <code>U where U: AnyService</code>, then we can return an object of the correct type. (The <code>AnyService</code> protocol must provide a way of returning an instance.)</p>
+
+<p>It is then up to the caller to dictate in the completion closure what type of object should be returned.</p>
+
+<p>For example:</p>
+
+<pre><code>myOtherClass.provideService { (output: RoomService) in
+  // do something with the RoomService
+}
+</code></pre>
+
+<p>The implementation of the <code>provideService</code> function doesn&rsquo;t need to know anything about the <code>RoomService</code> class. It simply has to conform to <code>AnyService</code>, which allows it to be instantiated somehow.</p>
+
+<p>What I really like about this, is that the caller can get back whatever they want back. The caller simply says, &ldquo;in the completion handler, I want an instance of <code>RoomService</code>&rdquo; and the implementation of the function knows how to deliver.</p>
+
+<p>This is in stark contrast with Objective-C, where we would define a completion block argument of type <code>id</code> and the caller would tell the compiler what type of object they <em>expect</em> back when they implement the completion handler. But in Swift, we are <em>guaranteed</em> an object of this type. What&rsquo;s more, we are given this guarantee at compile time.</p>
+
+<h2>Closure best practices</h2>
+
+<p>I try to keep closures as concise as possible.</p>
+
+<ul>
+<li>If a closure returns <code>Void</code>, I don&rsquo;t write the return type</li>
+<li>If the type of the object can be inferred by the compiler, then don&rsquo;t write the type</li>
+<li>If the closure only has a single argument, then don&rsquo;t put it in parentheses</li>
+<li>Always make the closure the last argument to a function</li>
+<li>Always trail the closure when implementing</li>
+<li>Don&rsquo;t write redundant parentheses that the compiler doesn&rsquo;t require (for example, if the function only has one argument and that argument is the closure)</li>
+</ul>
+
+
+<p>These are largely up for debate, but this is the way I&rsquo;m writing things right now. For example:</p>
+
+<pre><code>myObject.doSomething { output in
+  // do something with the output
+}
+</code></pre>
+
+<p>As opposed to:</p>
+
+<pre><code>myObject.doSomething() { (output: NSData?) -&gt; Void in
+  // do something with the output
+}
+</code></pre>
+
+<h2>I hope you enjoyed reading</h2>
+
+<p>If you enjoyed this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+
+<p>And if you&rsquo;d like to join me at <a href="http://www.theappbusiness.com">The App Business</a> to work on some awesome projects for the biggest clients in each industry, then please get in touch &ndash; we&rsquo;re looking for great Swift and Objective-C developers.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Why I Love Swift's Protocol Extensions]]></title>
+    <link href="http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions/"/>
+    <updated>2015-08-04T08:00:00+01:00</updated>
+    <id>http://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions</id>
+    <content type="html"><![CDATA[<p>When protocol extensions were first mentioned at WWDC in June, they immediately stood out as a necessary feature. But it was only after I started playing around with them that I realised the true value these bring to the language.</p>
+
+<!-- More -->
+
+
+<h2>The problems in Objective-C that are somewhat solved by Swift</h2>
+
+<h3>The ability to &ldquo;mix in&rdquo; functionality to classes</h3>
+
+<p>When you want to extend a class in Objective-C, you would typically create a category on that class.</p>
+
+<p>Say in my app I have defined the <code>Video</code>, <code>Photo</code> and <code>Song</code> classes, which have the shared superclass <code>MediaItem</code>.</p>
+
+<p>Now I want to give each of these classes some functionality to make them <code>Shareable</code>. And I would expect this functionality to mostly be the same in each class.</p>
+
+<p>Now you might suggest I implement the shareable functionality in their common superclass, and then somehow specify whether each one is shareable. But I might not want all future subclasses to inherit this functionality, and I may want to give this functionality to other classes that don&rsquo;t inherit from <code>MediaItem</code>. For example, I might want to make <code>UserProfile</code> shareable, so my users can share each other&rsquo;s profiles.</p>
+
+<blockquote><p>With inheritance, you would typically follow the &ldquo;is a&rdquo; principle, meaning an object of your subclass type is an object of its superclass type and inherits common properties. For example, in real life, a <code>Dog</code> <em>is a</em> <code>Mammal</code> so it would make sense to inherit from the <code>Mammal</code> class.</p>
+
+<p>A <code>Dog</code> should also be capable of other functionality, for example being able to <code>run</code>. It doesn&rsquo;t make sense to implement that functionality in the <code>Mammal</code> class, because it would not apply to the <code>Whale</code>, which is also a subclass of <code>Mammal</code>.</p>
+
+<p>It doesn&rsquo;t make sense to have a <code>Runner</code> class for <code>Dog</code> to inherit from, because a <code>Dog</code> isn&rsquo;t necessarily a <code>Runner</code>, so the &ldquo;is a&rdquo; principle doesn&rsquo;t apply. Being able to <code>run</code> is a capability rather than a property.</p></blockquote>
+
+<p>So how can I provide the <code>Shareable</code> functionality to my media classes without implementing it in each class individually? Well in Objective-C it simply isn&rsquo;t possible. Of course, you could add the shared functionality to a category on <code>NSObject</code>. But then (almost) all of your classes will inherit this functionality, which you don&rsquo;t want.</p>
+
+<p>This is where Swift&rsquo;s protocol extensions come in handy. You could define the <code>Shareable</code> protocol like so:</p>
+
+<pre><code class="swift">protocol Shareable {}
+extension Shareable {
+  func share() {
+    // common share functionality
+  }
+}
+</code></pre>
+
+<p>Now any class that you declare as conforming to the <code>Shareable</code> protocol will &ldquo;adopt&rdquo; the sharing functionality. For example:</p>
+
+<pre><code class="swift">class Photo: MediaItem, Shareable {
+  // func share() adopted from Shareable protocol
+}
+
+class UserProfile: Shareable {
+  // func share() adopted from Shareable protocol
+}
+</code></pre>
+
+<p>If you are familiar with Ruby, you will see the resemblence to what is known as a mixin.</p>
+
+<h3>The requirement to check <code>respondsToSelector:</code></h3>
+
+<p>For aeons people have been trying to work around this problem, for example Peter Steinberger&rsquo;s <a href="http://petersteinberger.com/blog/2013/smart-proxy-delegation/">Smart Proxy Delegation</a>. But all such solutions are only work arounds.</p>
+
+<p>We all know that pure Swift protocols don&rsquo;t support optional methods. And Swift objects don&rsquo;t support <code>respondsToSelector</code>. But with protocol extensions, none of this matters!</p>
+
+<p>We can simplify what used to be five rather ugly lines of Objective-C&hellip;</p>
+
+<pre><code class="objc">BOOL shouldBegin = YES;
+id&lt;DataServiceDelegate&gt; delegate = self.delegate;
+if ([delegate respondsToSelector:@selector(dataServiceShouldBeginSync:)]) {
+  shouldBegin = [delegate dataServiceShouldBeginSync:self];
+}
+</code></pre>
+
+<p>&hellip; into a single line of Swift&hellip;</p>
+
+<pre><code class="swift Swift">let shouldBegin = delegate.dataServiceShouldBeginSync(self)
+</code></pre>
+
+<p>This is acheived by defining the default implementation of this methods in an extension to the protocol, as follows:</p>
+
+<pre><code class="swift">extension DataServiceDelegate {
+  func dataServiceShouldBeginSync(dataService: DataService) -&gt; Bool {
+    return YES;
+  }
+}
+</code></pre>
+
+<p>The additional beauty of this is that it makes the default behaviour explicitly clear to the consumer of your interface. No longer do they have to hunt around in possibly out-of-date documentation to figure out what will happen if they don&rsquo;t implement this methods themselves. And the default behaviour isn&rsquo;t hidden in the implementation.</p>
+
+<h2>The additional powers of protocol extensions</h2>
+
+<p>You can specify a &ldquo;where&rdquo; clause for your extension, so that only specific conforming classes adopt the functionality defined in the extension.</p>
+
+<p>This allows us to define different default behaviour depending on the class that conforms to the protocol. For example, I could define the following protocol:</p>
+
+<pre><code class="swift">protocol Shareable {
+  func share()
+}
+</code></pre>
+
+<p>Now I can specify that any object that conforms to this protocol should use the default behaviour as defined:</p>
+
+<pre><code class="swift">extension Shareable {
+  func share() {
+    print("sharing something")
+  }
+}
+</code></pre>
+
+<p>And I can specify that all media items have a different default behaviour:</p>
+
+<pre><code class="swift">extension Shareable where Self : MediaItem {
+  func share() {
+    print("sharing a media item!")
+  }
+}
+</code></pre>
+
+<blockquote><p>Note that this is not the same as providing this implementation in the <code>MediaItem</code> class, because this doesn&rsquo;t mean all <code>MediaItem</code> objects are <code>Shareable</code>. Only subclasses that conform to the <code>Shareable</code> protocol will pick up this functionality.</p></blockquote>
+
+<p>This is demonstrated below:</p>
+
+<pre><code class="swift">class UserProfile : Shareable {}
+class AudioTrack : MediaItem, Shareable {}
+class Video : MediaItem {}
+
+let userProfile = UserProfile()
+userProfile.share()
+// prints "sharing something"
+
+let audio = AudioTrack()
+audio.share()
+// prints "sharing a media item!"
+
+let video = Video()
+video.share()
+// results in a compiler error: value of type 'Video' has no member 'share'
+</code></pre>
+
+<p>This also means that you can refer to <code>self</code> in the default implementation and access the properties of <code>self</code> with the knowledge that it is of a particular type. For example, the <code>MediaItem</code>  might have a <code>copyrightTerms</code> property, so I can use it in my default implementation as follows:</p>
+
+<pre><code class="swift">extension Shareable where Self : MediaItem {
+  func share() {
+    if (self.copyrightTerms) {
+      // present the copyright terms to the user, asking them to accept before continuing.
+    } else {
+      // complete share action without showing copyright terms.
+    }
+  }
+}
+</code></pre>
+
+<h2>So are there any drawbacks?</h2>
+
+<p>Like with so many language features: with great power comes great responsibility. And even more importantly, comes the greater need to fully understand how something works.</p>
+
+<p>The methods in a protocol extension can also be implemented in the class that conforms to the protocol. The implementation in the class overrides the &ldquo;default&rdquo; implementation in the protocol extension. What&rsquo;s more is that if the implementation is added to the class in the form of a class extension, then it too overrides the protocol extension implementation. This can get very confusing if you are defining different implementations using the &ldquo;where&rdquo; syntax.</p>
+
+<p>As more people become accustomed to writing Swift, I&rsquo;m sure the most common use for protocol extensions will be for the default implementation of &ldquo;optional&rdquo; delegate methods.</p>
+
+<p>But for those that do use them as a kind of &ldquo;mixin&rdquo;, I&rsquo;d suggest erring on the side of caution and making your intent very clear.</p>
+
+<h2>I hope you enjoyed reading</h2>
+
+<p>If you enjoyed this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+
+<p>And if you&rsquo;d like to join me at <a href="http://www.theappbusiness.com">The App Business</a> to work on some awesome projects for the biggest clients in each industry, then please get in touch &ndash; we&rsquo;re looking for great Swift and Objective-C developers.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[swift alternatives to c macros (part i)]]></title>
+    <link href="http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros/"/>
+    <updated>2015-04-06T22:05:57+01:00</updated>
+    <id>http://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros</id>
+    <content type="html"><![CDATA[<p>Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you&rsquo;ve ever used <code>NSAssert</code>, then you&rsquo;ve used a macro. (And if you haven&rsquo;t, then what have you been doing?!)</p>
+
+<p>Now please bear with me&hellip; before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I&rsquo;ve seen in other recent posts within the community.</p>
+
+<p>In this short series, I&rsquo;m going to look at some of the more creative uses of C macros and investigate how we could use some of Swift&rsquo;s advanced language features to accomplish the same results.</p>
+
+<!-- More -->
+
+
+<h1>Misuse of macros</h1>
+
+<p>I have come across a few blog posts recently which take various types of Objective-C macro and find alternative solutions in Swift. But every macro discussed could have been written as a function (or even worse declared as a constant) in Objective-C in the first place, so would be trivial to convert to Swift. I was going crazy staring at the screen in disbelief of people converting macros such as the following:</p>
+
+<pre><code class="objc">#define SQUARE_NUMBER(n) n * n
+</code></pre>
+
+<p>The blog post failed to point out that the Objective-C developer that wrote this macro in the first place should have been shot in the head with a <a href="http://nerf.hasbro.com/en-us">Nerf</a> gun and sent back to junior school. There is so much wrong with that macro, I don&rsquo;t want to waste any more of my life discussing it.</p>
+
+<p>I don&rsquo;t condone or encourage the use of macros in Objective-C where functions or constants could be used instead, and I don&rsquo;t think that any other iOS developer should do so either. And I certainly don&rsquo;t think the Objective-C community should be encouraging this by promoting or linking to this type of blog post.</p>
+
+<p>There is never a need to write a function-like macro in Objective-C. If you&rsquo;re worried about performance (of calling out to a function), then there&rsquo;s no need. Cocoa provides the macros <code>NS_INLINE</code>, <code>CF_INLINE</code>, etc. which mean that your friend the compiler will decide whether it&rsquo;s appropriate to expand the function definition in-line. See the definition of the <code>CGRectMake</code> function for example. And there is certainly no need to <code>#define</code> primitive constants!</p>
+
+<p>Yet even <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithCAPIs.html#//apple_ref/doc/uid/TP40014216-CH8-XID_19">Apple&rsquo;s documentation</a> seems to condone the use of primitive constants being declared as a macro. By the time I read this, I was getting pretty fed up. Why is everyone, including Apple, encouraging the misuse of macros?!</p>
+
+<p>Apple&rsquo;s example below should never have been written as a macro in the first place.
+```objc</p>
+
+<h1>define FADE_ANIMATION_DURATION 0.35</h1>
+
+<pre><code>It provides no type-safety and it won't be available to interrogate in the debugger. There's a real danger this type of macro could be misused and lead to hard-to-diagnose bugs. In short, it's code smell that should be avoided at all times, with no excuses.
+
+# So are macros ever acceptable?
+
+Some people would probably argue the fact that it's never acceptable to use macros. I would encourage those people to read on because you might discover some cool tricks!
+
+I wrote recently about KVC collection operators and [how to use them safely](/blog/2014/07/25/collection-operators-done-properly/). In that post, I discuss the use of macros to provide compile-time checking on the keys used in key-value coding.
+
+Consider the following example interfaces:
+</code></pre>
+
+<p>@interface Account : NSObject
+@property double balance;
+@end</p>
+
+<p>@interface Transaction : NSObject
+@property Account <em>account;
+@property double value;
+@end
+<code>``
+I can use KVC collection operators to simplify retrieval of transaction characteristicts from an array of</code>Transaction </em>` objects:</p>
+
+<pre><code class="objc">double minimumValue = [transactions valueForKeyPath:@"@min.value"];
+double maximumAccountBalance = [transactions valueForKeyPath:@"@max.account.balance"];
+NSArray *accounts = [transactions valueForKeyPath:@"unionOfObjects.account"];
+NSArray *accounts = [transactions valueForKey:@"account"]; // same as above
+</code></pre>
+
+<p>I haven&rsquo;t used a macro yet! But I can use macros as defined in <a href="/blog/2014/07/25/collection-operators-done-properly/">my other post</a> to perform these operations and get compile-time checking of the key paths with code-completion <em>and</em> syntax highlighting! (The highlighter on my blog doesn&rsquo;t display it as nicely as Xcode does.)</p>
+
+<pre><code class="objc">double minimumValue = DZLMinimum(transactions, Transaction *, value);
+double maximumAccountBalance = DZLMaximum(transactions, Transaction *, account.balance);
+NSArray *accounts = DZLUnionOfObjects(transactions, Transaction *, account);
+</code></pre>
+
+<p>Notice that the key paths are not enclosed in quotes. This is due to how they are expanded at compile time to be verified and then turned into strings to pass to <code>-valueForKeyPath:</code>.</p>
+
+<p>So a macro that adds compile-time validation and code-completion to an otherwise crash-prone interface is, in my opinion, a decent example of when to use macros in Objective-C.</p>
+
+<h1>How does this type of macro translate to Swift?</h1>
+
+<p>In the macros above, we pass the type expected in the array, namely <code>Transaction *</code> and pass the key path that we want to extract. In Swift, the type of objects in an array is mandatory when you declare the array, and we can extract information using the <code>map</code> or <code>reduce</code> functions.</p>
+
+<p>For example, the above can be re-written in Swift as follows:</p>
+
+<pre><code class="swift">var minimumValue = transactions.map({$0.value}).reduce(Int.min, {max($0, $1)})
+var maximumValue = transactions.map({$0.account.balance}).reduce(Int.max, {min($0, $1)})
+var accounts = transactions.map {$0.account}
+</code></pre>
+
+<p>You can read up on these functions in <a href="https://developer.apple.com/library/ios/documentation/General/Reference/SwiftStandardLibraryReference/Array.html">Apple&rsquo;s documentation</a>. I also use the shorthand name of the first closure argument <code>$0</code>, which is also discussed in <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html">Apple&rsquo;s documentation</a>.</p>
+
+<p>But you could easily argue that the above is a little long-winded, in which case you could simplify it by extending <code>Array</code>. I&rsquo;ve shown how to do this for the <code>minimum</code> below, but it could be easily modified for <code>maximum</code>, or <code>average</code>.</p>
+
+<pre><code class="objc">extension Array {
+  func mapMinimum&lt;U :Comparable&gt;(transform: (T) -&gt; U) -&gt; U? {
+    var mapped:Array&lt;U&gt; = self.map(transform)
+    return mapped.count == 0 ? nil : mapped.reduce(mapped.first!, { max($0, $1) })
+  }
+}
+</code></pre>
+
+<p>In the above extension, I&rsquo;m defining the <code>mapMinimum</code> function, which can be invoked on an array whose members all conform to the <code>Comparable</code> protocol (in order to be passed into the <code>max</code> function). It returns the minimum of the members of the array resulting from calling <code>transform(x)</code> on all members <code>x</code> of <code>self</code>. In other words, it performs the <code>map</code> function with the given closure, and then returns the minimum of the resulting array.</p>
+
+<p>Having declared the same for maximum, I can now use them as follows:
+<code>objc
+var minimumValue = transactions.mapMinimum {$0.value}
+var maximumAccountBalance = transactions.mapMaximum {$0.account.balance}
+</code></p>
+
+<p>So the syntax is actually improved in Swift compared to the macros I defined in Objective-C. The key path is validated by the compiler, because it knows what types of object are contained in the <code>transactions</code> array.</p>
+
+<h1>Next time&hellip;</h1>
+
+<p>I&rsquo;ll be investigating more of what I consider &ldquo;valid&rdquo; uses of macros and how we can achieve the same result using the advanced language features of Swift.</p>
+
+<p>If you&rsquo;ve enjoyed reading this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I&rsquo;m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+]]></content>
+  </entry>
+  
+</feed>

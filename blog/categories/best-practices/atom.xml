@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: best-practices | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/best-practices/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:55:00+01:00</updated>
+  <id>http://sam.dods.co/</id>
+  <author>
+    <name><![CDATA[Sam Dods]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Swift best practices (part i)]]></title>
+    <link href="http://sam.dods.co/blog/2015/09/21/some-swift-best-practices/"/>
+    <updated>2015-09-21T08:00:37+01:00</updated>
+    <id>http://sam.dods.co/blog/2015/09/21/some-swift-best-practices</id>
+    <content type="html"><![CDATA[<p>I started learning Swift the day it was announced and read Apple&rsquo;s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
+
+<p>That was until Swift 2.0 was announced in June. Since then I&rsquo;ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
+
+<p>Read on for some of my observations &ndash; some are obvious and common, but hopefully some will be new to most people. Let me know if you have any of your own that I could add to the list!</p>
+
+<!-- More -->
+
+
+<h2>Prefer <code>let</code> over <code>var</code></h2>
+
+<p>Train your brain and your keyboard-bashing fingers to write <code>let</code> by default. There may be times when you know up-front you&rsquo;ll need a mutable variable, but I still recommend using <code>let</code> until you absolutely need to modify its value. This is the most obvious of my best practices, but it&rsquo;s super important, so still worth a mention.</p>
+
+<h2>Prefer <code>private</code> access control</h2>
+
+<p>Again, this one is obvious, but still worth pointing out. It&rsquo;s always better to keep as much of your implementation <code>private</code>, which means it can only be accessed from the same source file.</p>
+
+<h2>Prefer non-optionals</h2>
+
+<p>Optionals are great. This concept does exist in other languages (Scala, Haskell, etc.), but much respect has to go to Chris Lattner for bringing it to Swift.</p>
+
+<p>However, as useful as they can be, I would still try to avoid them where possible. It leads to much cleaner code if you have variables and properties that you know hold a value, or functions that you can guarantee return a non-nil value.</p>
+
+<p>For example, I would prefer a function to throw an exception if it is unable to return a non-nil value. Take the SDK&rsquo;s <code>NSJSONSerialization.JSONObjectWithData</code> function. It guarantees that if it returns anything, it will return a non-nil <code>AnyObject</code>, otherwise it throws an exception.</p>
+
+<h2>Prefer <code>guard let</code> over <code>if let</code></h2>
+
+<p>What can you do in an <code>if let</code> code block? I would <em>almost</em> always opt for a <code>guard let</code> and return early. Early return tends to make the code that follows easier to read because you can guarantee the state of variables at that point. If you can&rsquo;t calculate a required value, then return early.</p>
+
+<h2>Don&rsquo;t be afraid to <code>throw</code></h2>
+
+<p>Instead of returning early, consider throwing an error, which is an alternative exit point from the function. Exception handling in Objective-C (<code>@try @catch</code>) was always possible, but frowned upon. In Swift, throwing errors is a fundamental concept and should be embraced.</p>
+
+<p>I had a parsing function that returned an optional, returning <code>nil</code> if the data couldn&rsquo;t be parsed. This meant that the caller would have to check for <code>nil</code>. I refactored it to be a function that always returns a non-optional and <code>throws</code> an error if it can&rsquo;t do so (see above related to preferring non-optionals).</p>
+
+<h2>Never <code>guard</code> against multiple conditions</h2>
+
+<p>Consider the following code:</p>
+
+<pre><code class="swift">guard let data = data,
+          json = self.jsonFromData(data),
+          authors = json["authors"] else {
+  throw AuthorParserError
+}
+</code></pre>
+
+<p>The above avoids the repetition of throwing the <code>AuthorParserError</code> in three places, but in my opinion it would be much better written as follows:</p>
+
+<pre><code class="swift">guard let data = data else {
+  throw AuthorParserError
+}
+guard let json = self.jsonFromData(data) else {
+  throw AuthorParserError
+}
+guard let authors = json["authors"] else {
+  throw AuthorParserError
+}
+</code></pre>
+
+<p>The above is better because you can now test each case individually. And you can be sure that you&rsquo;ve covered each case, because Xcode 7&rsquo;s awesome code coverage facility will highlight any of the conditions that are not tested.</p>
+
+<h2>Always inject dependencies, even if only for testing purposes</h2>
+
+<p>The great thing about Swift&rsquo;s optional function arguments is that you can dictate how something should ordinarily be used but at the same time open up your classes for easy testing - in particular mocking of dependencies.</p>
+
+<p>If your class relies on something to handle network requests, for example, then why not pass that into the <code>init</code> function?</p>
+
+<p>This will make testing a doddle, because you can mock the dependency, ensuring that you are only testing the functionality of that individual class. (Of course you <em>can</em> write more integrated tests too.)</p>
+
+<p>For example:</p>
+
+<pre><code class="swift">public init(requestDelegate: MyClassRequestDelegate = RequestManager()) {
+  self.requestDelegate = requestDelegate
+}
+</code></pre>
+
+<p>The dependency in the above example is actually a protocol, which makes testing very simple, because we just need to mock an object that conforms to the protocol.</p>
+
+<p>(Some people might even demand that the dependency is always injected, instead of defining the defaul. But I feel the main purpose for this type of dependency injection is for easy testing. Unless you&rsquo;re building a library, your app will probably always use the same dependency, so it usually makes sense to have a default.)</p>
+
+<h2>Always <code>typealias</code> completion handlers (where possible)</h2>
+
+<p>Despite <a href="http://www.fuckingclosuresyntax.com">the syntax of closures being somewhat confusing</a>, the syntax for type aliasing a closure is unquestionably simpler than the equivalent <code>typedef</code> in Objective-C. So always define a <code>typealias</code> for your completion handlers (unless they contain generics, in which case you can&rsquo;t).</p>
+
+<pre><code>typealias SomethingCompletion = (result: SomeType) -&gt; Void
+</code></pre>
+
+<h2>Use <code>enum</code> to avoid ambiguity</h2>
+
+<p>Here I&rsquo;m referring to a tuple or a set of completion handler arguments that may give rise to ambiguity.</p>
+
+<p>Consider the following completion handler:</p>
+
+<pre><code>doSomething() { (output: NSData?, error: NSError?) in
+  // need to check if we have output or error
+}
+</code></pre>
+
+<blockquote><p>Note that I&rsquo;m still using NSError as part of the completion handler, rather than throwing an exception, because you can&rsquo;t throw an exception asynchronously.</p></blockquote>
+
+<p>The above shows a completion handler which takes two optional values as its arguments. This goes against one of my previous points of &ldquo;avoiding optionals&rdquo; where possible.</p>
+
+<p>What happens in the above if we have neither <code>output</code> nor <code>error</code>. Or what if we have both? Which do we handle?</p>
+
+<p>You should be clear about the arguments to your completion handler, and you can use <code>enum</code> to help. For example, you could define the following:</p>
+
+<pre><code>enum Result&lt;U&gt; {
+  case .Success(output: U)
+  case .Failure(error: NSError)
+}
+</code></pre>
+
+<p>Now we can rewrite the above use of the completion handler as:</p>
+
+<pre><code>doSomething() { result in
+  switch (result) {
+  case .Success(let output):
+    // use output
+  case .Failure(let error):
+    // handle error
+  }
+}
+</code></pre>
+
+<p>This is absolutely clear now that if it was successful, there will be a non-nil output. And we even know the type of it, assuming the <code>doSomething</code> function specialises the generic <code>Result</code>. And likewise it is clear that if it failed there will be a non-nil error. And it can only succeed or fail, so there is no ambiguity.</p>
+
+<h2>A trick for generic completion handling</h2>
+
+<p>Let&rsquo;s say you have a function declared in a protocol as follows:</p>
+
+<pre><code class="swift">protocol ServiceProvider {
+  func provideService&lt;U where U: AnyService&gt;(completion: (output: U) -&gt; Void)
+}
+</code></pre>
+
+<p>When making a class conform to the <code>ServiceProvider</code> protocol (i.e. when implementing this function), as long as we know how to instantiate an object of type <code>U where U: AnyService</code>, then we can return an object of the correct type. (The <code>AnyService</code> protocol must provide a way of returning an instance.)</p>
+
+<p>It is then up to the caller to dictate in the completion closure what type of object should be returned.</p>
+
+<p>For example:</p>
+
+<pre><code>myOtherClass.provideService { (output: RoomService) in
+  // do something with the RoomService
+}
+</code></pre>
+
+<p>The implementation of the <code>provideService</code> function doesn&rsquo;t need to know anything about the <code>RoomService</code> class. It simply has to conform to <code>AnyService</code>, which allows it to be instantiated somehow.</p>
+
+<p>What I really like about this, is that the caller can get back whatever they want back. The caller simply says, &ldquo;in the completion handler, I want an instance of <code>RoomService</code>&rdquo; and the implementation of the function knows how to deliver.</p>
+
+<p>This is in stark contrast with Objective-C, where we would define a completion block argument of type <code>id</code> and the caller would tell the compiler what type of object they <em>expect</em> back when they implement the completion handler. But in Swift, we are <em>guaranteed</em> an object of this type. What&rsquo;s more, we are given this guarantee at compile time.</p>
+
+<h2>Closure best practices</h2>
+
+<p>I try to keep closures as concise as possible.</p>
+
+<ul>
+<li>If a closure returns <code>Void</code>, I don&rsquo;t write the return type</li>
+<li>If the type of the object can be inferred by the compiler, then don&rsquo;t write the type</li>
+<li>If the closure only has a single argument, then don&rsquo;t put it in parentheses</li>
+<li>Always make the closure the last argument to a function</li>
+<li>Always trail the closure when implementing</li>
+<li>Don&rsquo;t write redundant parentheses that the compiler doesn&rsquo;t require (for example, if the function only has one argument and that argument is the closure)</li>
+</ul>
+
+
+<p>These are largely up for debate, but this is the way I&rsquo;m writing things right now. For example:</p>
+
+<pre><code>myObject.doSomething { output in
+  // do something with the output
+}
+</code></pre>
+
+<p>As opposed to:</p>
+
+<pre><code>myObject.doSomething() { (output: NSData?) -&gt; Void in
+  // do something with the output
+}
+</code></pre>
+
+<h2>I hope you enjoyed reading</h2>
+
+<p>If you enjoyed this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+
+<p>And if you&rsquo;d like to join me at <a href="http://www.theappbusiness.com">The App Business</a> to work on some awesome projects for the biggest clients in each industry, then please get in touch &ndash; we&rsquo;re looking for great Swift and Objective-C developers.</p>
+]]></content>
+  </entry>
+  
+</feed>

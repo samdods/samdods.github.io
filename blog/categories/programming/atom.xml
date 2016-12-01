@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: programming | ]]></title>
+  <link href="http://sam.dods.co/blog/categories/programming/atom.xml" rel="self"/>
+  <link href="http://sam.dods.co/"/>
+  <updated>2016-07-08T08:55:00+01:00</updated>
+  <id>http://sam.dods.co/</id>
+  <author>
+    <name><![CDATA[Sam Dods]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Enumerated Types and Checking Their Values]]></title>
+    <link href="http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/"/>
+    <updated>2014-02-01T11:06:27+00:00</updated>
+    <id>http://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask</id>
+    <content type="html"><![CDATA[<p>Enumerated types are very useful and widely-used. Foundation framework gives us two macros to help give definition to an enumerated type: <a href="http://nshipster.com/ns_enum-ns_options/">NS_ENUM and NS_OPTIONS</a>. But their intended use &ndash; and correct use &ndash; isn&rsquo;t immediately obvious.</p>
+
+<p>First a bit of background: Enumerated types are a part of the ANSI C standard and, if I was a gambler, I would bet my entire future life&rsquo;s earnings on the fact that every single iOS or OS X programmer has encountered them and is very likely to use them daily, even if they are unaware of it. They are defined in a similar way to a struct and it&rsquo;s very common to <code>typedef</code> an enumerated type for easier use.</p>
+
+<p>In this post I will discuss the Objective-C macros <code>NS_ENUM</code> and <code>NS_OPTIONS</code>, their origins and, most importantly, the correct way to check the value of a variable of an enumerated type.</p>
+
+<!-- more -->
+
+
+<h1>Enumerated Types</h1>
+
+<p>An enumerated type is a data type that consists of named integer values. They are frequently used to represent options. For example, you could define the following enumerated type:</p>
+
+<pre><code class="objc">enum AnimationOptions {
+ // 1.
+  AllowUserInteraction      = 1 &lt;&lt; 0,  //   1
+  Repeat                    = 1 &lt;&lt; 1,  //   2
+  Autoreverse               = 1 &lt;&lt; 2,  //   4
+
+ // 2.
+  TransitionFlipFromLeft    = 1 &lt;&lt; 4,  //  16
+  TransitionFlipFromRight   = 2 &lt;&lt; 4,  //  32
+  TransitionCurlUp          = 3 &lt;&lt; 4,  //  48
+  TransitionCurlDown        = 4 &lt;&lt; 4,  //  64
+  TransitionCrossDissolve   = 5 &lt;&lt; 4   //  80
+};
+</code></pre>
+
+<ol>
+<li><p>The first 3 options defined in the above enumerated type, 1, 2 and 4 are distinct bits, i.e. <code>0001</code>, <code>0010</code> and <code>0100</code> respectively. This allows none, one, some or all of these options to be used at the same time. For example <code>0110</code> (i.e. 6) means the animation will repeat and auto-reverse.</p></li>
+<li><p>The second set of constants are not distinct bits. This is intentional so that only a single transition type can be used. If I try to set both the <code>TransitionFlipFromRight</code> option and the <code>TransitionCurlUp</code> option at the same time, I&rsquo;ll end up with the <code>TransitionCrossDissolve</code> option (because 32 + 48 = 80).</p></li>
+</ol>
+
+
+<p>You could <code>typedef</code> this enumerated type and use it as follows:</p>
+
+<pre><code>typedef enum AnimationOptions AnimationOptions;
+
+@interface MyAnimation : NSObject
+- (instancetype)animationWithOptions:(AnimationOptions)options;
+@end
+</code></pre>
+
+<h1>Sized Enumerated Types</h1>
+
+<p>C++ extends the ANSI C definition of <code>enum</code> allowing you to specify the size of your enumerated type. You can use any integer type, for example <code>int</code>, <code>char</code> or <code>unsigned long</code>.</p>
+
+<p>We could inline <code>typedef</code> and specify a size for the the <code>AnimationOptions</code> enumerated type as follows:</p>
+
+<pre><code>typedef enum AnimationOptions : unsigned int {
+  AllowUserInteraction    = 1,
+ // etc.
+} AnimationOptions;
+</code></pre>
+
+<h1>NS_ENUM and NS_OPTIONS</h1>
+
+<p>Foundation introduced these macros in OS X 10.8 and iOS 6. Since then they have been the preferred way to declare enumerated types, because each macro implies the intended use of its underlying integer values. They are both defined in exactly the same way. They are identical to each other in all ways but one &ndash; their intended use:</p>
+
+<ul>
+<li>Use <code>NS_ENUM</code> to describe a type of variable that may only be set to a single option at any time. An example is <code>UIInterfaceOrientation</code>, because the device can only be held in one orientation at any time.</li>
+<li>Use <code>NS_OPTIONS</code> to describe a type of variable that may contain multiple options at the same time. Some of these options may apply at the same time as others; some may not be used in conjunction with any others in the same set. This is referred to as a bitmask, where each bit&ndash;or set of bits&ndash;represents an option. An example is <code>UIInterfaceOrientationMask</code> &ndash; this is used when multiple orientation options may be stored in a single variable, such as <code>unsigned int supportedInterfaceOptions</code> &ndash; we can support more than one interface orientation at the same time.</li>
+</ul>
+
+
+<p>Both of these macros are defined in <code>&lt;Foundation/NSObjCRuntime.h&gt;</code>, and what they boil down to is the following:</p>
+
+<pre><code>#define NS_OPTIONS(_type, _name) enum _name : _type _name; enum _name : _type
+</code></pre>
+
+<p>This isn&rsquo;t immediately obvious in Xcode because it doens&rsquo;t allow you to &ldquo;Jump to Definition&rdquo;. But it is evident when inspecting the result of the preprocessor. The following is an example of using <code>NS_OPTIONS</code>:</p>
+
+<pre><code>typedef NS_OPTIONS(NSUInteger, AnimationOptions) {
+  AllowUserInteraction = 1,
+ // etc.
+};
+</code></pre>
+
+<p>The above example results in the following output from the preprocessor:
+<code>
+typedef enum AnimationOptions : NSUInteger AnimationOptions; enum AnimationOptions : NSUInteger {
+  AllowUserInteraction = 1,
+ // etc.
+};
+</code></p>
+
+<blockquote><p>Note it is up to you to enter <code>typedef</code> before the <code>NS_ENUM</code> or <code>NS_OPTIONS</code> macro.</p></blockquote>
+
+<p>Because <code>NS_OPTIONS</code> can hold multiple options at the same time, variables of these types can be set with multiple values using the bitwise OR operator <code>|</code>, as follows:</p>
+
+<pre><code>AnimationOptions options = Repeat | Autoreverse | TransitionCrossDissolve;
+</code></pre>
+
+<blockquote><p>Note that in C a variable of an enumerated type can hold a value that is not defined in its underlying enumerated type. With Objective-C (and more specifically the GDB and LLDB compilers), we are warned at compile-time if we set the value of an <code>enum</code>-type variable to anything other than what is defined in its underlying enumerated type definition.</p></blockquote>
+
+<p>In <code>NS_OPTIONS</code>, a set of bits is used as one option when the option has multiple possible values. In <code>UIViewAnimationOptions</code> bit 3 specifies that the animation should repeat indefinitely. This is a binary option and can only be on or off. However, bits 16-19 are used to hold the animation curve option, which can be one&ndash;but only one&ndash;of several options. This is like an NS_ENUM (one option at a time) embedded within the options of an <code>NS_OPTIONS</code> type.</p>
+
+<h1>Checking the Value of an Enumerated Type Variable</h1>
+
+<h2>NS_ENUM</h2>
+
+<p>Checking the value of an <code>NS_ENUM</code>-type variable is simple. It is an integer value and it can only contain one option at a time, so it can be checked for equality like any other integer, for example:
+<code>
+UIInterfaceOrientation orientation = device.orientation;
+BOOL isPortrait = (orientation == UIDeviceOrientationPortrait);
+</code></p>
+
+<h2>NS_OPTIONS</h2>
+
+<p>As mentioned above, <code>NS_OPTIONS</code> is intended to hold a list of options that may be used at the same time. Therefore variables of this type are referred to as bitmasks.</p>
+
+<p>Checking the value of a bitmask can&rsquo;t be done by checking for equality, because multiple options are stored in the same variable by setting different bits. So checking for an option is done using the bitwise AND operator. In C this is <code>&amp;</code>.</p>
+
+<p>It might be assumed safe to check as follows:</p>
+
+<pre><code>- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return (options &amp; TransitionCrossDissolve);
+}
+</code></pre>
+
+<h1>But This is Wrong!</h1>
+
+<p>Consider the scenario where my animation is created as follows:
+<code>
+MyAnimation *animation = [MyAnimation animationWithOptions:TransitionCurlUp];
+</code></p>
+
+<p>This passes in the <code>TransitionCurlUp</code> option (i.e. 48). When this option is passed into the <code>-isCrossDisolveUsedInAnimationOptions:</code> method above, it returns <code>YES</code>, which is WRONG!</p>
+
+<p>It returns <code>YES</code> because the following are equivalent:</p>
+
+<ul>
+<li><code>TransitionCurlUp &amp; TransitionCrossDissolve</code></li>
+<li><code>48 &amp; 80</code></li>
+<li><code>0011 0000</code> bitwise AND <code>0101 0000</code></li>
+<li><code>0001 0000</code></li>
+<li>non-zero</li>
+<li><code>YES</code>.</li>
+</ul>
+
+
+<p>It is wrong because my animation options were specified with <code>TransitionCurlUp</code> option, but this method says it is a <code>TransitionCrossDissolve</code> animation.</p>
+
+<h1>The Correct Way</h1>
+
+<p>The correct way to check for this value is to first bitwise AND the values and then check for equality to the required value, as follows:</p>
+
+<pre><code>- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return ((options &amp; TransitionCrossDissolve) == TransitionCrossDissolve);
+}
+</code></pre>
+
+<p>Or more generally:</p>
+
+<pre><code>#define OptionsHasValue(options, value) (((options) &amp; (value)) == (value))
+</code></pre>
+
+<p>With this macro, I can change my method above, as follows:</p>
+
+<pre><code>- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return OptionsHasValue(options, TransitionCrossDissolve);
+}
+</code></pre>
+
+<p>So go forth and use <code>NS_ENUM</code> and <code>NS_OPTIONS</code> how they were intended to be used. But just be sure that you are checking their values in the correct way!</p>
+
+<p><a href="http://twitter.com/dodsios">Follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same!</p>
+]]></content>
+  </entry>
+  
+</feed>

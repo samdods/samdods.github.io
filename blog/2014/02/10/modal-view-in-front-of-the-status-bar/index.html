@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Modal View In Front of the Status Bar - </title>
+  <meta name="author" content="Sam Dods">
+
+  
+  <meta name="description" content="Article">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="" type="application/atom+xml">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lora:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900' rel='stylesheet' type='text/css'>
+
+
+
+
+  
+
+  <style>html{background: url(/images/background.png) no-repeat center center fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;}</style>
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Modal View in Front of the Status Bar</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-10T07:55:28+00:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.</p>
+
+<!-- more -->
+
+
+<p><strong>Edit</strong> Thanks to <a href="https://twitter.com/EricHoracek">@EricHoracek</a> for pointing out that this can be done without the use of private API methods. I had originally been adding the top (in-front) view controller&rsquo;s view to the <code>UIStatusBarWindow</code> which contains the status bar. But the solution below is much cleaner and uses only public API methods, so is guaranteed for App Store approval.</p>
+
+<p>It&rsquo;s nice to discuss things like this with the never-ending endeavour of finding cleaner approaches and learning something along the way!</p>
+
+<h1>The Effect</h1>
+
+<p><img src="https://github.com/samdods/StatusBarDemo/blob/master/statusBarDemo.gif?raw=true" title="made at imgflip.com"/></p>
+
+<p>What I really like about this is that you can display content full-screen, with no status bar, but allow the user to simply drag down slightly to see the time and other activity shown in the status bar. As we all know with the arrival of iOS 7, content is king! And I think it looks great to show images and other full-screen content without the status bar. But it&rsquo;s nice to know that it&rsquo;s only a slight drag away.</p>
+
+<h1>The Secret</h1>
+
+<p>It&rsquo;s actually very easy. <code>UIWindow</code> has the <code>windowLevel</code> property, which is of type <code>UIWindowLevel</code> (i.e. <code>CGFloat</code>). There are a few predefined window levels that we can take advantage of for this trick. The predefined values are as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelNormal</span><span class="p">;</span>
+</span><span class='line'><span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelAlert</span><span class="p">;</span>
+</span><span class='line'><span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelStatusBar</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When displaying a new window, it appears in front of all other existing windows at the same level. The higher the <code>windowLevel</code> value, the closer to the front of the screen the window appears.</p>
+
+<p>Below is how to create a new window and add it above the status bar.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">// 1.</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIWindow</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame</span><span class="p">:</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">bounds</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 2.</span>
+</span><span class='line'><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="nl">setRootViewController</span><span class="p">:</span><span class="nb">self</span><span class="p">.</span><span class="n">overlayViewController</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 3.</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">topWindow</span><span class="p">.</span><span class="n">windowLevel</span> <span class="o">=</span> <span class="n">UIWindowLevelStatusBar</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 4.</span>
+</span><span class='line'><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="n">makeKeyAndVisible</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Create a new window. Although <code>UIWindow</code> is a subclass of <code>UIView</code>, instances of this class don&rsquo;t generally have a superview. You don&rsquo;t need to add the window to anything else in order for it to be displayed.</li>
+<li>Specify the root view controller for the window. This is the view controller who&rsquo;s view you want to appear in front of the status bar.</li>
+<li>Specify the window level. By specifying <code>UIWindowLevelStatusBar</code>, the new window will appear above the status bar. Other windows with a higher <code>windowLevel</code>, for example <code>UIWindowLevelAlert</code> will appear in front of your new window still.</li>
+<li>Show the window. By invoking <code>makeKeyAndVisible</code>, the window is added to the application. You could also write <code>self.topWindow.hidden = NO;</code>.</li>
+</ol>
+
+
+<h1>The Demo</h1>
+
+<p>I created a demo project <a href="https://github.com/samdods/StatusBarDemo">available on GitHub</a>.</p>
+
+<p>I&rsquo;d be happy to talk about this, so feel free to <a href="http://twitter.com/dodsios">tweet me</a>. I&rsquo;d love to hear if anyone else has tried this and maybe taken a different approach. Subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sam Dods</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-10T07:55:28+00:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/objective-c/'>objective-c</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/" data-via="dodsios" data-counturl="http://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/" title="Previous Post: Enumerated Types and Checking Their Values">&laquo; Enumerated Types and Checking Their Values</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/" title="Next Post: Pushing the Limits of User-Defined Runtime Attributes in Interface Builder">Pushing the Limits of User-Defined Runtime Attributes in Interface Builder &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="titles">
+  <a href="http://sam.dods.co" title=""><img id="logo" src="http://sam.dods.co/images/logo.png" /></a>
+  <h1 id="site_title"><a href="http://sam.dods.co" title=""></a></h1>
+  <h3 id="site_subtitle">braindump of an iOS developer</h3>
+</section>
+
+<section id="menu">
+  <ul>
+    <li><i class="fa fa-home fa-lg"></i><a href="http://sam.dods.co"> Home </a></li>
+    <li><i class="fa fa-calendar fa-lg"></i><a href="http://sam.dods.co/blog/archives/"> Archives </a></li>
+    <li><i class="fa fa-user fa-lg"></i><a href="http://sam.dods.co/about/"> About </a></li>
+    <li><i class="fa fa-rss fa-lg"></i><a href="http://sam.dods.co/atom.xml"> Feed </a></li>
+  </ul>
+</section>
+
+<section id="social">
+  
+
+  
+
+  
+
+  
+    <a href="https://github.com/samdods" title="samdods"><i class="fa fa-github fa-2x"></i></a>
+  
+
+  
+
+  
+    <a href="https://twitter.com/dodsios" title="dodsios"><i class="fa fa-twitter fa-2x"></i></a>
+  
+</section>
+
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift best practices (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">swift alternatives to c macros (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to intercept delegate messages if you are not the delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/samdods">@samdods</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'samdods',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Sam Dods -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

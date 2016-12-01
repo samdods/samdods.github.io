@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dynamic Accessors for Category Properties - </title>
+  <meta name="author" content="Sam Dods">
+
+  
+  <meta name="description" content="Article">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="" type="application/atom+xml">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lora:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900' rel='stylesheet' type='text/css'>
+
+
+
+
+  
+
+  <style>html{background: url(/images/background.png) no-repeat center center fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;}</style>
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Dynamic Accessors for Category Properties</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-04T10:06:30+00:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>The Problem</h1>
+
+<p>Repetition, repetition, repetition. I don&rsquo;t like it. I like code to be as <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">dry</a> as it can possibly be without affecting readability, so as soon as I find myself repeating code in a project I immediately refactor. And if I find myself repeatedly writing what many would consider boilerplate code, I begin to wonder how I can avoid doing this in the future.</p>
+
+<p>I was recently adding a couple of properties to an existing class using a category. We can do this thanks to the Objective-C runtime functions <code>objc_getAssociatedObject</code> and <code>objc_setAssociatedObject</code>. I found myself writing the same old getters and setters that looked identical to those I&rsquo;d written countless times before. And herein lies the problem. I don&rsquo;t like repeating myself.</p>
+
+<!-- more -->
+
+
+<h1>A Solution</h1>
+
+<p>Below is an example of an Objective-C category with some very important properties. It&rsquo;s a surprise these don&rsquo;t exist on the underlying class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">BondGirl</span> <span class="nl">(DZLAdditions)</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">strong</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="bp">UIColor</span> <span class="o">*</span><span class="n">dzl_hairColor</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">strong</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="bp">NSArray</span> <span class="o">*</span><span class="n">dzl_weapons</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The nicest solution I came up with was to simply declare the properties as dynamic and implement the necessary accessor methods at runtime, from the <code>+load</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@implementation</span> <span class="nc">BondGirl</span> <span class="nl">(DZLAdditions)</span>
+</span><span class='line'><span class="k">@dynamic</span> <span class="n">dzl_hairColor</span><span class="p">,</span> <span class="n">dzl_weapons</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">load</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// implement for all properties (where methods are not already defined)</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="n">implementDynamicPropertyAccessors</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">// or implement only for specific property specified by name</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">implementDynamicPropertyAccessorsForPropertyName</span><span class="p">:</span><span class="s">@&quot;dzl_weapons&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">// or implement only for specific properties match regular expression</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">implementDynamicPropertyAccessorsForPropertyMatching</span><span class="p">:</span><span class="s">@&quot;^dzl_&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I think it looks nice. And if you have multiple properties in your category then it can save a lot of lines of code, and ultimately it avoids repetition. The documentation tells us that a category <code>+load</code> method is called after the class&rsquo;s own <code>+load</code> method. The important thing here is that implementing the <code>+load</code> method within a category does not override the <code>+load</code> method of the class itself.</p>
+
+<p>I&rsquo;ve found that the <code>+implementDynamicPropertyAccessors</code> method is always sufficient for my needs. But the other methods may provide peace of mind as well as the ability to use this functionality on a class that has other dynamic properties that you don&rsquo;t wish to be implemented in this way.</p>
+
+<h1>The Working</h1>
+
+<p>All the magic happens in the <code>+[NSObject implementDynamicPropertyAccessors]</code> method defined in a category on NSObject.</p>
+
+<p>The method itself is very simple.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">implementDynamicPropertyAccessors</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">enumeratePropertiesWithBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="kt">objc_property_t</span> <span class="n">property</span><span class="p">){</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">implementAccessorsIfNecessaryForProperty</span><span class="p">:</span><span class="n">property</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">}];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All I&rsquo;m doing here is iterating over the properties of <code>self</code>, and sending each property off to another method, which will do all the hard work.</p>
+
+<p>The method <code>+implementAccessorsIfNecessaryForProperty:</code> will inspect the attributes of the property to determine whether or not the accessors need to be implemented. It will then implement the accessor methods if necessary.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">implementAccessorsIfNecessaryForProperty:</span><span class="p">(</span><span class="kt">objc_property_t</span><span class="p">)</span><span class="nv">property</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// 1.</span>
+</span><span class='line'>  <span class="bp">NSArray</span> <span class="o">*</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">attributesOfProperty</span><span class="p">:</span><span class="n">property</span><span class="p">];</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isDynamic</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span> <span class="nl">containsObject</span><span class="p">:</span><span class="s">@&quot;D&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isDynamic</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 2.</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isObjectType</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>  <span class="bp">NSString</span> <span class="o">*</span><span class="n">customGetterName</span><span class="p">;</span>
+</span><span class='line'>  <span class="bp">NSString</span> <span class="o">*</span><span class="n">customSetterName</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">attribute</span> <span class="k">in</span> <span class="n">attributes</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">unichar</span> <span class="n">firstChar</span> <span class="o">=</span> <span class="p">[</span><span class="n">attribute</span> <span class="nl">characterAtIndex</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="n">firstChar</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;T&#39;</span><span class="o">:</span> <span class="n">isObjectType</span> <span class="o">=</span> <span class="p">[</span><span class="n">attribute</span> <span class="nl">characterAtIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;@&#39;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;G&#39;</span><span class="o">:</span> <span class="n">customGetterName</span> <span class="o">=</span> <span class="p">[</span><span class="n">attribute</span> <span class="nl">substringFromIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;S&#39;</span><span class="o">:</span> <span class="n">customSetterName</span> <span class="o">=</span> <span class="p">[</span><span class="n">attribute</span> <span class="nl">substringFromIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">default</span><span class="o">:</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isObjectType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 3.</span>
+</span><span class='line'>  <span class="k">static</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">key</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 4.</span>
+</span><span class='line'>  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="n">property_getName</span><span class="p">(</span><span class="n">property</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">implementGetterIfNecessaryForPropertyName</span><span class="p">:</span><span class="n">name</span> <span class="nl">customGetterName</span><span class="p">:</span><span class="n">customGetterName</span> <span class="nl">key</span><span class="p">:</span><span class="n">key</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isReadonly</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span> <span class="nl">containsObject</span><span class="p">:</span><span class="s">@&quot;R&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isReadonly</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">implementSetterIfNecessaryForPropertyName</span><span class="p">:</span><span class="n">name</span> <span class="nl">customSetterName</span><span class="p">:</span><span class="n">customSetterName</span> <span class="nl">key</span><span class="p">:</span><span class="n">key</span> <span class="nl">attributes</span><span class="p">:</span><span class="n">attributes</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>First I fetch the attributes of the property and check if the property is dynamic. If the property is not dynamic then we have no business with it.</li>
+<li>Next I go through the attributes to determine the type of the property and the custom getter and setter names, if specified. If the property is not an object type, then we have no business with it (I don&rsquo;t currently support properties that are not of an object type).</li>
+<li>Next I create a key to be used as a reference to the associated object. Note: this is a static variable, which I increase for each property being implemented, allowing for 2<sup>32</sup> properties to be implemented on each object (or 2<sup>64</sup> for a 64-bit binary), which I think is more than sufficient.</li>
+<li>And finally, I get the name of the property and implement the getter and setter methods. The setter is only implemented if the property is not marked as readonly. In reality the property will very rarely be readonly, because something has to set the value. I occasionally define a readonly property in a category and set it lazily when it&rsquo;s read. I might do this, for example, with an NSMutableArray property, but I&rsquo;m not supporting that kind of functionality here.</li>
+</ol>
+
+
+<h1>The Missing Pieces</h1>
+
+<p>Among the missing pieces are the methods that actually implement the getter and setter.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">implementGetterIfNecessaryForPropertyName:</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*</span><span class="p">)</span><span class="nv">propertyName</span> <span class="nf">customGetterName:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">customGetterName</span> <span class="nf">key:</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="nv">key</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">SEL</span> <span class="k">getter</span> <span class="o">=</span> <span class="n">NSSelectorFromString</span><span class="p">(</span><span class="n">customGetterName</span> <span class="o">?:</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%s&quot;</span><span class="p">,</span> <span class="n">propertyName</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">implementMethodIfNecessaryForSelector</span><span class="p">:</span><span class="k">getter</span> <span class="nl">parameterTypes</span><span class="p">:</span><span class="nb">NULL</span> <span class="nl">block</span><span class="p">:</span><span class="o">^</span><span class="kt">id</span><span class="p">(</span><span class="kt">id</span> <span class="n">_self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">objc_getAssociatedObject</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method above defines the getter using the property name or a custom getter name if specified. It then calls another method to create the implementation based on the block specified. The block returns the associated object using the key as the reference.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">implementSetterIfNecessaryForPropertyName:</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*</span><span class="p">)</span><span class="nv">propertyName</span> <span class="nf">customSetterName:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">customSetterName</span> <span class="nf">key:</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="nv">key</span> <span class="nf">attributes:</span><span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nv">attributes</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isCopy</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span> <span class="nl">containsObject</span><span class="p">:</span><span class="s">@&quot;C&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isRetain</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span> <span class="nl">containsObject</span><span class="p">:</span><span class="s">@&quot;&amp;&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">objc_AssociationPolicy</span> <span class="n">associationPolicy</span> <span class="o">=</span> <span class="n">isCopy</span> <span class="o">?</span> <span class="nl">OBJC_ASSOCIATION_COPY</span> <span class="p">:</span> <span class="n">isRetain</span> <span class="o">?</span> <span class="nl">OBJC_ASSOCIATION_RETAIN</span> <span class="p">:</span> <span class="n">OBJC_ASSOCIATION_ASSIGN</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">isNonatomic</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span> <span class="nl">containsObject</span><span class="p">:</span><span class="s">@&quot;N&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">isNonatomic</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">objc_AssociationPolicy</span> <span class="k">nonatomic</span> <span class="o">=</span> <span class="n">OBJC_ASSOCIATION_COPY_NONATOMIC</span> <span class="o">-</span> <span class="n">OBJC_ASSOCIATION_COPY</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">associationPolicy</span> <span class="o">+=</span> <span class="k">nonatomic</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">SEL</span> <span class="k">setter</span> <span class="o">=</span> <span class="n">NSSelectorFromString</span><span class="p">(</span><span class="n">customSetterName</span> <span class="o">?:</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;set%c%s:&quot;</span><span class="p">,</span> <span class="n">toupper</span><span class="p">(</span><span class="o">*</span><span class="n">propertyName</span><span class="p">),</span> <span class="n">propertyName</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">[</span><span class="nb">self</span> <span class="nl">implementMethodIfNecessaryForSelector</span><span class="p">:</span><span class="k">setter</span> <span class="nl">parameterTypes</span><span class="p">:</span><span class="s">&quot;@&quot;</span> <span class="nl">block</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="kt">id</span> <span class="n">_self</span><span class="p">,</span> <span class="kt">id</span> <span class="n">var</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">objc_setAssociatedObject</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">associationPolicy</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method above defines the setter using the property name &ndash; capitalized and prefixed with <code>set</code> &ndash; or a custom setter name if specified. It also has to inspect the attributes to determine the association policy, which must be provided when setting an associated object. The block used here simply sets the associated object using the specified key as the reference.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">implementMethodIfNecessaryForSelector:</span><span class="p">(</span><span class="kt">SEL</span><span class="p">)</span><span class="nv">selector</span> <span class="nf">parameterTypes:</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="nv">types</span> <span class="nf">block:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">block</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">BOOL</span> <span class="n">instancesRespondToSelector</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">instancesRespondToSelector</span><span class="p">:</span><span class="n">selector</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">instancesRespondToSelector</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">IMP</span> <span class="n">implementation</span> <span class="o">=</span> <span class="n">imp_implementationWithBlock</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">class_addMethod</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">types</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method above adds a method to the class for the given selector and implementation block.</p>
+
+<p>Finally, I defined a couple of other methods to separate out concerns. The following method iterates over the properties and executes the given block with each property</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">enumeratePropertiesWithBlock:</span><span class="p">(</span><span class="kt">void</span><span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="kt">objc_property_t</span> <span class="n">property</span><span class="p">))</span><span class="nv">block</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">NSParameterAssert</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">uint</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">objc_property_t</span> <span class="o">*</span><span class="n">properties</span> <span class="o">=</span> <span class="n">class_copyPropertyList</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">count</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="n">uint</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">objc_property_t</span> <span class="n">property</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">block</span><span class="p">(</span><span class="n">property</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">free</span><span class="p">(</span><span class="n">properties</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the following method simply returns an array of the attributes of the given property.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nf">attributesOfProperty:</span><span class="p">(</span><span class="kt">objc_property_t</span><span class="p">)</span><span class="nv">property</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[[</span><span class="bp">NSString</span> <span class="nl">stringWithCString</span><span class="p">:</span><span class="n">property_getAttributes</span><span class="p">(</span><span class="n">property</span><span class="p">)</span> <span class="nl">encoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">]</span> <span class="nl">componentsSeparatedByString</span><span class="p">:</span><span class="s">@&quot;,&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br>
+Thanks for reading! If you got this far, I hope it&rsquo;s because you found it interesting. If I&rsquo;m right, then you might like to check out the code, which is available on <a href="https://github.com/samdods/dynamicCategoryProperties/tree/master/DynamicCategoryProperties/NSObject%2BCategoryProperties">GitHub</a>. It&rsquo;s part of a project to demo how it can be used, and is tweaked to include extra methods <code>+implementDynamicPropertyAccessorsForPropertyName:</code> and <code>+implementDynamicPropertyAccessorsForPropertyMatching:</code>.</p>
+
+<p>And <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sam Dods</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-04T10:06:30+00:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objective-c-runtime/'>objective-c-runtime</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties/" data-via="dodsios" data-counturl="http://sam.dods.co/blog/2014/01/04/dynamic-accessors-for-category-properties/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/02/01/checking-for-a-value-in-a-bit-mask/" title="Next Post: Enumerated Types and Checking Their Values">Enumerated Types and Checking Their Values &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="titles">
+  <a href="http://sam.dods.co" title=""><img id="logo" src="http://sam.dods.co/images/logo.png" /></a>
+  <h1 id="site_title"><a href="http://sam.dods.co" title=""></a></h1>
+  <h3 id="site_subtitle">braindump of an iOS developer</h3>
+</section>
+
+<section id="menu">
+  <ul>
+    <li><i class="fa fa-home fa-lg"></i><a href="http://sam.dods.co"> Home </a></li>
+    <li><i class="fa fa-calendar fa-lg"></i><a href="http://sam.dods.co/blog/archives/"> Archives </a></li>
+    <li><i class="fa fa-user fa-lg"></i><a href="http://sam.dods.co/about/"> About </a></li>
+    <li><i class="fa fa-rss fa-lg"></i><a href="http://sam.dods.co/atom.xml"> Feed </a></li>
+  </ul>
+</section>
+
+<section id="social">
+  
+
+  
+
+  
+
+  
+    <a href="https://github.com/samdods" title="samdods"><i class="fa fa-github fa-2x"></i></a>
+  
+
+  
+
+  
+    <a href="https://twitter.com/dodsios" title="dodsios"><i class="fa fa-twitter fa-2x"></i></a>
+  
+</section>
+
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift best practices (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">swift alternatives to c macros (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to intercept delegate messages if you are not the delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/samdods">@samdods</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'samdods',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Sam Dods -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

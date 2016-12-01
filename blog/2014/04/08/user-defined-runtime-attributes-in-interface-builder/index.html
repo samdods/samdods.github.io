@@ -1,0 +1,423 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pushing the Limits of User-Defined Runtime Attributes in Interface Builder - </title>
+  <meta name="author" content="Sam Dods">
+
+  
+  <meta name="description" content="Article">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="" type="application/atom+xml">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lora:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900' rel='stylesheet' type='text/css'>
+
+
+
+
+  
+
+  <style>html{background: url(/images/background.png) no-repeat center center fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;}</style>
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pushing the Limits of User-Defined Runtime Attributes in Interface Builder</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-08T19:16:47+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>User-defined runtimes attributes in Xcode&rsquo;s Interface Builder are a great way to keep view controller and view code clean, while obeying Separation of Concerns.
+They allow you to configure properties on the view or view controller that you are unable to configure from within Interface Builder&rsquo;s <em>Attributes Inspector</em> or <em>Size Inspector</em>.</p>
+
+<p>But sometimes you may want to setup from Interface Builder a scenario which you can&rsquo;t do from simple KVC-compliant property manipulation.</p>
+
+<p>One example I ran into recently was trying to set the content insets on a collection view in a normal view controller in an iPhone-specific storyboard. In Xcode 5.1 you are unable to set the content insets of a collection view (I&rsquo;m not sure in which Xcode version this was first missing - I&rsquo;m sure you used to be able to do it).
+So with this feature missinh, it would be nice to be able to do the same thing using user-defined runtime attributes.</p>
+
+<p>Because contentInset is of <code>UIEdgeInsets</code> type, this isn&rsquo;t possible with any of the types defined in Interface Builder under user-defined runtime attributes. But it can be done!</p>
+
+<p>Another example I will show below is how to set the borderColor property of a <code>CALayer</code>, even though the runtime attributes don&rsquo;t support <code>CGColorRef</code> type. All will be explained!</p>
+
+<!-- More -->
+
+
+<h1>Runtime Attributes Explained</h1>
+
+<p>First a bit of background: user-defined runtime attributes can be set from the <em>Identity Inspector</em> tab in Interface Builder utilities, as shown below:</p>
+
+<p><img class="center" src="/images/user-defined-runtime-attributes.png" title="s Interface Builder" alt="images"></p>
+
+<p>They are defined as a set of key-value pairs. The key is actually a <em>key path</em>, which is a powerful, especially in Interface Builder where you don&rsquo;t have direct access to the underlying <code>CALayer</code> of a <code>UIView</code> (more on this below).</p>
+
+<p>The limitation is that the object&rsquo;s class must be KVC-compliant for the key (or key path) defined in the set of runtime attributes. To be <em>KVC-compliant</em> for a key <code>foo</code> simply means instances of the class must respond to the selector <code>setFoo:</code>.</p>
+
+<blockquote><p>Really, being KVC-compliant for a property means the class should implement the methods required for <code>valueForKey:</code> and <code>setValue:forKey:</code> to work for that property. For user-defined runtime attributes, that means implementing the setter for the property (key).</p></blockquote>
+
+<p>The following property types available for runtime attributes in Interface Builder:</p>
+
+<ul>
+<li><strong>Boolean</strong> - translates to a <code>BOOL</code> property</li>
+<li><strong>Number</strong> - can translate to any numeric scalar property or a property of type <code>NSNumber *</code></li>
+<li><strong>String</strong> - translates to a property of type <code>NSString *</code></li>
+<li><strong>Localized String</strong> - the value here is a key to look up in the <code>strings</code> file for the current locale.</li>
+<li><strong>Point</strong> - translates to a <code>CGPoint</code> property</li>
+<li><strong>Size</strong> - translates to a <code>CGSize</code> property</li>
+<li><strong>Rect</strong> - translates to a <code>CGRect</code> property</li>
+<li><strong>Range</strong> - translates to an <code>NSRange</code> property</li>
+<li><strong>Color</strong> - translates to a property of type <code>UIColor *</code></li>
+<li><strong>Nil</strong> - this spectial type doesn&rsquo;t allow you to set a value, it is just a way of specifying that the value should be set to <code>nil</code></li>
+</ul>
+
+
+<blockquote><p>The types <strong>Point</strong> and <strong>Size</strong> can be used interchangeably, because they both map to the same type of C structure (<code>struct {CGFloat v1; CGFloat v2;}</code>).</p></blockquote>
+
+<h1>Some Examples</h1>
+
+<h3>Configuring a CALayer</h3>
+
+<p>A great example of using runtime attributes is to configure a <code>UIView</code>&rsquo;s underlying <code>CALayer</code>. For example, we can set the layer&rsquo;s border width and corner radius as follows:</p>
+
+<p><img class="center" src="/images/calayer-setup.png" title="s underlying layer" alt="images"></p>
+
+<p>Unfortunately, Interface Builder doesn&rsquo;t allow us to set the color of a CALayer, because the <strong>Color</strong> type doesn&rsquo;t translate to properties of <code>CGColorRef *</code> type (workaround discussed below).</p>
+
+<h3>Configuring Custom Controls</h3>
+
+<p>Another example is if you are using a custom <code>UIControl</code> object such as a range slider. A range slider is similar to the built-in slider, but has two thumbs, or knobs: one to specify the minimum value and one to specify the maximum value.
+This kind of control would be useful for setting a minimum price and maximum price in a search query. There are <a href="https://github.com/muZZkat/NMRangeSlider">various</a> <a href="http://www.sitepoint.com/wicked-ios-range-slider-part-one/">implementations</a> <a href="https://github.com/barrettj/BJRangeSliderWithProgress">available</a> in the community.</p>
+
+<p>Using user-defined runtime attributes, you can configure such a control right from within Interface Builder. Taking the example of <a href="https://github.com/muZZkat/NMRangeSlider">NMRangeSlider</a>, you could configure the minimum and maximum values for the slider as follows:</p>
+
+<p><img class="center" src="/images/custom-control-setup.png" title="Configuring a custom control" alt="images"></p>
+
+<p>The main benefit of Interface Builder in my opinion is that it keeps all the UI configuration logic in one place outside of the view controller. By configuring your controls in Interface Builder, this is yet more code that can be removed from your view controller. After all, you would configure your <code>UIButton</code> and <code>UISlider</code> controls in Interface Builder, so why not configure your custom controls too?</p>
+
+<h1>The Limitations</h1>
+
+<p>As discussed above, the class must be KVC-compliant for each key you specify in the runtime attributes. If you specify a key path, then the object returned for each key must be KVC-compliant for the following key in the path.</p>
+
+<p>For example, the list of types shown above means that we can&rsquo;t set the content inset on a <code>UICollectionView</code> because there is no <code>UIEdgeInset</code> type (and no type that uses the exact same C structure type).</p>
+
+<p>We also already discussed the fact that we can&rsquo;t set the border color of a <code>CALayer</code>. Wouldn&rsquo;t it be nice if anything you can think of, you could configure in Interface Builder without adding logic to your view or view controller?</p>
+
+<h1>The Workaround</h1>
+
+<p>Define a category on the object you wish to configure. Comply to KVC in the category and put the configuration logic in the setter method. You don&rsquo;t even need to <code>#import</code> the category header anywhere - just by having it in the project, the runtime will call the setter method.</p>
+
+<h3>Define a Category</h3>
+
+<p>For example, by defining a category on <code>UICollectionView</code>, we can make the class KVC-compliant for any key we choose. To set the content inset, we can define the following category implementation:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@implementation</span> <span class="bp">UICollectionView</span> <span class="nl">(ContentInset)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setContentInsetFromString:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">string</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">contentInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsFromString</span><span class="p">(</span><span class="n">string</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&rsquo;s no need to define anything in the category header.</p>
+
+<p>This particular example is especailly simple because of the <code>UIEdgeInsetsFromString</code> mathod, which could it seems have been created specifically for this purpose!</p>
+
+<h3>Configure the Interface</h3>
+
+<p>Now we can set the user-defined runtime attributes in Interface Builder like so:</p>
+
+<p><img class="center" src="/images/content-inset-from-string.png" title="Configuring content inset" alt="images"></p>
+
+<p>The <strong>Key Path</strong> must match the name of the setter method in the category, but without the <strong>set</strong> prefix and with lowercase first letter.</p>
+
+<p>Now you&rsquo;ve configured your interface in Interface Builder - the correct place - and you can avoid having clutter in your code!</p>
+
+<p>An added bonus of doing things in Interface Builder is that if you use separate nibs or storyboards for iPad/iPhone then you can configure your view differently for each device without cluttering your code checking the user interface idiom.</p>
+
+<h1>Another Example</h1>
+
+<p>Now we can define the border color of a <code>CALayer</code> by simply mapping it from a <code>UIColor</code>.</p>
+
+<h3>Define a Category</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@implementation</span> <span class="bp">CALayer</span> <span class="nl">(Additions)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setBorderColorFromUIColor:</span><span class="p">(</span><span class="bp">UIColor</span> <span class="o">*</span><span class="p">)</span><span class="nv">color</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="n">color</span><span class="p">.</span><span class="bp">CGColor</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configure the Interface</h3>
+
+<p><img class="center" src="/images/calayer-border-color.png" title="s border color" alt="images"></p>
+
+<h1>Considerations</h1>
+
+<p>I think this is the right way to configure a user interface. Given that we have Interface Builder, we should use it to its full potential. But&hellip; there&rsquo;s always a &ldquo;but&rdquo; isn&rsquo;t there?</p>
+
+<p>Many people wouldn&rsquo;t think to look in Interface Builder at the user-defined runtime attributes, so they could be left very puzzled if they come to maintain your code at a later date. They could be left with a seemingly random border to their view, unable to figure out why it&rsquo;s there.</p>
+
+<p>So like anything of this nature &ndash; and by that I mean a more-advanced use of a programming language or development evironment &ndash; we should use it with caution. Use it only if it is necessary and simplifies logic elsewhere in your code.</p>
+
+<p>Setting up a view in a view controller isn&rsquo;t necessarily messy. The most valid reason for using user-defined runtime attributes is to configure a view differently whether the Interface Builder file is for iPhone or iPad. Because you already have a separate nib or storyboard file specifically for each device, that should be the place that you do any device-specific configuration.</p>
+
+<p>I hope you enjoyed reading this article. If so, please <a href="https://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sam Dods</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-08T19:16:47+01:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/objective-c/'>objective-c</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/" data-via="dodsios" data-counturl="http://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/10/modal-view-in-front-of-the-status-bar/" title="Previous Post: Modal View In Front of the Status Bar">&laquo; Modal View In Front of the Status Bar</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/25/collection-operators-done-properly/" title="Next Post: Collection Operators Done Properly">Collection Operators Done Properly &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="titles">
+  <a href="http://sam.dods.co" title=""><img id="logo" src="http://sam.dods.co/images/logo.png" /></a>
+  <h1 id="site_title"><a href="http://sam.dods.co" title=""></a></h1>
+  <h3 id="site_subtitle">braindump of an iOS developer</h3>
+</section>
+
+<section id="menu">
+  <ul>
+    <li><i class="fa fa-home fa-lg"></i><a href="http://sam.dods.co"> Home </a></li>
+    <li><i class="fa fa-calendar fa-lg"></i><a href="http://sam.dods.co/blog/archives/"> Archives </a></li>
+    <li><i class="fa fa-user fa-lg"></i><a href="http://sam.dods.co/about/"> About </a></li>
+    <li><i class="fa fa-rss fa-lg"></i><a href="http://sam.dods.co/atom.xml"> Feed </a></li>
+  </ul>
+</section>
+
+<section id="social">
+  
+
+  
+
+  
+
+  
+    <a href="https://github.com/samdods" title="samdods"><i class="fa fa-github fa-2x"></i></a>
+  
+
+  
+
+  
+    <a href="https://twitter.com/dodsios" title="dodsios"><i class="fa fa-twitter fa-2x"></i></a>
+  
+</section>
+
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift best practices (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">swift alternatives to c macros (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to intercept delegate messages if you are not the delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/samdods">@samdods</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'samdods',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Sam Dods -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

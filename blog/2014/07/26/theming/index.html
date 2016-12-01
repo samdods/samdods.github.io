@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Theming - </title>
+  <meta name="author" content="Sam Dods">
+
+  
+  <meta name="description" content="Article">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://sam.dods.co/blog/2014/07/26/theming/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="" type="application/atom+xml">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lora:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900' rel='stylesheet' type='text/css'>
+
+
+
+
+  
+
+  <style>html{background: url(/images/background.png) no-repeat center center fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;}</style>
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Theming</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-26T08:03:03+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Many of the projects on which I&rsquo;ve worked have had the problem of &ldquo;theming&rdquo;, because it&rsquo;s difficult to keep a project&rsquo;s codebase clean when dealing with multiple themes. When I refer to a &ldquo;theme&rdquo; I mean something that only affects the look and feel of an app, but not the functionality.</p>
+
+<p>By &ldquo;theming&rdquo;, I&rsquo;m referring to a project that might have different targets, each with different colour schemes, fonts, sizes, etc. to deliver a different user experience with the same functionality.</p>
+
+<p>But theming can be extended to a single app, with a single theme, where different interface builder (nib/xib) files are backed by a single class. This might be as simple as having a different interface file (or nib) for iPad as opposed to iPhone, where each nib is backed by the same class.</p>
+
+<p>Theming is often even more complex. For example, I might have an app that can display the same content in various forms. A news app, for example, might have a timeline in which it displays article teasers as either: a small widget with headline only; a double-height, more-impactful widget with headline and thumbnail image; a double-height widget with headline and article summary. That&rsquo;s three nibs, and I&rsquo;ll also need each one styled slightly differently whether it&rsquo;s on iPad or iPhone. So that&rsquo;s six nibs all backed by a single class!</p>
+
+<p>In this article, I&rsquo;ll discuss my latest solution to &ldquo;theming&rdquo; using <a href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/">User Defined Runtime Attributes</a>. <!--more--></p>
+
+<h1>Theming with User Defined Runtime Attributes</h1>
+
+<p>Using user defined runtime attributes, you can specify the aesthetic settings of a user interface exactly at the point at which it matters, in Interface Builder. I&rsquo;m a firm believer in the <a href="http://effectivesoftwaredesign.com/2012/02/05/separation-of-concerns/">separation of concerns</a>, and therefore I think the best place to configure an interface is in Interface Builder.</p>
+
+<p>The objective is to be able to do something like so to specify how the app should display my view:</p>
+
+<p><img class="center" src="/images/interface-builder-guidance.png" title="Configuring a themed view in Interface Builder" alt="images"></p>
+
+<p>In the example above, I&rsquo;ve set the value of the &ldquo;themeTextAttributes&rdquo; key to <code>articleWidgetTitle.iPhone.large</code>. I&rsquo;ll use this key-value pair later, but what&rsquo;s important at this stage is that this can be configured differently for each nib.</p>
+
+<p>The ultimate objective is a project that requires no changes in code to change the aesthetics of a view.</p>
+
+<h1>Reading a Theme from a Property List</h1>
+
+<p>One of the traditional theming methods I&rsquo;ve come across is the use of a property list (.plist file) or other resource containing keys and values for fonts, colours, etc. for a particular theme.</p>
+
+<p>I first came across this approach from the <a href="http://twinlogix.com/en/blog/how-create-multiple-themes-ios-apps">Twinlogix blog post</a> written by Alex Reggiani, in which he uses a plist file to reference each of his interface elements. His plist appears to contain one huge list of keys for various UI elements &ndash; of which there may be hundreds in a larger app &ndash; and I think this makes it very difficult to find the element you&rsquo;re looking for when you want to modify something. In the <a href="http://twinlogix.com/en/blog/how-create-multiple-themes-ios-apps-part-ii">second part</a> of Alex&rsquo;s article, he concludes that the best approach is to specify in the nib&rsquo;s user defined runtime attributes the font name and size for a UI element. I personally don&rsquo;t think this approach provides any benefit over using Interface Builder&rsquo;s attribute inspector.</p>
+
+<p>I have also seen a very good implementation of the plist approach by <a href="https://twitter.com/shaps">Shaps </a>, but again this results in a very long list of keys in a dictionary, which I personally find hard to maintain. And the technique I will describe below means that all this configuration can come from inside Interface Builder, rather than in view or view controller code.</p>
+
+<p>Now consider the fictional apps <em>Sam&rsquo;s Mega Lucky Bingo</em> and <em>Jurassic Bingo Legends</em>, which are both built from the same codebase with exactly the same user interface. Their only difference is the colour scheme and fonts used throughout each app. For these apps, I would create a different plist for each app and compile the corresponding plist into the bundle at build time, resulting in a different look and feel. An example plist file might look like so:</p>
+
+<p><img class="center" src="/images/plist-example.png" title="Example Theme Plist" alt="images"></p>
+
+<p>I think this is a realy nicely structured plist, in which I can group components at various levels, so they can be easily located, along with the device type on which it will appear, and the form it will take.</p>
+
+<p>Now I would likely have a helper class from which I can request the font, text colour and line spacing for a particular user interface element. For example, in the <code>-awakeFromNib</code> method of my <code>ArticleWidgetView</code> class, I would setup the view as follows:</p>
+
+<figure class='code'><figcaption><span>ArticleWidgetView.m</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">awakeFromNib</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="bp">NSString</span> <span class="o">*</span><span class="n">element</span> <span class="o">=</span> <span class="s">@&quot;articleWidgetTitle.iPhone.large&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">titleLabel</span><span class="p">.</span><span class="n">font</span> <span class="o">=</span> <span class="p">[</span><span class="n">Theme</span> <span class="nl">fontForElement</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">titleLabel</span><span class="p">.</span><span class="n">textColour</span> <span class="o">=</span> <span class="p">[</span><span class="n">Theme</span> <span class="nl">colorForElement</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">// line-spacing will be used when setting the attributedText property.</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>Theme</code> class helper methods will look up the values for the relevant properties in the plist dictionary. The implementation of the <code>+fontForElement:</code> method might look like so (after having read the plist into a dictionary on app launch):</p>
+
+<figure class='code'><figcaption><span>Theme.m</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="bp">UIFont</span> <span class="o">*</span><span class="p">)</span><span class="nf">fontForElement:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">element</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">textAttributes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Theme</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">plistDictionary</span><span class="p">][</span><span class="s">@&quot;Text Attributes&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">elementDictionary</span> <span class="o">=</span> <span class="p">[</span><span class="n">textAttributes</span> <span class="nl">valueForKeyPath</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="bp">NSString</span> <span class="o">*</span><span class="n">fontName</span> <span class="o">=</span> <span class="n">elementDictionary</span><span class="p">[</span><span class="s">@&quot;fontName&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">CGFloat</span> <span class="n">fontSize</span> <span class="o">=</span> <span class="p">[</span><span class="n">elementDictionary</span><span class="p">[</span><span class="s">@&quot;fontSize&quot;</span><span class="p">]</span> <span class="n">floatValue</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">NSAssert</span><span class="p">(</span><span class="n">fontName</span><span class="p">,</span> <span class="s">@&quot;Font not found for element %@&quot;</span><span class="p">,</span> <span class="n">element</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">fontName</span> <span class="o">?</span> <span class="p">[</span><span class="bp">UIFont</span> <span class="nl">fontWithName</span><span class="p">:</span><span class="n">fontName</span> <span class="nl">size</span><span class="p">:</span><span class="n">fontSize</span><span class="p">]</span> <span class="o">:</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the <code>element</code> string passed into the method takes the form of a key path (keys separated by dots), I can pass this directly to the dictionary to get the object at the end of the path. So in my <code>-awakeFromNib</code> method, I pass in the string <code>@"articleWidgetTitle.iPhone.large"</code>, which I use as the string in <code>-valueForKeyPath:</code> method above. This is effectively the same as doing <code>textAttributes[@"articleWidgetTitle"][@"iPhone"][@"large"]</code>.</p>
+
+<p>The downside to what we&rsquo;ve seen so far is that in your class implementation you need to know the &ldquo;element name&rdquo; that you will pass to the <code>Theme</code> class helper methods.</p>
+
+<h1>Separating Concerns</h1>
+
+<p>Now the objective is to strip out any interface-configuration logic from the view class. I don&rsquo;t really want the <code>ArticleWidgetView</code> class to care about the theme at all. It is loaded from a nib, so why should there be any further configuration required in the implementation?</p>
+
+<p>That&rsquo;s when we get back to user defined runtime attributes. As shown before, I&rsquo;ve configured my view in Interface Builder with the following runtime attributes:</p>
+
+<p><img class="center" src="/images/runtime-attributes.png" title="Runtime Attributes in Interface Builder" alt="images"></p>
+
+<p>Now as soon as I run this project, it&rsquo;s going to crash:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>*** Terminating app due to uncaught exception <span class="s1">&#39;NSUnknownKeyException&#39;</span>,
+</span><span class='line'>reason: <span class="s1">&#39;[&lt;UILabel 0x993b840&gt; setValue:forUndefinedKey:]:</span>
+</span><span class='line'><span class="s1">this class is not key value coding-compliant for the key themeTextAttributes.&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can easily fix this by implementing the necessary method in a category on UILabel, as follows:</p>
+
+<figure class='code'><figcaption><span>UILabel+Theme.m</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setThemeTextAttributes:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">element</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">font</span> <span class="o">=</span> <span class="p">[</span><span class="n">Theme</span> <span class="nl">fontForElement</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>  <span class="nb">self</span><span class="p">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">Theme</span> <span class="nl">colorForElement</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">CGFloat</span> <span class="n">lineSpacing</span> <span class="o">=</span> <span class="p">[</span><span class="n">Theme</span> <span class="nl">lineSpacingForElement</span><span class="p">:</span><span class="n">element</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">objc_setAssociatedObject</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="k">@selector</span><span class="p">(</span><span class="n">themeLineSpacing</span><span class="p">),</span> <span class="l">@(</span><span class="n">lineSpacing</span><span class="l">)</span><span class="p">,</span> <span class="n">OBJC_ASSOCIATION_RETAIN_NONATOMIC</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nf">themeLineSpacing</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">objc_getAssociatedObject</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="n">_cmd</span><span class="p">)</span> <span class="n">floatValue</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>By simply having this category exist in the project, all instances of <code>UILabel</code> will be able to respond the <code>setThemeTextAttributes:</code> method, which means I can use the key <code>themeTextAttributes</code> in Interface Builder&rsquo;s user defined runtime attributes.</p>
+
+<p>In the code snippet above, I&rsquo;m also setting an associated object on the UILabel instance, which will hold the line spacing as specified in the theming plist. I can use this property when setting attributed text on the label in the view&rsquo;s implementation. I will define the category header as follows:</p>
+
+<figure class='code'><figcaption><span>UILabel+Theme.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="bp">UILabel</span> <span class="nl">(Theme)</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">readonly</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">themeLineSpacing</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that I do not need to publicly expose the <code>setThemeTextAttributes:</code> method in the interface.</p>
+
+<p>Now I can configure all my labels in Interface Builder with no need to clutter the view or view controller code with unnecessary aesthetics code. I can add further categories for <code>UITextView</code>, <code>UIView</code> and other UIKit classes so that I can set the keys for their aesthetic properties in Interface Builder - where interface configuration belongs!</p>
+
+<h1>Demo Project</h1>
+
+<p>A demo project is <a href="https://github.com/samdods/DZLThemer">available on GitHub</a>.</p>
+
+<p>I&rsquo;m really keen to hear how other people have tackled theming, so <a href="http://twitter.com/dodsios">talk to me on twitter</a>! Or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sam Dods</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-26T08:03:03+01:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/objective-c/'>objective-c</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://sam.dods.co/blog/2014/07/26/theming/" data-via="dodsios" data-counturl="http://sam.dods.co/blog/2014/07/26/theming/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/25/collection-operators-done-properly/" title="Previous Post: Collection Operators Done Properly">&laquo; Collection Operators Done Properly</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/08/03/secondary-delegate/" title="Next Post: How to intercept delegate messages if you are not the delegate">How to intercept delegate messages if you are not the delegate &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="titles">
+  <a href="http://sam.dods.co" title=""><img id="logo" src="http://sam.dods.co/images/logo.png" /></a>
+  <h1 id="site_title"><a href="http://sam.dods.co" title=""></a></h1>
+  <h3 id="site_subtitle">braindump of an iOS developer</h3>
+</section>
+
+<section id="menu">
+  <ul>
+    <li><i class="fa fa-home fa-lg"></i><a href="http://sam.dods.co"> Home </a></li>
+    <li><i class="fa fa-calendar fa-lg"></i><a href="http://sam.dods.co/blog/archives/"> Archives </a></li>
+    <li><i class="fa fa-user fa-lg"></i><a href="http://sam.dods.co/about/"> About </a></li>
+    <li><i class="fa fa-rss fa-lg"></i><a href="http://sam.dods.co/atom.xml"> Feed </a></li>
+  </ul>
+</section>
+
+<section id="social">
+  
+
+  
+
+  
+
+  
+    <a href="https://github.com/samdods" title="samdods"><i class="fa fa-github fa-2x"></i></a>
+  
+
+  
+
+  
+    <a href="https://twitter.com/dodsios" title="dodsios"><i class="fa fa-twitter fa-2x"></i></a>
+  
+</section>
+
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/some-swift-best-practices/">Swift best practices (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/04/why-i-love-swift-protocol-extensions/">Why I Love Swift's Protocol Extensions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/02/stencil-xcode-plugin/">Introducing Stencil</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/swift-alternatives-to-c-macros/">swift alternatives to c macros (part i)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/secondary-delegate/">How to intercept delegate messages if you are not the delegate</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/samdods">@samdods</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'samdods',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Sam Dods -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
