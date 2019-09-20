@@ -3,7 +3,7 @@
 		"apps": [],
 		"details": [
 			{
-				"appID": "D87TGFCJK9.com.tab.oaknorth.test",
+				"appID": "VG9R2N57GC.com.tab.oaknorth.test",
 				"paths": [
 					"/auth"
 				]
@@ -12,12 +12,12 @@
 	},
 	"webcredentials": {
 		"apps": [
-			"VS63VNH549.com.tab.oaknorth.test"
+			"VG9R2N57GC.com.tab.oaknorth.test"
 		]
 	},
 	"activitycontinuation": {
 		"apps": [
-			"D87TGFCJK9.com.tab.oaknorth.test"
+			"VG9R2N57GC.com.tab.oaknorth.test"
 		]
 	}
 }
