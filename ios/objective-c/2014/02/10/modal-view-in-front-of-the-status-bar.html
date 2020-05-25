@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Modal View In Front of the Status Bar</title>
+  <meta name="description" content="This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the sc...">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/ios/objective-c/2014/02/10/modal-view-in-front-of-the-status-bar.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
+</head>
+
+
+  <body>
+      <div class="outer">
+        <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/"></a>
+    
+  </div>
+
+  <div class="header-badge">
+    <a href="/">
+        <img src="/assets/headshot.jpg" />
+    </a>
+  </div>
+    
+</header>
+
+
+        <div class="page-content">
+          <div class="wrapper">
+            <article class="post card" itemscope itemtype="http://schema.org/BlogPosting">
+ <div class="card-content">
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Modal View In Front of the Status Bar</h1>
+    <p class="post-meta"><time datetime="2014-02-10T07:55:28+00:00" itemprop="datePublished">Feb 10, 2014</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.</p>
+
+<!-- more -->
+
+<p><strong>Edit</strong> Thanks to <a href="https://twitter.com/EricHoracek">@EricHoracek</a> for pointing out that this can be done without the use of private API methods. I had originally been adding the top (in-front) view controller’s view to the <code class="highlighter-rouge">UIStatusBarWindow</code> which contains the status bar. But the solution below is much cleaner and uses only public API methods, so is guaranteed for App Store approval.</p>
+
+<p>It’s nice to discuss things like this with the never-ending endeavour of finding cleaner approaches and learning something along the way!</p>
+
+<h1 id="the-effect">The Effect</h1>
+
+<p><img src="https://github.com/samdods/StatusBarDemo/blob/master/statusBarDemo.gif?raw=true" title="made at imgflip.com" /></p>
+
+<p>What I really like about this is that you can display content full-screen, with no status bar, but allow the user to simply drag down slightly to see the time and other activity shown in the status bar. As we all know with the arrival of iOS 7, content is king! And I think it looks great to show images and other full-screen content without the status bar. But it’s nice to know that it’s only a slight drag away.</p>
+
+<h1 id="the-secret">The Secret</h1>
+
+<p>It’s actually very easy. <code class="highlighter-rouge">UIWindow</code> has the <code class="highlighter-rouge">windowLevel</code> property, which is of type <code class="highlighter-rouge">UIWindowLevel</code> (i.e. <code class="highlighter-rouge">CGFloat</code>). There are a few predefined window levels that we can take advantage of for this trick. The predefined values are as follows:</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelNormal</span><span class="p">;</span>
+<span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelAlert</span><span class="p">;</span>
+<span class="n">UIKIT_EXTERN</span> <span class="k">const</span> <span class="n">UIWindowLevel</span> <span class="n">UIWindowLevelStatusBar</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>When displaying a new window, it appears in front of all other existing windows at the same level. The higher the <code class="highlighter-rouge">windowLevel</code> value, the closer to the front of the screen the window appears.</p>
+
+<p>Below is how to create a new window and add it above the status bar.</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1.</span>
+<span class="n">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIWindow</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithFrame</span><span class="p">:</span><span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">bounds</span><span class="p">];</span>
+
+<span class="c1">// 2.</span>
+<span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="nf">setRootViewController</span><span class="p">:</span><span class="n">self</span><span class="p">.</span><span class="n">overlayViewController</span><span class="p">];</span>
+
+<span class="c1">// 3.</span>
+<span class="n">self</span><span class="p">.</span><span class="n">topWindow</span><span class="p">.</span><span class="n">windowLevel</span> <span class="o">=</span> <span class="n">UIWindowLevelStatusBar</span><span class="p">;</span>
+
+<span class="c1">// 4.</span>
+<span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">topWindow</span> <span class="nf">makeKeyAndVisible</span><span class="p">];</span>
+</code></pre></div></div>
+
+<ol>
+  <li>Create a new window. Although <code class="highlighter-rouge">UIWindow</code> is a subclass of <code class="highlighter-rouge">UIView</code>, instances of this class don’t generally have a superview. You don’t need to add the window to anything else in order for it to be displayed.</li>
+  <li>Specify the root view controller for the window. This is the view controller who’s view you want to appear in front of the status bar.</li>
+  <li>Specify the window level. By specifying <code class="highlighter-rouge">UIWindowLevelStatusBar</code>, the new window will appear above the status bar. Other windows with a higher <code class="highlighter-rouge">windowLevel</code>, for example <code class="highlighter-rouge">UIWindowLevelAlert</code> will appear in front of your new window still.</li>
+  <li>Show the window. By invoking <code class="highlighter-rouge">makeKeyAndVisible</code>, the window is added to the application. You could also write <code class="highlighter-rouge">self.topWindow.hidden = NO;</code>.</li>
+</ol>
+
+<h1 id="the-demo">The Demo</h1>
+
+<p>I created a demo project <a href="https://github.com/samdods/StatusBarDemo">available on GitHub</a>.</p>
+
+<p>I’d be happy to talk about this, so feel free to <a href="http://twitter.com/dodsios">tweet me</a>. I’d love to hear if anyone else has tried this and maybe taken a different approach. Subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same!</p>
+
+  </div>
+</div>
+</article>
+
+          </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
+      </div>
+  </body>
+  
+</html>

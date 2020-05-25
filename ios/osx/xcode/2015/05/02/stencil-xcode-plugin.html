@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Introducing Stencil</title>
+  <meta name="description" content="Stencil is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It’s intended to save ...">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/ios/osx/xcode/2015/05/02/stencil-xcode-plugin.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
+</head>
+
+
+  <body>
+      <div class="outer">
+        <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/"></a>
+    
+  </div>
+
+  <div class="header-badge">
+    <a href="/">
+        <img src="/assets/headshot.jpg" />
+    </a>
+  </div>
+    
+</header>
+
+
+        <div class="page-content">
+          <div class="wrapper">
+            <article class="post card" itemscope itemtype="http://schema.org/BlogPosting">
+ <div class="card-content">
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Introducing Stencil</h1>
+    <p class="post-meta"><time datetime="2015-05-02T11:50:25+01:00" itemprop="datePublished">May 2, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p><a href="/stencil-xcode-plugin/">Stencil</a> is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It’s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.</p>
+
+<p>Once you’ve used <a href="/stencil-xcode-plugin/">Stencil</a> to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.</p>
+
+<p>It really adds benefit when there’s a particular class that you commonly subclass, especially if the new subclass requires an interface builder counterpart.</p>
+
+<p>Of course you would want to document your project to explain that you have defined custom templates, which can be used with the <a href="/stencil-xcode-plugin/">Stencil</a> plugin. But if one of your co-workers doesn’t have the plugin, then it doesn’t matter. No harm done, it just means they won’t reap the benefits. And you can spend longer on your tea break, while they’re spending longer doing things manually!</p>
+
+<!-- More -->
+
+<h1 id="creating-a-custom-file-template-by-example">Creating a custom file template, by example</h1>
+
+<p>In a hypothetical social-network-like project, I have an abstract <code class="highlighter-rouge">SectionViewController</code> class, which will be subclassed for various sections of the app. For example, we have a <code class="highlighter-rouge">FriendsSectionViewController</code> and in the future we might want to add a <code class="highlighter-rouge">GroupsSectionViewController</code> and an <code class="highlighter-rouge">EventsSectionViewController</code>.</p>
+
+<p>The <code class="highlighter-rouge">SectionViewController</code> interface looks like this:</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">SectionViewController</span> <span class="p">:</span> <span class="nc">UIViewController</span>
+<span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">weak</span><span class="p">)</span> <span class="n">IBOutlet</span> <span class="n">UITableView</span> <span class="o">*</span><span class="n">tableView</span><span class="p">;</span>
+<span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">Section</span> <span class="o">*</span><span class="n">section</span><span class="p">;</span>
+
+<span class="c1">// may be implemented in subclasses, invoked when a table cell is selected.</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">didSelectItemAtIndexPath</span><span class="p">:(</span><span class="n">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span><span class="p">;</span>
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>It’s implementation takes care of the table’s data source using the specified <code class="highlighter-rouge">Section</code> object, and implements the necessary delegate methods.</p>
+
+<p>Subclasses are simply expected to implement the <code class="highlighter-rouge">-didSelectItemAtIndexPath:</code> method as described in the interface. Each subclass will also have its own storyboard file, which must link up a <code class="highlighter-rouge">UITableView</code> to the outlet in the superclass and provide a prototype cell with a specific reuse identifier. The <code class="highlighter-rouge">UITableView</code> will also hook up its <code class="highlighter-rouge">delegate</code> and <code class="highlighter-rouge">dataSource</code> outlets to the view controller.</p>
+
+<p>In order to create a new subclass, say <code class="highlighter-rouge">GroupsSectionViewController</code>, I would need to create the new class files (<code class="highlighter-rouge">.h</code> and <code class="highlighter-rouge">.m</code>) and create separately the new storyboard file. In the implementation, I would need to override the <code class="highlighter-rouge">-didSelectItemAtIndexPath:</code> method. In the storyboard, I would need to add a new view controller, embedded in a navigation controller; add a <code class="highlighter-rouge">UITableView</code> and hook it up to the outlet; hook up the table’s <code class="highlighter-rouge">delegate</code> and <code class="highlighter-rouge">dataSource</code> outlets; and add a prototype cell and give it the necessary reuse identifier, as required by the <code class="highlighter-rouge">SectionViewController</code> implementation. Sounds tedious!</p>
+
+<h2 id="simplifying-repetitive-tasks">Simplifying repetitive tasks</h2>
+
+<p>This is where <a href="/stencil-xcode-plugin/">Stencil</a> comes in. We can create a template based on an existing subclass of <code class="highlighter-rouge">SectionViewController</code>, to simplify adding a new section in the future. This will not only save my time, but make it much easier for a new joiner to get up to speed with the project and get stuck in making a new section, following the pattern that already exists in the project.</p>
+
+<p>Simply select the files that you wish to base your template upon, and select the new option to <em>New Template from Selection</em>, as in the image below.</p>
+
+<p><img src="/assets/images/stencil/create-new-template.jpg" align="center" alt="Create File Template from Group" /></p>
+
+<p>In the options window that is presented, I’ll leave the <em>Interface or protocol</em> option as “interface FriendsSectionViewController”, because this is the interface I wish to make a template from (it’s the only interface defined in the selected files).</p>
+
+<p>I’ll change the <em>New will inherit from</em> option to “SectionViewController” because this is what I want newly created files to inherit from. (I don’t want them to inherit from FriendsSectionViewController.)</p>
+
+<p>The <em>Template name</em> is defaulted to “SectionViewController” so I’ll leave that, and I’ll add a useful description so people know what it is in the future. I’ll leave all other options as the defaults. See image below.</p>
+
+<p><img src="/assets/images/stencil/create-template-options.jpg" align="center" alt="Template Creation Options" /></p>
+
+<p>You will then be presented with the template files for you to edit. Ensure you don’t modify the parts of the code that have references like <code class="highlighter-rouge">___FILEBASENAMEASIDENTIFIER___</code>, as this is what Xcode will replace when you use your template in the future.</p>
+
+<p>Remove any functionality that is specific to the class you used to create the template. Leave stubs of methods that you expect to be implemented in new classes that you create based on your template. See image below.</p>
+
+<p><img src="/assets/images/stencil/editing-new-template.jpg" align="center" alt="Editing The Template" /></p>
+
+<p>If your template includes an Interface Builder file, the template file will be presented in a separate window. Remove any views or controllers that are specific to the class you used to create the template. You can leave outlets connected and don’t modify the custom class <code class="highlighter-rouge">___FILEBASENAMEASIDENTIFIER___</code>. See image below.</p>
+
+<p><img src="/assets/images/stencil/editing-ui-template.jpg" align="center" alt="Editing Interface Builder Template" /></p>
+
+<p>After following the instructions that are presented to you in an Xcode window, make your changes to the template files, close the window(s) and return to your project.</p>
+
+<p>That’s it! You’ve now created your own custom file template. It will be saved under your project’s directory (under the <code class="highlighter-rouge">StencilPlugin</code> subdirectory), so you can commit it to source control.</p>
+
+<h1 id="using-your-template-to-create-a-new-file">Using your template to create a new file</h1>
+
+<p>So far in my project, I only have a <code class="highlighter-rouge">FriendsSectionViewController</code>. Now it’s time to add a <code class="highlighter-rouge">GroupsSectionViewController</code>. To use the template created above, simply right-click in the Project Navigator and select <em>New File from Custom Template…</em>. This will present all templates that are associated with this project. See image below.</p>
+
+<p><img src="/images/stencil/new-from-template.jpg" align="center" alt="New File from Custom Template" /></p>
+
+<p>Select the <code class="highlighter-rouge">SectionViewController</code> template created previously. See image below.</p>
+
+<p><img src="/images/stencil/select-custom-template.jpg" align="center" alt="Selecting Custom Template" /></p>
+
+<p>Give your new class a name, in my case this will be <code class="highlighter-rouge">GroupsSectionViewController</code>. Your new files will be created, just like usual. You’ll see the code files and the Interface Builder files all present in the Project Navigator. The storyboard file has the <code class="highlighter-rouge">UITableView</code> hooked up, as well as its <code class="highlighter-rouge">delegate</code> and <code class="highlighter-rouge">dataSource</code>. The code files have stubs of the methods that I’m expected to implement in the new subclass. See image below.</p>
+
+<p><img src="/images/stencil/new-files-created.jpg" align="center" alt="New Files Created" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p><a href="/stencil-xcode-plugin/">Stencil</a> may not provide benefit to every kind of project. But generally – if extending the app means that you frequently subclass a particular class – then you can find benefits in using the <a href="/stencil-xcode-plugin/">Stencil</a> plugin. You might find yourself subclassing a <code class="highlighter-rouge">WidgetView</code> for example, it’s much quicker to use <a href="/stencil-xcode-plugin/">Stencil</a> to produce your new files, which may include a <code class="highlighter-rouge">.xib</code> file. And it makes it immediately clear to people joining the project in the future what methods are expected to be implemented in new subclasses.</p>
+
+<h1 id="get-stencil">Get Stencil</h1>
+
+<p>See the <a href="/stencil-xcode-plugin/">Stencil</a> website.</p>
+
+  </div>
+</div>
+</article>
+
+          </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
+      </div>
+  </body>
+  
+</html>
