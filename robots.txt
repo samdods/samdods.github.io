@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://sam.dods.co/sitemap.xml 

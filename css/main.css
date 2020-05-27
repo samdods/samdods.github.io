@@ -22,7 +22,13 @@
 html { width: 100%; box-sizing: border-box; font-size: 62.5%; background-color: #37474F; background-repeat: no-repeat; background-size: cover; background-attachment: fixed; padding: 0; margin: 0; }
 
 /*setting up font sizes and base font family*/
-body { minheight: 100%; width: 100%; padding: 0; margin: 0; background-image: url("../assets/hero.jpg"); letter-spacing: 0.01em; line-height: 1.6; font-size: 2rem; font-weight: 400; font-family: Alice, serif; }
+body { minheight: 100%; width: 100%; padding: 0; margin: 0; letter-spacing: 0.01em; line-height: 1.6; font-size: 2rem; font-weight: 400; font-family: Alice, serif; }
+
+body p { font-family: Alice, serif; font-size: 2rem; text-align: left; }
+
+body img { object-position: center; width: 100%; }
+
+@media (min-width: 550px) { body img { object-position: center; width: 90%; } }
 
 .card-panel { transition: box-shadow .25s; padding: 20px; margin: 6.6666666667px 0 13.3333333333px 0; border-radius: 0px; background-color: #fff; }
 
@@ -76,7 +82,7 @@ body { minheight: 100%; width: 100%; padding: 0; margin: 0; background-image: ur
 
 .card .card-content .post-meta { margin-top: 6px; margin-bottom: 20px; font-family: 'Courier Prime', monospace; color: #999; font-size: 14px; }
 
-.card .card-content p { margin: 0; color: inherit; }
+.card .card-content p { margin: 0; margin-bottom: 1em; color: inherit; }
 
 .card .card-content .card-title { line-height: 48px; }
 
@@ -182,7 +188,9 @@ textarea:focus, textarea[type=text]:focus { border: 1px solid #99b3ff; border-ra
 a { color: #20A0A0; }
 
 /*------------------------------------------------------------ Lists ------------------------------------------------------------*/
-ul, ol { list-style: none; }
+ul, ol { text-align: left; }
+
+ul li, ol li { padding-bottom: 1em; }
 
 /*------------------------------------------------------------ Misc ------------------------------------------------------------*/
 code { padding: .2rem .5rem; margin: 0 .2rem; font-size: 90%; white-space: nowrap; background: #F1F1F1; border: 1px solid #E1E1E1; border-radius: 4px; }
@@ -380,11 +388,11 @@ h6 { font-size: 1.5rem; line-height: 1.6; letter-spacing: 0; }
 
 .page-content p.heading { line-height: 1.2; font-family: Lato, sans-serif; margin: 0; margin-bottom: 0.5em; font-size: 5rem; text-align: left; }
 
+.page-content p.h2 { line-height: 1.2; font-family: Lato, sans-serif; margin-top: 1.2em; margin-bottom: 0.5em; color: #20A0A0; font-size: 3rem; text-align: left; }
+
 .page-content .top { text-align: center; padding: 120px 20px 20px; }
 
 .page-content .top a.email { font-size: 2rem; text-decoration: none; color: #3A474E; }
-
-.page-content .top p.description { font-family: Alice, serif; font-size: 2rem; text-align: left; }
 
 .page-content .middle { margin-top: 20px; padding: 20px 20px 20px; }
 

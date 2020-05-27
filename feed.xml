@@ -5,10 +5,10 @@
     <description>Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! &lt;br&gt;&lt;br&gt;
 I'm a Lead Engineer at &lt;a href='https://kinandcarta.com/create'&gt;Kin + Carta Create&lt;/a&gt;, specialising in iOS development and all things Mobile. &lt;br&gt;&lt;br&gt;
 In 2018 I started writing new blog content on &lt;a href='https://medium.com/@sdods'&gt;Medium&lt;/a&gt;, so that's where you'll find my latest technical articles. My &lt;a href='archive'&gt;archived posts&lt;/a&gt; are still available. &lt;br&gt;&lt;br&gt;</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 26 May 2020 11:29:44 +0100</pubDate>
-    <lastBuildDate>Tue, 26 May 2020 11:29:44 +0100</lastBuildDate>
+    <link>https://sam.dods.co/</link>
+    <atom:link href="https://sam.dods.co/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Wed, 27 May 2020 10:25:07 +0100</pubDate>
+    <lastBuildDate>Wed, 27 May 2020 10:25:07 +0100</lastBuildDate>
     <generator>Jekyll v4.0.1</generator>
     
       <item>
@@ -201,17 +201,11 @@ In 2018 I started writing new blog content on &lt;a href='https://medium.com/@sd
 
 </description>
         <pubDate>Mon, 21 Sep 2015 08:00:37 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/swift/best-practices/2015/09/21/some-swift-best-practices.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/swift/best-practices/2015/09/21/some-swift-best-practices.html</guid>
+        <link>https://sam.dods.co/blog/2015/09/21/some-swift-best-practices.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2015/09/21/some-swift-best-practices.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Swift</category>
-        
-        <category>Best-Practices</category>
+        <category>blog</category>
         
       </item>
     
@@ -381,15 +375,11 @@ extension DataServiceDelegate {
 
 </description>
         <pubDate>Tue, 04 Aug 2015 08:00:00 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/swift/2015/08/04/why-i-love-swift-protocol-extensions.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/swift/2015/08/04/why-i-love-swift-protocol-extensions.html</guid>
+        <link>https://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2015/08/04/why-i-love-swift-protocol-extensions.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Swift</category>
+        <category>blog</category>
         
       </item>
     
@@ -479,15 +469,11 @@ extension DataServiceDelegate {
 &lt;p&gt;See the &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; website.&lt;/p&gt;
 </description>
         <pubDate>Sat, 02 May 2015 11:50:25 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/xcode/2015/05/02/stencil-xcode-plugin.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/xcode/2015/05/02/stencil-xcode-plugin.html</guid>
+        <link>https://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2015/05/02/stencil-xcode-plugin.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Xcode</category>
+        <category>blog</category>
         
       </item>
     
@@ -595,15 +581,11 @@ extension DataServiceDelegate {
 
 </description>
         <pubDate>Mon, 06 Apr 2015 22:05:57 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/swift/2015/04/06/swift-alternatives-to-c-macros.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/swift/2015/04/06/swift-alternatives-to-c-macros.html</guid>
+        <link>https://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2015/04/06/swift-alternatives-to-c-macros.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Swift</category>
+        <category>blog</category>
         
       </item>
     
@@ -739,15 +721,11 @@ extension DataServiceDelegate {
 
 </description>
         <pubDate>Sun, 03 Aug 2014 13:45:25 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/objective-c/2014/08/03/secondary-delegate.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/objective-c/2014/08/03/secondary-delegate.html</guid>
+        <link>https://sam.dods.co/blog/2014/08/03/secondary-delegate.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/08/03/secondary-delegate.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Objective-C</category>
+        <category>blog</category>
         
       </item>
     
@@ -887,13 +865,11 @@ objc_setAssociatedObject(self, @selector(themeLineSpacing), @(lineSpacing), OBJC
 
 </description>
         <pubDate>Sat, 26 Jul 2014 08:03:03 +0100</pubDate>
-        <link>http://localhost:4000/ios/objective-c/2014/07/26/theming.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/objective-c/2014/07/26/theming.html</guid>
+        <link>https://sam.dods.co/blog/2014/07/26/theming.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/07/26/theming.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>Objective-C</category>
+        <category>blog</category>
         
       </item>
     
@@ -1040,15 +1016,11 @@ DZLAverageNumber(self.transactions, Transaction *, value);
 
 </description>
         <pubDate>Fri, 25 Jul 2014 21:33:59 +0100</pubDate>
-        <link>http://localhost:4000/ios/osx/objective-c/2014/07/25/collection-operators-done-properly.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/osx/objective-c/2014/07/25/collection-operators-done-properly.html</guid>
+        <link>https://sam.dods.co/blog/2014/07/25/collection-operators-done-properly.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/07/25/collection-operators-done-properly.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>OSX</category>
-        
-        <category>Objective-C</category>
+        <category>blog</category>
         
       </item>
     
@@ -1197,13 +1169,11 @@ This kind of control would be useful for setting a minimum price and maximum pri
 
 </description>
         <pubDate>Tue, 08 Apr 2014 19:16:47 +0100</pubDate>
-        <link>http://localhost:4000/ios/objective-c/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/objective-c/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</guid>
+        <link>https://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>Objective-C</category>
+        <category>blog</category>
         
       </item>
     
@@ -1263,13 +1233,11 @@ This kind of control would be useful for setting a minimum price and maximum pri
 &lt;p&gt;I’d be happy to talk about this, so feel free to &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;tweet me&lt;/a&gt;. I’d love to hear if anyone else has tried this and maybe taken a different approach. Subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same!&lt;/p&gt;
 </description>
         <pubDate>Mon, 10 Feb 2014 07:55:28 +0000</pubDate>
-        <link>http://localhost:4000/ios/objective-c/2014/02/10/modal-view-in-front-of-the-status-bar.html</link>
-        <guid isPermaLink="true">http://localhost:4000/ios/objective-c/2014/02/10/modal-view-in-front-of-the-status-bar.html</guid>
+        <link>https://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/02/10/modal-view-in-front-of-the-status-bar.html</guid>
         
         
-        <category>iOS</category>
-        
-        <category>Objective-C</category>
+        <category>blog</category>
         
       </item>
     
@@ -1444,13 +1412,11 @@ BOOL isPortrait = (orientation == UIDeviceOrientationPortrait);
 
 </description>
         <pubDate>Sat, 01 Feb 2014 11:06:27 +0000</pubDate>
-        <link>http://localhost:4000/programming/computer-science/2014/02/01/checking-for-a-value-in-a-bit-mask.html</link>
-        <guid isPermaLink="true">http://localhost:4000/programming/computer-science/2014/02/01/checking-for-a-value-in-a-bit-mask.html</guid>
+        <link>https://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask.html</link>
+        <guid isPermaLink="true">https://sam.dods.co/blog/2014/02/01/checking-for-a-value-in-a-bit-mask.html</guid>
         
         
-        <category>Programming</category>
-        
-        <category>Computer-Science</category>
+        <category>blog</category>
         
       </item>
     

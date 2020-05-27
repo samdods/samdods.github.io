@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How to Intercept Delegate Messages If You Are Not The Delegate</title>
+  <meta name="description" content="I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with...">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://sam.dods.co/blog/2014/08/03/secondary-delegate.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="https://sam.dods.co/feed.xml">
+</head>
+
+
+  <body>
+      <div>
+        <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/"></a>
+    
+  </div>
+
+  <div class="header-badge">
+    <a href="/">
+        <img src="/assets/headshot.jpg" />
+    </a>
+  </div>
+    
+</header>
+
+
+        <div class="page-content">
+          <div class="wrapper">
+            <article class="post card" itemscope itemtype="http://schema.org/BlogPosting">
+
+ <div class="card-content">
+  <br>
+      <a href="/archive" class="btn">Back to Archive</a>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How to Intercept Delegate Messages If You Are Not The Delegate</h1>
+    <p class="post-meta"><time datetime="2014-08-03T13:45:25+01:00" itemprop="datePublished">Aug 3, 2014</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.</p>
+
+<p>The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.</p>
+
+<p>So, the question is: how can we listen out for the delegate messages from a UIScrollView, when we are not acting as the delegate?</p>
+
+<!-- More -->
+
+<p>One solution would be to use KVO. But it wouldn’t be possible to implement <code class="highlighter-rouge">-scrollViewWillEndDragging:withVelocity:targetContentOffset:</code> using KVO.</p>
+
+<h1 id="secondary-delegate">Secondary Delegate</h1>
+
+<p>So I propose adding a <code class="highlighter-rouge">secondaryDelegate</code> property in a category on UIScrollView. This category will implement the <code class="highlighter-rouge">-setSecondaryDelegate:</code> method, which can be called from the app (from a view controller, say).</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@interface</span> <span class="nc">UIScrollView</span> <span class="p">(</span><span class="nl">SecondaryDelegate</span><span class="p">)</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">weak</span><span class="p">)</span> <span class="n">id</span><span class="o">&lt;</span><span class="n">UIScrollViewDelegate</span><span class="o">&gt;</span> <span class="n">secondaryDelegate</span><span class="p">;</span>
+
+<span class="k">@end</span>
+</code></pre></div></div>
+
+<p>So for example, my view controller can set itself as the “delegate” of its web view’s UIScrollView as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- (void)viewDidLoad
+{
+  [super viewDidLoad];
+
+  self.webView.scrollView.secondaryDelegate = self;
+}
+</code></pre></div></div>
+
+<p>By setting the <code class="highlighter-rouge">secondaryDelegate</code> property, the category’s setter method actually overrides the <code class="highlighter-rouge">delegate</code> property with a <code class="highlighter-rouge">delegateProxy</code> object. This proxy object holds a weak reference to the original (overridden) delegate and to the secondary delegate provided.</p>
+
+<h1 id="delegate-proxy">Delegate Proxy</h1>
+
+<p>The delegate proxy is responsible for forwarding messages to the relevant delegates. The proxy holds a weak reference to each delegate. This means it is perfectly acceptable for the UIScrollView to hold a strong reference to the proxy by way of associated object (explained in more detail later).</p>
+
+<p>The proxy object is a subclass of NSProxy and conforms to the UIScrollViewDelegate protocol, so it must implement the following methods: <code class="highlighter-rouge">-methodSignatureForSelector:</code> and <code class="highlighter-rouge">-forwardInvocation:</code>.</p>
+
+<p>We’ll also implement the <code class="highlighter-rouge">-respondsToSelector:</code> method, because we know our proxy will be used as the delegate of a UIScrollView, which will check if the delegate responds to each selector before calling that selector.</p>
+
+<p>To determine the method signature for a selector, we can just ask each delegate and return when we find one that can provide what we need.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+  NSObject *delegateForResonse = [self.primaryDelegate respondsToSelector:selector] ? self.primaryDelegate : self.secondaryDelegate;
+  return [delegateForResonse respondsToSelector:selector] ? [delegateForResonse methodSignatureForSelector:selector] : nil;
+}
+</code></pre></div></div>
+
+<p>To determine if the proxy can respond to a selector, again we just check each delegate and return <code class="highlighter-rouge">YES</code> if one of them can respond.</p>
+
+<p>Before calling one of its optional delegate methods the UIScrollView (or anyone else for that matter) asks its delegate if it can respond to the selector. If it replies with <code class="highlighter-rouge">YES</code>, then it will send the message. But because we have set the <code class="highlighter-rouge">delegate</code> property to our <code class="highlighter-rouge">delegateProxy</code> object, this message will arrive as an invocation in the <code class="highlighter-rouge">-forwardInvocation:</code> method.</p>
+
+<p>We should implement this method as follows in order to forward the invocation to each delegate in turn (if it can respond to the selector).</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- (void)forwardInvocation:(NSInvocation *)invocation
+{
+  [self invokeInvocation:invocation onDelegate:self.primaryDelegate];
+  [self invokeInvocation:invocation onDelegate:self.secondaryDelegate];
+}
+
+- (void)invokeInvocation:(NSInvocation *)invocation onDelegate:(id&lt;UIScrollViewDelegate&gt;)delegate
+{
+  if ([delegate respondsToSelector:invocation.selector]) {
+    [invocation invokeWithTarget:delegate];
+  }
+}
+</code></pre></div></div>
+
+<h1 id="the-uiscrollview-category">The UIScrollView Category</h1>
+
+<p>For completeness, I’ve added the code for the category, with comments below.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 1. Private interface extension
+@interface UIScrollView ()
+@property (nonatomic, strong) TABScrollViewDelegateProxy *delegateProxy;
+@end
+
+@implementation UIScrollView (SecondaryDelegate)
+
+// 2. Setter
+- (void)setSecondaryDelegate:(id&lt;UIScrollViewDelegate&gt;)secondaryDelegate
+{
+  if (!self.delegateProxy) {
+    self.delegateProxy = [TABScrollViewDelegateProxy alloc];
+    self.delegateProxy.primaryDelegate = self.delegate;
+  }
+  
+  self.delegateProxy.secondaryDelegate = secondaryDelegate;
+  self.delegate = self.delegateProxy;
+}
+
+// 3. Getter
+- (id&lt;UIScrollViewDelegate&gt;)secondaryDelegate
+{
+  return self.delegateProxy.secondaryDelegate;
+}
+
+// 4. Associated object
+- (void)setDelegateProxy:(TABScrollViewDelegateProxy *)delegateProxy
+{
+  objc_setAssociatedObject(self, @selector(delegateProxy), delegateProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (TABScrollViewDelegateProxy *)delegateProxy
+{
+  return objc_getAssociatedObject(self, @selector(delegateProxy));
+}
+</code></pre></div></div>
+
+<ol>
+  <li>The <code class="highlighter-rouge">delegateProxy</code> property is added to the private interface extension. The fact that this category uses a proxy is an implementation detail and should therefore not be exposed in the public interface.</li>
+  <li>The setter method for the <code class="highlighter-rouge">secondaryDelegate</code> property will create the <code class="highlighter-rouge">delegateProxy</code> object if it doesn’t already exist and assign it to the <code class="highlighter-rouge">delegateProxy</code> property. Next we the <code class="highlighter-rouge">primaryDelegate</code> to the original delegate held in <code class="highlighter-rouge">self.delegate</code>. Then we set the <code class="highlighter-rouge">delegateProxy.secondaryDelegate</code> and override the object held in <code class="highlighter-rouge">self.delegate</code>. (Notice how we only call <code class="highlighter-rouge">alloc</code> on the proxy class - this is because instances of NSProxy do not by default respond to <code class="highlighter-rouge">-init</code>.)</li>
+  <li>We should provide the getter method for the object. It is just a wrapper around getting it from <code class="highlighter-rouge">self.delegateProxy</code>.</li>
+  <li>We hold a strong reference to the <code class="highlighter-rouge">delegateProxy</code> object by using an associated object. The strong reference is fine, because it only holds weak references to each delegate. (Notice the use of <code class="highlighter-rouge">@selector(delegateProxy)</code> as the key for the associated object. This is fine because the pointer returned is unique.)</li>
+</ol>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>This solution is clean and robust. It doesn’t involve method swizzling - only message forwarding using a proxy object, which is fine. In fact the only reason we have to import <code class="highlighter-rouge">&lt;objc/runtime.h&gt;</code> is to use associated objects.</p>
+
+<p>The public interface is clean - it only provides a single extra property for UIScrollView - the <code class="highlighter-rouge">secondaryDelegate</code>.</p>
+
+<p>The only downside to this is that the original delegate must have been set (if it ever will be set) before you set the secondary delegate. Or rather, you cannot set the <code class="highlighter-rouge">delegate</code> property after setting the <code class="highlighter-rouge">secondaryDelegate</code>. This is because setting the <code class="highlighter-rouge">secondaryDelegate</code> overwrites the value of the <code class="highlighter-rouge">delegate</code> property. I thought about a solution that adds an observer to listen for changes to the <code class="highlighter-rouge">delegate</code> property, but removing the observer on deallocation was not trivial, so I settled on the solution described above, which will not allow the delegate to be set after having set the secondary delegate.</p>
+
+<p>If you found this interesting, please <a href="http://twitter.com/dodsios">follow me on twitter</a>, or <a href="http://samdods.github.io/atom.xml">subscribe to my RSS feed</a>.</p>
+
+
+  </div>
+</div>
+</article>
+
+          </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
+      </div>
+  </body>
+  
+</html>

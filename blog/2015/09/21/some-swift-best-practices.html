@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Swift best Practices</title>
+  <meta name="description" content="I started learning Swift the day it was announced and read Apple’s The Swift Programming Language in the first couple of days. I began writing small componen...">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://sam.dods.co/blog/2015/09/21/some-swift-best-practices.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="https://sam.dods.co/feed.xml">
+</head>
+
+
+  <body>
+      <div>
+        <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/"></a>
+    
+  </div>
+
+  <div class="header-badge">
+    <a href="/">
+        <img src="/assets/headshot.jpg" />
+    </a>
+  </div>
+    
+</header>
+
+
+        <div class="page-content">
+          <div class="wrapper">
+            <article class="post card" itemscope itemtype="http://schema.org/BlogPosting">
+
+ <div class="card-content">
+  <br>
+      <a href="/archive" class="btn">Back to Archive</a>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Swift best Practices</h1>
+    <p class="post-meta"><time datetime="2015-09-21T08:00:37+01:00" itemprop="datePublished">Sep 21, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>I started learning Swift the day it was announced and read Apple’s <em>The Swift Programming Language</em> in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.</p>
+
+<p>That was until Swift 2.0 was announced in June. Since then I’ve been using it more and more and recently started writing a major project at <a href="www.theappbusiness.com">The App Business</a> purely in Swift 2.0.</p>
+
+<p>Read on for some of my observations – some are obvious and common, but hopefully some will be new to most people. Let me know if you have any of your own that I could add to the list!</p>
+
+<!-- More -->
+
+<h2 id="prefer-let-over-var">Prefer <code class="highlighter-rouge">let</code> over <code class="highlighter-rouge">var</code></h2>
+
+<p>Train your brain and your keyboard-bashing fingers to write <code class="highlighter-rouge">let</code> by default. There may be times when you know up-front you’ll need a mutable variable, but I still recommend using <code class="highlighter-rouge">let</code> until you absolutely need to modify its value. This is the most obvious of my best practices, but it’s super important, so still worth a mention.</p>
+
+<h2 id="prefer-private-access-control">Prefer <code class="highlighter-rouge">private</code> access control</h2>
+
+<p>Again, this one is obvious, but still worth pointing out. It’s always better to keep as much of your implementation <code class="highlighter-rouge">private</code>, which means it can only be accessed from the same source file.</p>
+
+<h2 id="prefer-non-optionals">Prefer non-optionals</h2>
+
+<p>Optionals are great. This concept does exist in other languages (Scala, Haskell, etc.), but much respect has to go to Chris Lattner for bringing it to Swift.</p>
+
+<p>However, as useful as they can be, I would still try to avoid them where possible. It leads to much cleaner code if you have variables and properties that you know hold a value, or functions that you can guarantee return a non-nil value.</p>
+
+<p>For example, I would prefer a function to throw an exception if it is unable to return a non-nil value. Take the SDK’s <code class="highlighter-rouge">NSJSONSerialization.JSONObjectWithData</code> function. It guarantees that if it returns anything, it will return a non-nil <code class="highlighter-rouge">AnyObject</code>, otherwise it throws an exception.</p>
+
+<h2 id="prefer-guard-let-over-if-let">Prefer <code class="highlighter-rouge">guard let</code> over <code class="highlighter-rouge">if let</code></h2>
+
+<p>What can you do in an <code class="highlighter-rouge">if let</code> code block? I would <em>almost</em> always opt for a <code class="highlighter-rouge">guard let</code> and return early. Early return tends to make the code that follows easier to read because you can guarantee the state of variables at that point. If you can’t calculate a required value, then return early.</p>
+
+<h2 id="dont-be-afraid-to-throw">Don’t be afraid to <code class="highlighter-rouge">throw</code></h2>
+
+<p>Instead of returning early, consider throwing an error, which is an alternative exit point from the function. Exception handling in Objective-C (<code class="highlighter-rouge">@try @catch</code>) was always possible, but frowned upon. In Swift, throwing errors is a fundamental concept and should be embraced.</p>
+
+<p>I had a parsing function that returned an optional, returning <code class="highlighter-rouge">nil</code> if the data couldn’t be parsed. This meant that the caller would have to check for <code class="highlighter-rouge">nil</code>. I refactored it to be a function that always returns a non-optional and <code class="highlighter-rouge">throws</code> an error if it can’t do so (see above related to preferring non-optionals).</p>
+
+<h2 id="never-guard-against-multiple-conditions">Never <code class="highlighter-rouge">guard</code> against multiple conditions</h2>
+
+<p>Consider the following code:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+          <span class="n">json</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">jsonFromData</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+          <span class="n">authors</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">"authors"</span><span class="p">]</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="kt">AuthorParserError</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The above avoids the repetition of throwing the <code class="highlighter-rouge">AuthorParserError</code> in three places, but in my opinion it would be much better written as follows:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">guard</span> <span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="n">data</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="kt">AuthorParserError</span>
+<span class="p">}</span>
+<span class="k">guard</span> <span class="k">let</span> <span class="nv">json</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">jsonFromData</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="kt">AuthorParserError</span>
+<span class="p">}</span>
+<span class="k">guard</span> <span class="k">let</span> <span class="nv">authors</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">"authors"</span><span class="p">]</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="kt">AuthorParserError</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The above is better because you can now test each case individually. And you can be sure that you’ve covered each case, because Xcode 7’s awesome code coverage facility will highlight any of the conditions that are not tested.</p>
+
+<h2 id="always-inject-dependencies-even-if-only-for-testing-purposes">Always inject dependencies, even if only for testing purposes</h2>
+
+<p>The great thing about Swift’s optional function arguments is that you can dictate how something should ordinarily be used but at the same time open up your classes for easy testing - in particular mocking of dependencies.</p>
+
+<p>If your class relies on something to handle network requests, for example, then why not pass that into the <code class="highlighter-rouge">init</code> function?</p>
+
+<p>This will make testing a doddle, because you can mock the dependency, ensuring that you are only testing the functionality of that individual class. (Of course you <em>can</em> write more integrated tests too.)</p>
+
+<p>For example:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">requestDelegate</span><span class="p">:</span> <span class="kt">MyClassRequestDelegate</span> <span class="o">=</span> <span class="kt">RequestManager</span><span class="p">())</span> <span class="p">{</span>
+  <span class="k">self</span><span class="o">.</span><span class="n">requestDelegate</span> <span class="o">=</span> <span class="n">requestDelegate</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The dependency in the above example is actually a protocol, which makes testing very simple, because we just need to mock an object that conforms to the protocol.</p>
+
+<p>(Some people might even demand that the dependency is always injected, instead of defining the defaul. But I feel the main purpose for this type of dependency injection is for easy testing. Unless you’re building a library, your app will probably always use the same dependency, so it usually makes sense to have a default.)</p>
+
+<h2 id="always-typealias-completion-handlers-where-possible">Always <code class="highlighter-rouge">typealias</code> completion handlers (where possible)</h2>
+
+<p>Despite <a href="http://www.fuckingclosuresyntax.com">the syntax of closures being somewhat confusing</a>, the syntax for type aliasing a closure is unquestionably simpler than the equivalent <code class="highlighter-rouge">typedef</code> in Objective-C. So always define a <code class="highlighter-rouge">typealias</code> for your completion handlers (unless they contain generics, in which case you can’t).</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typealias SomethingCompletion = (result: SomeType) -&gt; Void
+</code></pre></div></div>
+
+<h2 id="use-enum-to-avoid-ambiguity">Use <code class="highlighter-rouge">enum</code> to avoid ambiguity</h2>
+
+<p>Here I’m referring to a tuple or a set of completion handler arguments that may give rise to ambiguity.</p>
+
+<p>Consider the following completion handler:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>doSomething() { (output: NSData?, error: NSError?) in
+  // need to check if we have output or error
+}
+</code></pre></div></div>
+
+<blockquote>
+  <p>Note that I’m still using NSError as part of the completion handler, rather than throwing an exception, because you can’t throw an exception asynchronously.</p>
+</blockquote>
+
+<p>The above shows a completion handler which takes two optional values as its arguments. This goes against one of my previous points of “avoiding optionals” where possible.</p>
+
+<p>What happens in the above if we have neither <code class="highlighter-rouge">output</code> nor <code class="highlighter-rouge">error</code>. Or what if we have both? Which do we handle?</p>
+
+<p>You should be clear about the arguments to your completion handler, and you can use <code class="highlighter-rouge">enum</code> to help. For example, you could define the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>enum Result&lt;U&gt; {
+  case .Success(output: U)
+  case .Failure(error: NSError)
+}
+</code></pre></div></div>
+
+<p>Now we can rewrite the above use of the completion handler as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>doSomething() { result in
+  switch (result) {
+  case .Success(let output):
+    // use output
+  case .Failure(let error):
+    // handle error
+  }
+}
+</code></pre></div></div>
+
+<p>This is absolutely clear now that if it was successful, there will be a non-nil output. And we even know the type of it, assuming the <code class="highlighter-rouge">doSomething</code> function specialises the generic <code class="highlighter-rouge">Result</code>. And likewise it is clear that if it failed there will be a non-nil error. And it can only succeed or fail, so there is no ambiguity.</p>
+
+<h2 id="a-trick-for-generic-completion-handling">A trick for generic completion handling</h2>
+
+<p>Let’s say you have a function declared in a protocol as follows:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">ServiceProvider</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="n">provideService</span><span class="o">&lt;</span><span class="kt">U</span> <span class="k">where</span> <span class="kt">U</span><span class="p">:</span> <span class="kt">AnyService</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="p">(</span><span class="nv">output</span><span class="p">:</span> <span class="kt">U</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>When making a class conform to the <code class="highlighter-rouge">ServiceProvider</code> protocol (i.e. when implementing this function), as long as we know how to instantiate an object of type <code class="highlighter-rouge">U where U: AnyService</code>, then we can return an object of the correct type. (The <code class="highlighter-rouge">AnyService</code> protocol must provide a way of returning an instance.)</p>
+
+<p>It is then up to the caller to dictate in the completion closure what type of object should be returned.</p>
+
+<p>For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>myOtherClass.provideService { (output: RoomService) in
+  // do something with the RoomService
+}
+</code></pre></div></div>
+
+<p>The implementation of the <code class="highlighter-rouge">provideService</code> function doesn’t need to know anything about the <code class="highlighter-rouge">RoomService</code> class. It simply has to conform to <code class="highlighter-rouge">AnyService</code>, which allows it to be instantiated somehow.</p>
+
+<p>What I really like about this, is that the caller can get back whatever they want back. The caller simply says, “in the completion handler, I want an instance of <code class="highlighter-rouge">RoomService</code>” and the implementation of the function knows how to deliver.</p>
+
+<p>This is in stark contrast with Objective-C, where we would define a completion block argument of type <code class="highlighter-rouge">id</code> and the caller would tell the compiler what type of object they <em>expect</em> back when they implement the completion handler. But in Swift, we are <em>guaranteed</em> an object of this type. What’s more, we are given this guarantee at compile time.</p>
+
+<h2 id="closure-best-practices">Closure best practices</h2>
+
+<p>I try to keep closures as concise as possible.</p>
+
+<ul>
+  <li>If a closure returns <code class="highlighter-rouge">Void</code>, I don’t write the return type</li>
+  <li>If the type of the object can be inferred by the compiler, then don’t write the type</li>
+  <li>If the closure only has a single argument, then don’t put it in parentheses</li>
+  <li>Always make the closure the last argument to a function</li>
+  <li>Always trail the closure when implementing</li>
+  <li>Don’t write redundant parentheses that the compiler doesn’t require (for example, if the function only has one argument and that argument is the closure)</li>
+</ul>
+
+<p>These are largely up for debate, but this is the way I’m writing things right now. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>myObject.doSomething { output in
+  // do something with the output
+}
+</code></pre></div></div>
+
+<p>As opposed to:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>myObject.doSomething() { (output: NSData?) -&gt; Void in
+  // do something with the output
+}
+</code></pre></div></div>
+
+<h2 id="i-hope-you-enjoyed-reading">I hope you enjoyed reading</h2>
+
+<p>If you enjoyed this article, please <a href="http://twitter.com/dodsios">follow me on twitter</a> or subscribe to my <a href="http://octopress.dev/atom.xml">RSS feed</a> for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!</p>
+
+<p>And if you’d like to join me at <a href="http://www.theappbusiness.com">The App Business</a> to work on some awesome projects for the biggest clients in each industry, then please get in touch – we’re looking for great Swift and Objective-C developers.</p>
+
+
+  </div>
+</div>
+</article>
+
+          </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
+      </div>
+  </body>
+  
+</html>
