@@ -1,0 +1,188 @@
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title></title>
+  <meta name="description" content="Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! <br><br>
+I'm a Lead Engineer at <a href='https://kinandcarta.com/create'>Kin + Carta Create</a>, specialising in iOS development and all things Mobile. <br><br>
+In 2018 I started writing new blog content on <a href='https://medium.com/@sdods'>Medium</a>, so that's where you'll find my latest technical articles. My <a href='archive'>archived posts</a> are still available. <br><br>">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/projects/hook.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
+</head>
+
+
+  <body>
+      <div>
+        <header class="site-header">
+
+          <div class="wrapper">
+
+            <a class="site-title" href="/"></a>
+            
+          </div>
+
+          <div class="project-badge">
+            <img src="/assets/hook/icon.jpg" />
+          </div>
+            
+        </header>
+
+        <div class="page-content">
+          <div class="wrapper">
+
+            <div class="home">
+             <div class="top card">
+
+            <p class="heading">Hook</p>
+
+              <div align="left">
+                  <a href="/assets/hook/Hook.zip" class="btn">Download</a>
+              </div>
+
+              <p class="h2">What is Hook?</p>
+                <p>
+                  Hook is a macOS status bar app to provide quick access to upcoming meetings and allow you to instantly connect to video calls. It was originally designed for use with Zoom but now also supports Microsoft Teams video calls.
+                </p>
+<img src="/assets/hook/hook-use.jpg"/>
+
+                <p>
+                  Its main functions are:
+                </p>
+                <ul>
+                  <li>
+                    Quickly connect to video calls from the status bar menu.
+                  </li>
+                  <li>
+                    Open Zoom links directly in the Zoom app, without launching your web browser first.
+                  </li>
+                </ul>
+
+              <p class="heading">Installation and use</p>
+
+                <p class="h2">1. Download and open for the first time</p>
+                <ul>
+                  <li>
+                    Download and unzip, then drag Hook into your Applications folder.
+                  </li>
+                  <li>
+                    The first time you launch Hook, it will tell you Apple is unable to verify that the software isn't malicious. This is just because I'm not subscribed to the Apple Developer program.
+                  </li>
+                  <li>
+                    So to open it (only the first time), you have to go to your Applications folder, then hold the 'control' key and click on Hook, then select 'Open'. Then choose Open from the next window.
+                  </li>
+                </ul>
+
+                <p class="h2">2. Give Hook access to your calendar</p>
+                <ul>
+                  <li>
+                    Select the Hook icon in the macOS status bar (top right of the screen). Select 'Enable Calendar' to link to your calendar. It requires that whichever calendar you use (e.g. Google) is connected to macOS Calendar. (More on this below.)
+                  </li>
+                </ul>
+<img src="/assets/hook/enable-cal.jpg"/>
+
+                <p class="h2">3. Connect your calendar to macOS (if not already)</p>
+                <ul>
+                  <li>
+                    Open 'System Preferences' and go to 'Internet Accounts'.
+                  </li>
+                  <li>
+                    Make sure the account you use for your regular calendar is added to the list. If it's not already there, then you can add it now.
+                  </li>
+                  <li>
+                    Make sure the checkbox next to Calendar is checked. You can uncheck other checkboxes if you've just added the account and don't wish to use Mail, Contacts or Notes.
+                  </li>
+                </ul>
+<img src="/assets/hook/connect-cal.jpg"/>
+
+                <p class="h2">4. Make Hook your default browser</p>
+                <ul>
+                  <li>
+                    To make Zoom links open directly in the Zoom app withou opening in the web browser, you need to make Hook your default browser.
+                  </li>
+                  <li>
+                    Do this in 'System Preferences -> General'
+                  </li>
+                </ul>
+<img src="/assets/hook/default-browser.jpg"/>
+
+                <p class="h2">5. Let Hook know your preferred browser</p>
+                <ul>
+                  <li>
+                    Because the system now thinks Hook is your default browser, all links (websites) will be opened in Hook, but Hook isn't really a browser, so if you use a browser other than Safari, you need to tell Hook which you prefer.
+                  </li>
+                  <li>
+                    From the Hook status bar menu, select your default browser from the menu.
+                  </li>
+                </ul>
+<img src="/assets/hook/preferred-browser.jpg"/>
+
+                <p class="h2">6. Launch Hook on system login</p>
+                <ul>
+                  <li>
+                    If you'd like to ensure Hook is always running, you can add it to your login items, so it launches with the system.
+                  </li>
+                  <li>
+                    Open 'System Preferences -> Users & Groups', then on the right hand side, select 'Login Items'.
+                  </li>
+                  <li>
+                    Now drag Hook into this list, or select the '+' icon to add Hook from the File Opener.
+                  </li>
+                </ul>
+<img src="/assets/hook/login.jpg"/>
+
+                <p class="h2">7. Instantly connect to a video call</p>
+                <ul>
+                  <li>
+                    Select the Hook status bar menu and navigate to the meeting.
+                  </li>
+                  <li>
+                    If the meeting isn't displayed in the 'Up next' slot, then you'll find more meetings under the 'Meetings' submenu.
+                  </li>
+                  <li>
+                    Even past meetings are available in case they over-run and you wish to reconnect for some reason.
+                  </li>
+                  <li>
+                    Meetings that are greyed out (disabled) are so because Hook hasn't recognised a URL for a video call.
+                  </li>
+                  <li>
+                    All day meetings are never shown in the 'Up next' slot. They are only shown at all if they have a URL for a video call.
+                  </li>
+                </ul>
+<img src="/assets/hook/hook-use.jpg"/>
+<br><br>
+
+
+            <div align="left">
+                <a href="/" class="btn">Home</a>
+            </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
+      </div>
+  </body>
+  
+</html>
