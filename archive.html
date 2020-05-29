@@ -1,52 +1,14 @@
-<!DOCTYPE html>
-<html>
+---
+layout: default
+---
 
-  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title></title>
-  <meta name="description" content="Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! <br><br>
-I'm a Lead Engineer at <a href='https://kinandcarta.com/create'>Kin + Carta Create</a>, specialising in iOS development and all things Mobile. <br><br>
-In 2018 I started writing new blog content on <a href='https://medium.com/@sdods'>Medium</a>, so that's where you'll find my latest technical articles. My <a href='archive'>archived posts</a> are still available. <br><br>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/archive.html">
-  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
-</head>
-
-
-  <body>
-      <div>
-        <header class="site-header">
-
-  <div class="wrapper">
-
-    <a class="site-title" href="/"></a>
-    
-  </div>
-
-  <div class="header-badge">
-    <img src="/assets/headshot.jpg" />
-  </div>
-    
-</header>
-
-
-        <div class="page-content">
-          <div class="wrapper">
-            <div class="home">
+<div class="home">
   <div class="top card">
     <p>
       This is old content that I don't expect anyone to read. Just keeping it here in case it's linked to by someone, somewhere. I don't want to break their references. Don't judge me!
     </p>
     <p>
-      My latest technical articles are over on <a href='https://medium.com/@sdods'>Medium</a>.
+      My latest technical articles are over on <a href='{{ site.medium_url }}'>Medium</a>.
     </p>
       
     <div align="left">
@@ -60,82 +22,14 @@ In 2018 I started writing new blog content on <a href='https://medium.com/@sdods
     <div class="white-text posts" align="left">
 
       <ul class="post-list" style="list-style: none;">
-        
+        {% for post in site.posts %}
           <li>
-            <span class="post-meta">2015/09/21</span>
-            <a class="post-link" href="/blog/2015/09/21/some-swift-best-practices.html">Swift best Practices</a>            
+            <span class="post-meta">{{ post.date | date: "%Y/%m/%0d" }}</span>
+            <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>            
           </li>
-        
-          <li>
-            <span class="post-meta">2015/08/04</span>
-            <a class="post-link" href="/blog/2015/08/04/why-i-love-swift-protocol-extensions.html">Why I Love Swift's Protocol Extensions</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2015/05/02</span>
-            <a class="post-link" href="/blog/2015/05/02/stencil-xcode-plugin.html">Introducing Stencil</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2015/04/06</span>
-            <a class="post-link" href="/blog/2015/04/06/swift-alternatives-to-c-macros.html">Swift Alternatives to C Macros</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/08/03</span>
-            <a class="post-link" href="/blog/2014/08/03/secondary-delegate.html">How to Intercept Delegate Messages If You Are Not The Delegate</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/07/26</span>
-            <a class="post-link" href="/blog/2014/07/26/theming.html">Theming</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/07/25</span>
-            <a class="post-link" href="/blog/2014/07/25/collection-operators-done-properly.html">Collection Operators Done Properly</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/04/08</span>
-            <a class="post-link" href="/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html">Pushing the Limits of User-Defined Runtime Attributes in Interface Builder</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/02/10</span>
-            <a class="post-link" href="/blog/2014/02/10/modal-view-in-front-of-the-status-bar.html">Modal View In Front of the Status Bar</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/02/01</span>
-            <a class="post-link" href="/blog/2014/02/01/checking-for-a-value-in-a-bit-mask.html">Enumerated Types and Checking Their Values</a>            
-          </li>
-        
-          <li>
-            <span class="post-meta">2014/01/04</span>
-            <a class="post-link" href="/blog/2014/01/04/dynamic-accessors-for-category-properties.html">Dynamic Accessors for Category Properties</a>            
-          </li>
-        
+        {% endfor %}
       </ul>
 
     </div>
   </div>
 </div>
-
-          </div>
-        </div>
-
-        <footer class="site-footer">
-
-  <div class="wrapper">
-
-    <span class="footer-heading"></span>
-
-  </div>
-
-</footer>
-
-      </div>
-  </body>
-  
-</html>

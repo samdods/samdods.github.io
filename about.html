@@ -1,46 +1,8 @@
-<!DOCTYPE html>
-<html>
+---
+layout: default
+---
 
-  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title></title>
-  <meta name="description" content="Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! <br><br>
-I'm a Lead Engineer at <a href='https://kinandcarta.com/create'>Kin + Carta Create</a>, specialising in iOS development and all things Mobile. <br><br>
-In 2018 I started writing new blog content on <a href='https://medium.com/@sdods'>Medium</a>, so that's where you'll find my latest technical articles. My <a href='archive'>archived posts</a> are still available. <br><br>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/about.html">
-  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
-</head>
-
-
-  <body>
-      <div>
-        <header class="site-header">
-
-  <div class="wrapper">
-
-    <a class="site-title" href="/"></a>
-    
-  </div>
-
-  <div class="header-badge">
-    <img src="/assets/headshot.jpg" />
-  </div>
-    
-</header>
-
-
-        <div class="page-content">
-          <div class="wrapper">
-            <div class="home">
+<div class="home">
  <div class="top card">
 
 <p class="heading">About Me</p>
@@ -57,13 +19,13 @@ My goal as a software developer is to constantly make better user experiences fo
 When I'm not tinkering with tech or hanging out with my wife and daughter, I'm running, playing squash, snowboarding and generally keeping my mind and body active. Or I'm playing the guitar. Badly.
       </p>
       <p>
-You can find me on Twitter as <a href='https://www.twitter.com/dodsios'>@dodsios</a>. Come and say hi! 👋
+You can find me on Twitter as <a href='https://www.twitter.com/{{ site.twitter_username }}'>@{{ site.twitter_username }}</a>. Come and say hi! 👋
     </p>
 
 <div align="left">
     <a href="/" class="btn">Home</a>
-    <a href="https://www.twitter.com/dodsios" class="btn">Twitter</a>
-    <a href="https://medium.com/@sdods" class="btn">Medium</a>
+    <a href="https://www.twitter.com/{{ site.twitter_username }}" class="btn">Twitter</a>
+    <a href="{{ site.medium_url }}" class="btn">Medium</a>
     <a href="https://www.linkedin.com/in/sam-dods-0794064a/" class="btn">LinkedIn</a>
     <a href="https://github.com/samdods" class="btn">GitHub</a>
 </div>
@@ -71,21 +33,3 @@ You can find me on Twitter as <a href='https://www.twitter.com/dodsios'>@dodsios
   </div>
 
 </div>
-
-          </div>
-        </div>
-
-        <footer class="site-footer">
-
-  <div class="wrapper">
-
-    <span class="footer-heading"></span>
-
-  </div>
-
-</footer>
-
-      </div>
-  </body>
-  
-</html>

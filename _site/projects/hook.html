@@ -1,11 +1,24 @@
----
-layout: none
-redirect_from: "/toddle"
----
-
 <html>
 
-  {% include head.html %}
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title></title>
+  <meta name="description" content="Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! <br><br>
+I'm a Lead Engineer at <a href='https://kinandcarta.com/create'>Kin + Carta Create</a>, specialising in iOS development and all things Mobile. <br><br>
+In 2018 I started writing new blog content on <a href='https://medium.com/@sdods'>Medium</a>, so that's where you'll find my latest technical articles. My <a href='archive'>archived posts</a> are still available. <br><br>">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/projects/hook.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000/feed.xml">
+</head>
+
 
   <body>
       <div>
@@ -13,12 +26,12 @@ redirect_from: "/toddle"
 
           <div class="wrapper">
 
-            <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}</a>
+            <a class="site-title" href="/"></a>
             
           </div>
 
           <div class="project-badge">
-            <img src="{{ site.baseurl }}/assets/hook/icon.jpg" />
+            <img src="/assets/hook/icon.jpg" />
           </div>
             
         </header>
@@ -159,7 +172,16 @@ redirect_from: "/toddle"
           </div>
         </div>
 
-        {% include footer.html %}
+        <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <span class="footer-heading"></span>
+
+  </div>
+
+</footer>
+
       </div>
   </body>
   

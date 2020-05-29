@@ -1,0 +1,1424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title></title>
+    <description>Hi! 👋 My name is Sam Dods. Welcome to my quiet little corner of the web! &lt;br&gt;&lt;br&gt;
+I'm a Lead Engineer at &lt;a href='https://kinandcarta.com/create'&gt;Kin + Carta Create&lt;/a&gt;, specialising in iOS development and all things Mobile. &lt;br&gt;&lt;br&gt;
+In 2018 I started writing new blog content on &lt;a href='https://medium.com/@sdods'&gt;Medium&lt;/a&gt;, so that's where you'll find my latest technical articles. My &lt;a href='archive'&gt;archived posts&lt;/a&gt; are still available. &lt;br&gt;&lt;br&gt;</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 29 May 2020 09:43:31 +0100</pubDate>
+    <lastBuildDate>Fri, 29 May 2020 09:43:31 +0100</lastBuildDate>
+    <generator>Jekyll v4.0.1</generator>
+    
+      <item>
+        <title>Swift best Practices</title>
+        <description>&lt;p&gt;I started learning Swift the day it was announced and read Apple’s &lt;em&gt;The Swift Programming Language&lt;/em&gt; in the first couple of days. I began writing small components and playing around with Swift at the same time, but never felt it was mature enough to begin a big project with it.&lt;/p&gt;
+
+&lt;p&gt;That was until Swift 2.0 was announced in June. Since then I’ve been using it more and more and recently started writing a major project at &lt;a href=&quot;www.theappbusiness.com&quot;&gt;The App Business&lt;/a&gt; purely in Swift 2.0.&lt;/p&gt;
+
+&lt;p&gt;Read on for some of my observations – some are obvious and common, but hopefully some will be new to most people. Let me know if you have any of your own that I could add to the list!&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;h2 id=&quot;prefer-let-over-var&quot;&gt;Prefer &lt;code class=&quot;highlighter-rouge&quot;&gt;let&lt;/code&gt; over &lt;code class=&quot;highlighter-rouge&quot;&gt;var&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Train your brain and your keyboard-bashing fingers to write &lt;code class=&quot;highlighter-rouge&quot;&gt;let&lt;/code&gt; by default. There may be times when you know up-front you’ll need a mutable variable, but I still recommend using &lt;code class=&quot;highlighter-rouge&quot;&gt;let&lt;/code&gt; until you absolutely need to modify its value. This is the most obvious of my best practices, but it’s super important, so still worth a mention.&lt;/p&gt;
+
+&lt;h2 id=&quot;prefer-private-access-control&quot;&gt;Prefer &lt;code class=&quot;highlighter-rouge&quot;&gt;private&lt;/code&gt; access control&lt;/h2&gt;
+
+&lt;p&gt;Again, this one is obvious, but still worth pointing out. It’s always better to keep as much of your implementation &lt;code class=&quot;highlighter-rouge&quot;&gt;private&lt;/code&gt;, which means it can only be accessed from the same source file.&lt;/p&gt;
+
+&lt;h2 id=&quot;prefer-non-optionals&quot;&gt;Prefer non-optionals&lt;/h2&gt;
+
+&lt;p&gt;Optionals are great. This concept does exist in other languages (Scala, Haskell, etc.), but much respect has to go to Chris Lattner for bringing it to Swift.&lt;/p&gt;
+
+&lt;p&gt;However, as useful as they can be, I would still try to avoid them where possible. It leads to much cleaner code if you have variables and properties that you know hold a value, or functions that you can guarantee return a non-nil value.&lt;/p&gt;
+
+&lt;p&gt;For example, I would prefer a function to throw an exception if it is unable to return a non-nil value. Take the SDK’s &lt;code class=&quot;highlighter-rouge&quot;&gt;NSJSONSerialization.JSONObjectWithData&lt;/code&gt; function. It guarantees that if it returns anything, it will return a non-nil &lt;code class=&quot;highlighter-rouge&quot;&gt;AnyObject&lt;/code&gt;, otherwise it throws an exception.&lt;/p&gt;
+
+&lt;h2 id=&quot;prefer-guard-let-over-if-let&quot;&gt;Prefer &lt;code class=&quot;highlighter-rouge&quot;&gt;guard let&lt;/code&gt; over &lt;code class=&quot;highlighter-rouge&quot;&gt;if let&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;What can you do in an &lt;code class=&quot;highlighter-rouge&quot;&gt;if let&lt;/code&gt; code block? I would &lt;em&gt;almost&lt;/em&gt; always opt for a &lt;code class=&quot;highlighter-rouge&quot;&gt;guard let&lt;/code&gt; and return early. Early return tends to make the code that follows easier to read because you can guarantee the state of variables at that point. If you can’t calculate a required value, then return early.&lt;/p&gt;
+
+&lt;h2 id=&quot;dont-be-afraid-to-throw&quot;&gt;Don’t be afraid to &lt;code class=&quot;highlighter-rouge&quot;&gt;throw&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Instead of returning early, consider throwing an error, which is an alternative exit point from the function. Exception handling in Objective-C (&lt;code class=&quot;highlighter-rouge&quot;&gt;@try @catch&lt;/code&gt;) was always possible, but frowned upon. In Swift, throwing errors is a fundamental concept and should be embraced.&lt;/p&gt;
+
+&lt;p&gt;I had a parsing function that returned an optional, returning &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt; if the data couldn’t be parsed. This meant that the caller would have to check for &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt;. I refactored it to be a function that always returns a non-optional and &lt;code class=&quot;highlighter-rouge&quot;&gt;throws&lt;/code&gt; an error if it can’t do so (see above related to preferring non-optionals).&lt;/p&gt;
+
+&lt;h2 id=&quot;never-guard-against-multiple-conditions&quot;&gt;Never &lt;code class=&quot;highlighter-rouge&quot;&gt;guard&lt;/code&gt; against multiple conditions&lt;/h2&gt;
+
+&lt;p&gt;Consider the following code:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;jsonFromData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;authors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;authors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AuthorParserError&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The above avoids the repetition of throwing the &lt;code class=&quot;highlighter-rouge&quot;&gt;AuthorParserError&lt;/code&gt; in three places, but in my opinion it would be much better written as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AuthorParserError&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;json&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;jsonFromData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AuthorParserError&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;authors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;authors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AuthorParserError&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The above is better because you can now test each case individually. And you can be sure that you’ve covered each case, because Xcode 7’s awesome code coverage facility will highlight any of the conditions that are not tested.&lt;/p&gt;
+
+&lt;h2 id=&quot;always-inject-dependencies-even-if-only-for-testing-purposes&quot;&gt;Always inject dependencies, even if only for testing purposes&lt;/h2&gt;
+
+&lt;p&gt;The great thing about Swift’s optional function arguments is that you can dictate how something should ordinarily be used but at the same time open up your classes for easy testing - in particular mocking of dependencies.&lt;/p&gt;
+
+&lt;p&gt;If your class relies on something to handle network requests, for example, then why not pass that into the &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; function?&lt;/p&gt;
+
+&lt;p&gt;This will make testing a doddle, because you can mock the dependency, ensuring that you are only testing the functionality of that individual class. (Of course you &lt;em&gt;can&lt;/em&gt; write more integrated tests too.)&lt;/p&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;requestDelegate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MyClassRequestDelegate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;RequestManager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;requestDelegate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;requestDelegate&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The dependency in the above example is actually a protocol, which makes testing very simple, because we just need to mock an object that conforms to the protocol.&lt;/p&gt;
+
+&lt;p&gt;(Some people might even demand that the dependency is always injected, instead of defining the defaul. But I feel the main purpose for this type of dependency injection is for easy testing. Unless you’re building a library, your app will probably always use the same dependency, so it usually makes sense to have a default.)&lt;/p&gt;
+
+&lt;h2 id=&quot;always-typealias-completion-handlers-where-possible&quot;&gt;Always &lt;code class=&quot;highlighter-rouge&quot;&gt;typealias&lt;/code&gt; completion handlers (where possible)&lt;/h2&gt;
+
+&lt;p&gt;Despite &lt;a href=&quot;http://www.fuckingclosuresyntax.com&quot;&gt;the syntax of closures being somewhat confusing&lt;/a&gt;, the syntax for type aliasing a closure is unquestionably simpler than the equivalent &lt;code class=&quot;highlighter-rouge&quot;&gt;typedef&lt;/code&gt; in Objective-C. So always define a &lt;code class=&quot;highlighter-rouge&quot;&gt;typealias&lt;/code&gt; for your completion handlers (unless they contain generics, in which case you can’t).&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;typealias SomethingCompletion = (result: SomeType) -&amp;gt; Void
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;use-enum-to-avoid-ambiguity&quot;&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;enum&lt;/code&gt; to avoid ambiguity&lt;/h2&gt;
+
+&lt;p&gt;Here I’m referring to a tuple or a set of completion handler arguments that may give rise to ambiguity.&lt;/p&gt;
+
+&lt;p&gt;Consider the following completion handler:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;doSomething() { (output: NSData?, error: NSError?) in
+  // need to check if we have output or error
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that I’m still using NSError as part of the completion handler, rather than throwing an exception, because you can’t throw an exception asynchronously.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The above shows a completion handler which takes two optional values as its arguments. This goes against one of my previous points of “avoiding optionals” where possible.&lt;/p&gt;
+
+&lt;p&gt;What happens in the above if we have neither &lt;code class=&quot;highlighter-rouge&quot;&gt;output&lt;/code&gt; nor &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt;. Or what if we have both? Which do we handle?&lt;/p&gt;
+
+&lt;p&gt;You should be clear about the arguments to your completion handler, and you can use &lt;code class=&quot;highlighter-rouge&quot;&gt;enum&lt;/code&gt; to help. For example, you could define the following:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;enum Result&amp;lt;U&amp;gt; {
+  case .Success(output: U)
+  case .Failure(error: NSError)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we can rewrite the above use of the completion handler as:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;doSomething() { result in
+  switch (result) {
+  case .Success(let output):
+    // use output
+  case .Failure(let error):
+    // handle error
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is absolutely clear now that if it was successful, there will be a non-nil output. And we even know the type of it, assuming the &lt;code class=&quot;highlighter-rouge&quot;&gt;doSomething&lt;/code&gt; function specialises the generic &lt;code class=&quot;highlighter-rouge&quot;&gt;Result&lt;/code&gt;. And likewise it is clear that if it failed there will be a non-nil error. And it can only succeed or fail, so there is no ambiguity.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-trick-for-generic-completion-handling&quot;&gt;A trick for generic completion handling&lt;/h2&gt;
+
+&lt;p&gt;Let’s say you have a function declared in a protocol as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;protocol&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceProvider&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;provideService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;U&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;where&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;U&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AnyService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;completion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;U&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When making a class conform to the &lt;code class=&quot;highlighter-rouge&quot;&gt;ServiceProvider&lt;/code&gt; protocol (i.e. when implementing this function), as long as we know how to instantiate an object of type &lt;code class=&quot;highlighter-rouge&quot;&gt;U where U: AnyService&lt;/code&gt;, then we can return an object of the correct type. (The &lt;code class=&quot;highlighter-rouge&quot;&gt;AnyService&lt;/code&gt; protocol must provide a way of returning an instance.)&lt;/p&gt;
+
+&lt;p&gt;It is then up to the caller to dictate in the completion closure what type of object should be returned.&lt;/p&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;myOtherClass.provideService { (output: RoomService) in
+  // do something with the RoomService
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The implementation of the &lt;code class=&quot;highlighter-rouge&quot;&gt;provideService&lt;/code&gt; function doesn’t need to know anything about the &lt;code class=&quot;highlighter-rouge&quot;&gt;RoomService&lt;/code&gt; class. It simply has to conform to &lt;code class=&quot;highlighter-rouge&quot;&gt;AnyService&lt;/code&gt;, which allows it to be instantiated somehow.&lt;/p&gt;
+
+&lt;p&gt;What I really like about this, is that the caller can get back whatever they want back. The caller simply says, “in the completion handler, I want an instance of &lt;code class=&quot;highlighter-rouge&quot;&gt;RoomService&lt;/code&gt;” and the implementation of the function knows how to deliver.&lt;/p&gt;
+
+&lt;p&gt;This is in stark contrast with Objective-C, where we would define a completion block argument of type &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; and the caller would tell the compiler what type of object they &lt;em&gt;expect&lt;/em&gt; back when they implement the completion handler. But in Swift, we are &lt;em&gt;guaranteed&lt;/em&gt; an object of this type. What’s more, we are given this guarantee at compile time.&lt;/p&gt;
+
+&lt;h2 id=&quot;closure-best-practices&quot;&gt;Closure best practices&lt;/h2&gt;
+
+&lt;p&gt;I try to keep closures as concise as possible.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If a closure returns &lt;code class=&quot;highlighter-rouge&quot;&gt;Void&lt;/code&gt;, I don’t write the return type&lt;/li&gt;
+  &lt;li&gt;If the type of the object can be inferred by the compiler, then don’t write the type&lt;/li&gt;
+  &lt;li&gt;If the closure only has a single argument, then don’t put it in parentheses&lt;/li&gt;
+  &lt;li&gt;Always make the closure the last argument to a function&lt;/li&gt;
+  &lt;li&gt;Always trail the closure when implementing&lt;/li&gt;
+  &lt;li&gt;Don’t write redundant parentheses that the compiler doesn’t require (for example, if the function only has one argument and that argument is the closure)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These are largely up for debate, but this is the way I’m writing things right now. For example:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;myObject.doSomething { output in
+  // do something with the output
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As opposed to:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;myObject.doSomething() { (output: NSData?) -&amp;gt; Void in
+  // do something with the output
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;i-hope-you-enjoyed-reading&quot;&gt;I hope you enjoyed reading&lt;/h2&gt;
+
+&lt;p&gt;If you enjoyed this article, please &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;follow me on twitter&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!&lt;/p&gt;
+
+&lt;p&gt;And if you’d like to join me at &lt;a href=&quot;http://www.theappbusiness.com&quot;&gt;The App Business&lt;/a&gt; to work on some awesome projects for the biggest clients in each industry, then please get in touch – we’re looking for great Swift and Objective-C developers.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 21 Sep 2015 08:00:37 +0100</pubDate>
+        <link>http://localhost:4000/blog/2015/09/21/some-swift-best-practices.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2015/09/21/some-swift-best-practices.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Why I Love Swift's Protocol Extensions</title>
+        <description>&lt;p&gt;When protocol extensions were first mentioned at WWDC in June, they immediately stood out as a necessary feature. But it was only after I started playing around with them that I realised the true value these bring to the language.&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;h2 id=&quot;the-problems-in-objective-c-that-are-somewhat-solved-by-swift&quot;&gt;The problems in Objective-C that are somewhat solved by Swift&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-ability-to-mix-in-functionality-to-classes&quot;&gt;The ability to “mix in” functionality to classes&lt;/h3&gt;
+
+&lt;p&gt;When you want to extend a class in Objective-C, you would typically create a category on that class.&lt;/p&gt;
+
+&lt;p&gt;Say in my app I have defined the &lt;code class=&quot;highlighter-rouge&quot;&gt;Video&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Photo&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Song&lt;/code&gt; classes, which have the shared superclass &lt;code class=&quot;highlighter-rouge&quot;&gt;MediaItem&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now I want to give each of these classes some functionality to make them &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt;. And I would expect this functionality to mostly be the same in each class.&lt;/p&gt;
+
+&lt;p&gt;Now you might suggest I implement the shareable functionality in their common superclass, and then somehow specify whether each one is shareable. But I might not want all future subclasses to inherit this functionality, and I may want to give this functionality to other classes that don’t inherit from &lt;code class=&quot;highlighter-rouge&quot;&gt;MediaItem&lt;/code&gt;. For example, I might want to make &lt;code class=&quot;highlighter-rouge&quot;&gt;UserProfile&lt;/code&gt; shareable, so my users can share each other’s profiles.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;With inheritance, you would typically follow the “is a” principle, meaning an object of your subclass type is an object of its superclass type and inherits common properties. For example, in real life, a &lt;code class=&quot;highlighter-rouge&quot;&gt;Dog&lt;/code&gt; &lt;em&gt;is a&lt;/em&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Mammal&lt;/code&gt; so it would make sense to inherit from the &lt;code class=&quot;highlighter-rouge&quot;&gt;Mammal&lt;/code&gt; class.&lt;/p&gt;
+
+  &lt;p&gt;A &lt;code class=&quot;highlighter-rouge&quot;&gt;Dog&lt;/code&gt; should also be capable of other functionality, for example being able to &lt;code class=&quot;highlighter-rouge&quot;&gt;run&lt;/code&gt;. It doesn’t make sense to implement that functionality in the &lt;code class=&quot;highlighter-rouge&quot;&gt;Mammal&lt;/code&gt; class, because it would not apply to the &lt;code class=&quot;highlighter-rouge&quot;&gt;Whale&lt;/code&gt;, which is also a subclass of &lt;code class=&quot;highlighter-rouge&quot;&gt;Mammal&lt;/code&gt;.&lt;/p&gt;
+
+  &lt;p&gt;It doesn’t make sense to have a &lt;code class=&quot;highlighter-rouge&quot;&gt;Runner&lt;/code&gt; class for &lt;code class=&quot;highlighter-rouge&quot;&gt;Dog&lt;/code&gt; to inherit from, because a &lt;code class=&quot;highlighter-rouge&quot;&gt;Dog&lt;/code&gt; isn’t necessarily a &lt;code class=&quot;highlighter-rouge&quot;&gt;Runner&lt;/code&gt;, so the “is a” principle doesn’t apply. Being able to &lt;code class=&quot;highlighter-rouge&quot;&gt;run&lt;/code&gt; is a capability rather than a property.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So how can I provide the &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt; functionality to my media classes without implementing it in each class individually? Well in Objective-C it simply isn’t possible. Of course, you could add the shared functionality to a category on &lt;code class=&quot;highlighter-rouge&quot;&gt;NSObject&lt;/code&gt;. But then (almost) all of your classes will inherit this functionality, which you don’t want.&lt;/p&gt;
+
+&lt;p&gt;This is where Swift’s protocol extensions come in handy. You could define the &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt; protocol like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;protocol&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;extension&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// common share functionality&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now any class that you declare as conforming to the &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt; protocol will “adopt” the sharing functionality. For example:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Photo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MediaItem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// func share() adopted from Shareable protocol&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;UserProfile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// func share() adopted from Shareable protocol&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you are familiar with Ruby, you will see the resemblence to what is known as a mixin.&lt;/p&gt;
+
+&lt;h3 id=&quot;the-requirement-to-check-respondstoselector&quot;&gt;The requirement to check &lt;code class=&quot;highlighter-rouge&quot;&gt;respondsToSelector:&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;For aeons people have been trying to work around this problem, for example Peter Steinberger’s &lt;a href=&quot;http://petersteinberger.com/blog/2013/smart-proxy-delegation/&quot;&gt;Smart Proxy Delegation&lt;/a&gt;. But all such solutions are only work arounds.&lt;/p&gt;
+
+&lt;p&gt;We all know that pure Swift protocols don’t support optional methods. And Swift objects don’t support &lt;code class=&quot;highlighter-rouge&quot;&gt;respondsToSelector&lt;/code&gt;. But with protocol extensions, none of this matters!&lt;/p&gt;
+
+&lt;p&gt;We can simplify what used to be five rather ugly lines of Objective-C…&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;BOOL&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shouldBegin&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;YES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataServiceDelegate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delegate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delegate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delegate&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;respondsToSelector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;@selector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;dataServiceShouldBeginSync&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:)])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;shouldBegin&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delegate&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;dataServiceShouldBeginSync&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;… into a single line of Swift…&lt;/p&gt;
+
+&lt;p&gt;```swift Swift
+let shouldBegin = delegate.dataServiceShouldBeginSync(self)&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+This is acheived by defining the default implementation of this methods in an extension to the protocol, as follows:
+
+```swift
+extension DataServiceDelegate {
+  func dataServiceShouldBeginSync(dataService: DataService) -&amp;gt; Bool {
+    return YES;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The additional beauty of this is that it makes the default behaviour explicitly clear to the consumer of your interface. No longer do they have to hunt around in possibly out-of-date documentation to figure out what will happen if they don’t implement this methods themselves. And the default behaviour isn’t hidden in the implementation.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-additional-powers-of-protocol-extensions&quot;&gt;The additional powers of protocol extensions&lt;/h2&gt;
+
+&lt;p&gt;You can specify a “where” clause for your extension, so that only specific conforming classes adopt the functionality defined in the extension.&lt;/p&gt;
+
+&lt;p&gt;This allows us to define different default behaviour depending on the class that conforms to the protocol. For example, I could define the following protocol:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;protocol&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now I can specify that any object that conforms to this protocol should use the default behaviour as defined:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;extension&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sharing something&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And I can specify that all media items have a different default behaviour:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;extension&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;where&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Self&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MediaItem&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sharing a media item!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that this is not the same as providing this implementation in the &lt;code class=&quot;highlighter-rouge&quot;&gt;MediaItem&lt;/code&gt; class, because this doesn’t mean all &lt;code class=&quot;highlighter-rouge&quot;&gt;MediaItem&lt;/code&gt; objects are &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt;. Only subclasses that conform to the &lt;code class=&quot;highlighter-rouge&quot;&gt;Shareable&lt;/code&gt; protocol will pick up this functionality.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is demonstrated below:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;UserProfile&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AudioTrack&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MediaItem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Video&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MediaItem&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;userProfile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;UserProfile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;userProfile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// prints &quot;sharing something&quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;audio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AudioTrack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;audio&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// prints &quot;sharing a media item!&quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;video&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Video&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// results in a compiler error: value of type 'Video' has no member 'share'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This also means that you can refer to &lt;code class=&quot;highlighter-rouge&quot;&gt;self&lt;/code&gt; in the default implementation and access the properties of &lt;code class=&quot;highlighter-rouge&quot;&gt;self&lt;/code&gt; with the knowledge that it is of a particular type. For example, the &lt;code class=&quot;highlighter-rouge&quot;&gt;MediaItem&lt;/code&gt;  might have a &lt;code class=&quot;highlighter-rouge&quot;&gt;copyrightTerms&lt;/code&gt; property, so I can use it in my default implementation as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;extension&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Shareable&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;where&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Self&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;MediaItem&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;share&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copyrightTerms&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// present the copyright terms to the user, asking them to accept before continuing.&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// complete share action without showing copyright terms.&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;so-are-there-any-drawbacks&quot;&gt;So are there any drawbacks?&lt;/h2&gt;
+
+&lt;p&gt;Like with so many language features: with great power comes great responsibility. And even more importantly, comes the greater need to fully understand how something works.&lt;/p&gt;
+
+&lt;p&gt;The methods in a protocol extension can also be implemented in the class that conforms to the protocol. The implementation in the class overrides the “default” implementation in the protocol extension. What’s more is that if the implementation is added to the class in the form of a class extension, then it too overrides the protocol extension implementation. This can get very confusing if you are defining different implementations using the “where” syntax.&lt;/p&gt;
+
+&lt;p&gt;As more people become accustomed to writing Swift, I’m sure the most common use for protocol extensions will be for the default implementation of “optional” delegate methods.&lt;/p&gt;
+
+&lt;p&gt;But for those that do use them as a kind of “mixin”, I’d suggest erring on the side of caution and making your intent very clear.&lt;/p&gt;
+
+&lt;h2 id=&quot;i-hope-you-enjoyed-reading&quot;&gt;I hope you enjoyed reading&lt;/h2&gt;
+
+&lt;p&gt;If you enjoyed this article, please &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;follow me on twitter&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!&lt;/p&gt;
+
+&lt;p&gt;And if you’d like to join me at &lt;a href=&quot;http://www.theappbusiness.com&quot;&gt;The App Business&lt;/a&gt; to work on some awesome projects for the biggest clients in each industry, then please get in touch – we’re looking for great Swift and Objective-C developers.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 04 Aug 2015 08:00:00 +0100</pubDate>
+        <link>http://localhost:4000/blog/2015/08/04/why-i-love-swift-protocol-extensions.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2015/08/04/why-i-love-swift-protocol-extensions.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Introducing Stencil</title>
+        <description>&lt;p&gt;&lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; is an Xcode plugin that provides the ability to create custom file templates and use them in your project to create new files. It’s intended to save you time while making it easy to extend a project in the future: for you, next week; for your current colleagues; and especially for people that might inherit a project from you in the future.&lt;/p&gt;
+
+&lt;p&gt;Once you’ve used &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; to create a custom template, you can create new files based on this template. The new files can include Objective-C headers and implementation files, interface builder files (.xib and .storyboard), as well as Swift source files.&lt;/p&gt;
+
+&lt;p&gt;It really adds benefit when there’s a particular class that you commonly subclass, especially if the new subclass requires an interface builder counterpart.&lt;/p&gt;
+
+&lt;p&gt;Of course you would want to document your project to explain that you have defined custom templates, which can be used with the &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; plugin. But if one of your co-workers doesn’t have the plugin, then it doesn’t matter. No harm done, it just means they won’t reap the benefits. And you can spend longer on your tea break, while they’re spending longer doing things manually!&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;h1 id=&quot;creating-a-custom-file-template-by-example&quot;&gt;Creating a custom file template, by example&lt;/h1&gt;
+
+&lt;p&gt;In a hypothetical social-network-like project, I have an abstract &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionViewController&lt;/code&gt; class, which will be subclassed for various sections of the app. For example, we have a &lt;code class=&quot;highlighter-rouge&quot;&gt;FriendsSectionViewController&lt;/code&gt; and in the future we might want to add a &lt;code class=&quot;highlighter-rouge&quot;&gt;GroupsSectionViewController&lt;/code&gt; and an &lt;code class=&quot;highlighter-rouge&quot;&gt;EventsSectionViewController&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionViewController&lt;/code&gt; interface looks like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SectionViewController&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UIViewController&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nonatomic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IBOutlet&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UITableView&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tableView&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nonatomic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Section&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;section&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// may be implemented in subclasses, invoked when a table cell is selected.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;didSelectItemAtIndexPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSIndexPath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;indexPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It’s implementation takes care of the table’s data source using the specified &lt;code class=&quot;highlighter-rouge&quot;&gt;Section&lt;/code&gt; object, and implements the necessary delegate methods.&lt;/p&gt;
+
+&lt;p&gt;Subclasses are simply expected to implement the &lt;code class=&quot;highlighter-rouge&quot;&gt;-didSelectItemAtIndexPath:&lt;/code&gt; method as described in the interface. Each subclass will also have its own storyboard file, which must link up a &lt;code class=&quot;highlighter-rouge&quot;&gt;UITableView&lt;/code&gt; to the outlet in the superclass and provide a prototype cell with a specific reuse identifier. The &lt;code class=&quot;highlighter-rouge&quot;&gt;UITableView&lt;/code&gt; will also hook up its &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;dataSource&lt;/code&gt; outlets to the view controller.&lt;/p&gt;
+
+&lt;p&gt;In order to create a new subclass, say &lt;code class=&quot;highlighter-rouge&quot;&gt;GroupsSectionViewController&lt;/code&gt;, I would need to create the new class files (&lt;code class=&quot;highlighter-rouge&quot;&gt;.h&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;.m&lt;/code&gt;) and create separately the new storyboard file. In the implementation, I would need to override the &lt;code class=&quot;highlighter-rouge&quot;&gt;-didSelectItemAtIndexPath:&lt;/code&gt; method. In the storyboard, I would need to add a new view controller, embedded in a navigation controller; add a &lt;code class=&quot;highlighter-rouge&quot;&gt;UITableView&lt;/code&gt; and hook it up to the outlet; hook up the table’s &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;dataSource&lt;/code&gt; outlets; and add a prototype cell and give it the necessary reuse identifier, as required by the &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionViewController&lt;/code&gt; implementation. Sounds tedious!&lt;/p&gt;
+
+&lt;h2 id=&quot;simplifying-repetitive-tasks&quot;&gt;Simplifying repetitive tasks&lt;/h2&gt;
+
+&lt;p&gt;This is where &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; comes in. We can create a template based on an existing subclass of &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionViewController&lt;/code&gt;, to simplify adding a new section in the future. This will not only save my time, but make it much easier for a new joiner to get up to speed with the project and get stuck in making a new section, following the pattern that already exists in the project.&lt;/p&gt;
+
+&lt;p&gt;Simply select the files that you wish to base your template upon, and select the new option to &lt;em&gt;New Template from Selection&lt;/em&gt;, as in the image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/stencil/create-new-template.jpg&quot; align=&quot;center&quot; alt=&quot;Create File Template from Group&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the options window that is presented, I’ll leave the &lt;em&gt;Interface or protocol&lt;/em&gt; option as “interface FriendsSectionViewController”, because this is the interface I wish to make a template from (it’s the only interface defined in the selected files).&lt;/p&gt;
+
+&lt;p&gt;I’ll change the &lt;em&gt;New will inherit from&lt;/em&gt; option to “SectionViewController” because this is what I want newly created files to inherit from. (I don’t want them to inherit from FriendsSectionViewController.)&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;Template name&lt;/em&gt; is defaulted to “SectionViewController” so I’ll leave that, and I’ll add a useful description so people know what it is in the future. I’ll leave all other options as the defaults. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/stencil/create-template-options.jpg&quot; align=&quot;center&quot; alt=&quot;Template Creation Options&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You will then be presented with the template files for you to edit. Ensure you don’t modify the parts of the code that have references like &lt;code class=&quot;highlighter-rouge&quot;&gt;___FILEBASENAMEASIDENTIFIER___&lt;/code&gt;, as this is what Xcode will replace when you use your template in the future.&lt;/p&gt;
+
+&lt;p&gt;Remove any functionality that is specific to the class you used to create the template. Leave stubs of methods that you expect to be implemented in new classes that you create based on your template. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/stencil/editing-new-template.jpg&quot; align=&quot;center&quot; alt=&quot;Editing The Template&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If your template includes an Interface Builder file, the template file will be presented in a separate window. Remove any views or controllers that are specific to the class you used to create the template. You can leave outlets connected and don’t modify the custom class &lt;code class=&quot;highlighter-rouge&quot;&gt;___FILEBASENAMEASIDENTIFIER___&lt;/code&gt;. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/stencil/editing-ui-template.jpg&quot; align=&quot;center&quot; alt=&quot;Editing Interface Builder Template&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After following the instructions that are presented to you in an Xcode window, make your changes to the template files, close the window(s) and return to your project.&lt;/p&gt;
+
+&lt;p&gt;That’s it! You’ve now created your own custom file template. It will be saved under your project’s directory (under the &lt;code class=&quot;highlighter-rouge&quot;&gt;StencilPlugin&lt;/code&gt; subdirectory), so you can commit it to source control.&lt;/p&gt;
+
+&lt;h1 id=&quot;using-your-template-to-create-a-new-file&quot;&gt;Using your template to create a new file&lt;/h1&gt;
+
+&lt;p&gt;So far in my project, I only have a &lt;code class=&quot;highlighter-rouge&quot;&gt;FriendsSectionViewController&lt;/code&gt;. Now it’s time to add a &lt;code class=&quot;highlighter-rouge&quot;&gt;GroupsSectionViewController&lt;/code&gt;. To use the template created above, simply right-click in the Project Navigator and select &lt;em&gt;New File from Custom Template…&lt;/em&gt;. This will present all templates that are associated with this project. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/stencil/new-from-template.jpg&quot; align=&quot;center&quot; alt=&quot;New File from Custom Template&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Select the &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionViewController&lt;/code&gt; template created previously. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/stencil/select-custom-template.jpg&quot; align=&quot;center&quot; alt=&quot;Selecting Custom Template&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Give your new class a name, in my case this will be &lt;code class=&quot;highlighter-rouge&quot;&gt;GroupsSectionViewController&lt;/code&gt;. Your new files will be created, just like usual. You’ll see the code files and the Interface Builder files all present in the Project Navigator. The storyboard file has the &lt;code class=&quot;highlighter-rouge&quot;&gt;UITableView&lt;/code&gt; hooked up, as well as its &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;dataSource&lt;/code&gt;. The code files have stubs of the methods that I’m expected to implement in the new subclass. See image below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/stencil/new-files-created.jpg&quot; align=&quot;center&quot; alt=&quot;New Files Created&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; may not provide benefit to every kind of project. But generally – if extending the app means that you frequently subclass a particular class – then you can find benefits in using the &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; plugin. You might find yourself subclassing a &lt;code class=&quot;highlighter-rouge&quot;&gt;WidgetView&lt;/code&gt; for example, it’s much quicker to use &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; to produce your new files, which may include a &lt;code class=&quot;highlighter-rouge&quot;&gt;.xib&lt;/code&gt; file. And it makes it immediately clear to people joining the project in the future what methods are expected to be implemented in new subclasses.&lt;/p&gt;
+
+&lt;h1 id=&quot;get-stencil&quot;&gt;Get Stencil&lt;/h1&gt;
+
+&lt;p&gt;See the &lt;a href=&quot;/stencil-xcode-plugin/&quot;&gt;Stencil&lt;/a&gt; website.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 02 May 2015 11:50:25 +0100</pubDate>
+        <link>http://localhost:4000/blog/2015/05/02/stencil-xcode-plugin.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2015/05/02/stencil-xcode-plugin.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Swift Alternatives to C Macros</title>
+        <description>&lt;p&gt;Love them or hate them, macros are an integral part of C development, and are widely used throughout the Objective-C Cocoa and Cocoa Touch frameworks. If you’ve ever used &lt;code class=&quot;highlighter-rouge&quot;&gt;NSAssert&lt;/code&gt;, then you’ve used a macro. (And if you haven’t, then what have you been doing?!)&lt;/p&gt;
+
+&lt;p&gt;Now please bear with me… before all you macro-haters completely disregard this blog post, this is not another one of those posts that explains the trivial procedure of re-writing a function-like macro as a function in Swift. Nor will I show the Swift alternative to a macro definition of a primitive constant, as I’ve seen in other recent posts within the community.&lt;/p&gt;
+
+&lt;p&gt;In this short series, I’m going to look at some of the more creative uses of C macros and investigate how we could use some of Swift’s advanced language features to accomplish the same results.&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;h1 id=&quot;misuse-of-macros&quot;&gt;Misuse of macros&lt;/h1&gt;
+&lt;p&gt;I have come across a few blog posts recently which take various types of Objective-C macro and find alternative solutions in Swift. But every macro discussed could have been written as a function (or even worse declared as a constant) in Objective-C in the first place, so would be trivial to convert to Swift. I was going crazy staring at the screen in disbelief of people converting macros such as the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define SQUARE_NUMBER(n) n * n
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The blog post failed to point out that the Objective-C developer that wrote this macro in the first place should have been shot in the head with a &lt;a href=&quot;http://nerf.hasbro.com/en-us&quot;&gt;Nerf&lt;/a&gt; gun and sent back to junior school. There is so much wrong with that macro, I don’t want to waste any more of my life discussing it.&lt;/p&gt;
+
+&lt;p&gt;I don’t condone or encourage the use of macros in Objective-C where functions or constants could be used instead, and I don’t think that any other iOS developer should do so either. And I certainly don’t think the Objective-C community should be encouraging this by promoting or linking to this type of blog post.&lt;/p&gt;
+
+&lt;p&gt;There is never a need to write a function-like macro in Objective-C. If you’re worried about performance (of calling out to a function), then there’s no need. Cocoa provides the macros &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_INLINE&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;CF_INLINE&lt;/code&gt;, etc. which mean that your friend the compiler will decide whether it’s appropriate to expand the function definition in-line. See the definition of the &lt;code class=&quot;highlighter-rouge&quot;&gt;CGRectMake&lt;/code&gt; function for example. And there is certainly no need to &lt;code class=&quot;highlighter-rouge&quot;&gt;#define&lt;/code&gt; primitive constants!&lt;/p&gt;
+
+&lt;p&gt;Yet even &lt;a href=&quot;https://developer.apple.com/library/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithCAPIs.html#//apple_ref/doc/uid/TP40014216-CH8-XID_19&quot;&gt;Apple’s documentation&lt;/a&gt; seems to condone the use of primitive constants being declared as a macro. By the time I read this, I was getting pretty fed up. Why is everyone, including Apple, encouraging the misuse of macros?!&lt;/p&gt;
+
+&lt;p&gt;Apple’s example below should never have been written as a macro in the first place.&lt;/p&gt;
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define FADE_ANIMATION_DURATION 0.35
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;It provides no type-safety and it won’t be available to interrogate in the debugger. There’s a real danger this type of macro could be misused and lead to hard-to-diagnose bugs. In short, it’s code smell that should be avoided at all times, with no excuses.&lt;/p&gt;
+
+&lt;h1 id=&quot;so-are-macros-ever-acceptable&quot;&gt;So are macros ever acceptable?&lt;/h1&gt;
+
+&lt;p&gt;Some people would probably argue the fact that it’s never acceptable to use macros. I would encourage those people to read on because you might discover some cool tricks!&lt;/p&gt;
+
+&lt;p&gt;I wrote recently about KVC collection operators and &lt;a href=&quot;/blog/2014/07/25/collection-operators-done-properly/&quot;&gt;how to use them safely&lt;/a&gt;. In that post, I discuss the use of macros to provide compile-time checking on the keys used in key-value coding.&lt;/p&gt;
+
+&lt;p&gt;Consider the following example interfaces:&lt;/p&gt;
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Account&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NSObject&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;balance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Transaction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NSObject&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Account&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;I can use KVC collection operators to simplify retrieval of transaction characteristicts from an array of &lt;code class=&quot;highlighter-rouge&quot;&gt;Transaction *&lt;/code&gt; objects:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minimumValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;valueForKeyPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;@min.value&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maximumAccountBalance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;valueForKeyPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;@max.account.balance&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSArray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;accounts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;valueForKeyPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;unionOfObjects.account&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSArray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;accounts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;valueForKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;account&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// same as above&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I haven’t used a macro yet! But I can use macros as defined in &lt;a href=&quot;/blog/2014/07/25/collection-operators-done-properly/&quot;&gt;my other post&lt;/a&gt; to perform these operations and get compile-time checking of the key paths with code-completion &lt;em&gt;and&lt;/em&gt; syntax highlighting! (The highlighter on my blog doesn’t display it as nicely as Xcode does.)&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minimumValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DZLMinimum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Transaction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maximumAccountBalance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DZLMaximum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Transaction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;balance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSArray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;accounts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DZLUnionOfObjects&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Transaction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice that the key paths are not enclosed in quotes. This is due to how they are expanded at compile time to be verified and then turned into strings to pass to &lt;code class=&quot;highlighter-rouge&quot;&gt;-valueForKeyPath:&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;So a macro that adds compile-time validation and code-completion to an otherwise crash-prone interface is, in my opinion, a decent example of when to use macros in Objective-C.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-does-this-type-of-macro-translate-to-swift&quot;&gt;How does this type of macro translate to Swift?&lt;/h1&gt;
+
+&lt;p&gt;In the macros above, we pass the type expected in the array, namely &lt;code class=&quot;highlighter-rouge&quot;&gt;Transaction *&lt;/code&gt; and pass the key path that we want to extract. In Swift, the type of objects in an array is mandatory when you declare the array, and we can extract information using the &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;reduce&lt;/code&gt; functions.&lt;/p&gt;
+
+&lt;p&gt;For example, the above can be re-written in Swift as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;minimumValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)})&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;maximumValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;balance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)})&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;accounts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can read up on these functions in &lt;a href=&quot;https://developer.apple.com/library/ios/documentation/General/Reference/SwiftStandardLibraryReference/Array.html&quot;&gt;Apple’s documentation&lt;/a&gt;. I also use the shorthand name of the first closure argument &lt;code class=&quot;highlighter-rouge&quot;&gt;$0&lt;/code&gt;, which is also discussed in &lt;a href=&quot;https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html&quot;&gt;Apple’s documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;But you could easily argue that the above is a little long-winded, in which case you could simplify it by extending &lt;code class=&quot;highlighter-rouge&quot;&gt;Array&lt;/code&gt;. I’ve shown how to do this for the &lt;code class=&quot;highlighter-rouge&quot;&gt;minimum&lt;/code&gt; below, but it could be easily modified for &lt;code class=&quot;highlighter-rouge&quot;&gt;maximum&lt;/code&gt;, or &lt;code class=&quot;highlighter-rouge&quot;&gt;average&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;extension&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapMinimum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;U&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comparable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;U&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;U&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapped&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;U&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapped&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapped&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapped&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In the above extension, I’m defining the &lt;code class=&quot;highlighter-rouge&quot;&gt;mapMinimum&lt;/code&gt; function, which can be invoked on an array whose members all conform to the &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparable&lt;/code&gt; protocol (in order to be passed into the &lt;code class=&quot;highlighter-rouge&quot;&gt;max&lt;/code&gt; function). It returns the minimum of the members of the array resulting from calling &lt;code class=&quot;highlighter-rouge&quot;&gt;transform(x)&lt;/code&gt; on all members &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; of &lt;code class=&quot;highlighter-rouge&quot;&gt;self&lt;/code&gt;. In other words, it performs the &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; function with the given closure, and then returns the minimum of the resulting array.&lt;/p&gt;
+
+&lt;p&gt;Having declared the same for maximum, I can now use them as follows:&lt;/p&gt;
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minimumValue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapMinimum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maximumAccountBalance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapMaximum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;account&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;balance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So the syntax is actually improved in Swift compared to the macros I defined in Objective-C. The key path is validated by the compiler, because it knows what types of object are contained in the &lt;code class=&quot;highlighter-rouge&quot;&gt;transactions&lt;/code&gt; array.&lt;/p&gt;
+
+&lt;h1 id=&quot;next-time&quot;&gt;Next time…&lt;/h1&gt;
+
+&lt;p&gt;I’ll be investigating more of what I consider “valid” uses of macros and how we can achieve the same result using the advanced language features of Swift.&lt;/p&gt;
+
+&lt;p&gt;If you’ve enjoyed reading this article, please &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;follow me on twitter&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same. I’m happy to discuss this or any other subject in more depth, so feel free to contact me!&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 06 Apr 2015 22:05:57 +0100</pubDate>
+        <link>http://localhost:4000/blog/2015/04/06/swift-alternatives-to-c-macros.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2015/04/06/swift-alternatives-to-c-macros.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>How to Intercept Delegate Messages If You Are Not The Delegate</title>
+        <description>&lt;p&gt;I recently found myself in a situation where I needed to listen out for changes to a UIScrollView of which I couldn’t set the delegate. My situation was with the underlying UIScrollView of a UIWebView instance, but there are other situations where you might want to receive delegate method calls from an object for which you are not allowed to set the delegate.&lt;/p&gt;
+
+&lt;p&gt;The problem is that UIWebView exposes its underlying UIScrollView, but it would be bad etiquette to set its delegate, because you are not the owner of the UIScrollView instance and you don’t know the implementation of UIWebView.&lt;/p&gt;
+
+&lt;p&gt;So, the question is: how can we listen out for the delegate messages from a UIScrollView, when we are not acting as the delegate?&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;p&gt;One solution would be to use KVO. But it wouldn’t be possible to implement &lt;code class=&quot;highlighter-rouge&quot;&gt;-scrollViewWillEndDragging:withVelocity:targetContentOffset:&lt;/code&gt; using KVO.&lt;/p&gt;
+
+&lt;h1 id=&quot;secondary-delegate&quot;&gt;Secondary Delegate&lt;/h1&gt;
+
+&lt;p&gt;So I propose adding a &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt; property in a category on UIScrollView. This category will implement the &lt;code class=&quot;highlighter-rouge&quot;&gt;-setSecondaryDelegate:&lt;/code&gt; method, which can be called from the app (from a view controller, say).&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UIScrollView&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;SecondaryDelegate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nonatomic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weak&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIScrollViewDelegate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secondaryDelegate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So for example, my view controller can set itself as the “delegate” of its web view’s UIScrollView as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)viewDidLoad
+{
+  [super viewDidLoad];
+
+  self.webView.scrollView.secondaryDelegate = self;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;By setting the &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt; property, the category’s setter method actually overrides the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; property with a &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; object. This proxy object holds a weak reference to the original (overridden) delegate and to the secondary delegate provided.&lt;/p&gt;
+
+&lt;h1 id=&quot;delegate-proxy&quot;&gt;Delegate Proxy&lt;/h1&gt;
+
+&lt;p&gt;The delegate proxy is responsible for forwarding messages to the relevant delegates. The proxy holds a weak reference to each delegate. This means it is perfectly acceptable for the UIScrollView to hold a strong reference to the proxy by way of associated object (explained in more detail later).&lt;/p&gt;
+
+&lt;p&gt;The proxy object is a subclass of NSProxy and conforms to the UIScrollViewDelegate protocol, so it must implement the following methods: &lt;code class=&quot;highlighter-rouge&quot;&gt;-methodSignatureForSelector:&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;-forwardInvocation:&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We’ll also implement the &lt;code class=&quot;highlighter-rouge&quot;&gt;-respondsToSelector:&lt;/code&gt; method, because we know our proxy will be used as the delegate of a UIScrollView, which will check if the delegate responds to each selector before calling that selector.&lt;/p&gt;
+
+&lt;p&gt;To determine the method signature for a selector, we can just ask each delegate and return when we find one that can provide what we need.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+  NSObject *delegateForResonse = [self.primaryDelegate respondsToSelector:selector] ? self.primaryDelegate : self.secondaryDelegate;
+  return [delegateForResonse respondsToSelector:selector] ? [delegateForResonse methodSignatureForSelector:selector] : nil;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To determine if the proxy can respond to a selector, again we just check each delegate and return &lt;code class=&quot;highlighter-rouge&quot;&gt;YES&lt;/code&gt; if one of them can respond.&lt;/p&gt;
+
+&lt;p&gt;Before calling one of its optional delegate methods the UIScrollView (or anyone else for that matter) asks its delegate if it can respond to the selector. If it replies with &lt;code class=&quot;highlighter-rouge&quot;&gt;YES&lt;/code&gt;, then it will send the message. But because we have set the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; property to our &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; object, this message will arrive as an invocation in the &lt;code class=&quot;highlighter-rouge&quot;&gt;-forwardInvocation:&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;We should implement this method as follows in order to forward the invocation to each delegate in turn (if it can respond to the selector).&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)forwardInvocation:(NSInvocation *)invocation
+{
+  [self invokeInvocation:invocation onDelegate:self.primaryDelegate];
+  [self invokeInvocation:invocation onDelegate:self.secondaryDelegate];
+}
+
+- (void)invokeInvocation:(NSInvocation *)invocation onDelegate:(id&amp;lt;UIScrollViewDelegate&amp;gt;)delegate
+{
+  if ([delegate respondsToSelector:invocation.selector]) {
+    [invocation invokeWithTarget:delegate];
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;the-uiscrollview-category&quot;&gt;The UIScrollView Category&lt;/h1&gt;
+
+&lt;p&gt;For completeness, I’ve added the code for the category, with comments below.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 1. Private interface extension
+@interface UIScrollView ()
+@property (nonatomic, strong) TABScrollViewDelegateProxy *delegateProxy;
+@end
+
+@implementation UIScrollView (SecondaryDelegate)
+
+// 2. Setter
+- (void)setSecondaryDelegate:(id&amp;lt;UIScrollViewDelegate&amp;gt;)secondaryDelegate
+{
+  if (!self.delegateProxy) {
+    self.delegateProxy = [TABScrollViewDelegateProxy alloc];
+    self.delegateProxy.primaryDelegate = self.delegate;
+  }
+  
+  self.delegateProxy.secondaryDelegate = secondaryDelegate;
+  self.delegate = self.delegateProxy;
+}
+
+// 3. Getter
+- (id&amp;lt;UIScrollViewDelegate&amp;gt;)secondaryDelegate
+{
+  return self.delegateProxy.secondaryDelegate;
+}
+
+// 4. Associated object
+- (void)setDelegateProxy:(TABScrollViewDelegateProxy *)delegateProxy
+{
+  objc_setAssociatedObject(self, @selector(delegateProxy), delegateProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (TABScrollViewDelegateProxy *)delegateProxy
+{
+  return objc_getAssociatedObject(self, @selector(delegateProxy));
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; property is added to the private interface extension. The fact that this category uses a proxy is an implementation detail and should therefore not be exposed in the public interface.&lt;/li&gt;
+  &lt;li&gt;The setter method for the &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt; property will create the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; object if it doesn’t already exist and assign it to the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; property. Next we the &lt;code class=&quot;highlighter-rouge&quot;&gt;primaryDelegate&lt;/code&gt; to the original delegate held in &lt;code class=&quot;highlighter-rouge&quot;&gt;self.delegate&lt;/code&gt;. Then we set the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy.secondaryDelegate&lt;/code&gt; and override the object held in &lt;code class=&quot;highlighter-rouge&quot;&gt;self.delegate&lt;/code&gt;. (Notice how we only call &lt;code class=&quot;highlighter-rouge&quot;&gt;alloc&lt;/code&gt; on the proxy class - this is because instances of NSProxy do not by default respond to &lt;code class=&quot;highlighter-rouge&quot;&gt;-init&lt;/code&gt;.)&lt;/li&gt;
+  &lt;li&gt;We should provide the getter method for the object. It is just a wrapper around getting it from &lt;code class=&quot;highlighter-rouge&quot;&gt;self.delegateProxy&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;We hold a strong reference to the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegateProxy&lt;/code&gt; object by using an associated object. The strong reference is fine, because it only holds weak references to each delegate. (Notice the use of &lt;code class=&quot;highlighter-rouge&quot;&gt;@selector(delegateProxy)&lt;/code&gt; as the key for the associated object. This is fine because the pointer returned is unique.)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;This solution is clean and robust. It doesn’t involve method swizzling - only message forwarding using a proxy object, which is fine. In fact the only reason we have to import &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;objc/runtime.h&amp;gt;&lt;/code&gt; is to use associated objects.&lt;/p&gt;
+
+&lt;p&gt;The public interface is clean - it only provides a single extra property for UIScrollView - the &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The only downside to this is that the original delegate must have been set (if it ever will be set) before you set the secondary delegate. Or rather, you cannot set the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; property after setting the &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt;. This is because setting the &lt;code class=&quot;highlighter-rouge&quot;&gt;secondaryDelegate&lt;/code&gt; overwrites the value of the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; property. I thought about a solution that adds an observer to listen for changes to the &lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; property, but removing the observer on deallocation was not trivial, so I settled on the solution described above, which will not allow the delegate to be set after having set the secondary delegate.&lt;/p&gt;
+
+&lt;p&gt;If you found this interesting, please &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;follow me on twitter&lt;/a&gt;, or &lt;a href=&quot;http://samdods.github.io/atom.xml&quot;&gt;subscribe to my RSS feed&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 03 Aug 2014 13:45:25 +0100</pubDate>
+        <link>http://localhost:4000/blog/2014/08/03/secondary-delegate.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/08/03/secondary-delegate.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Theming</title>
+        <description>&lt;p&gt;Many of the projects on which I’ve worked have had the problem of “theming”, because it’s difficult to keep a project’s codebase clean when dealing with multiple themes. When I refer to a “theme” I mean something that only affects the look and feel of an app, but not the functionality.&lt;/p&gt;
+
+&lt;p&gt;By “theming”, I’m referring to a project that might have different targets, each with different colour schemes, fonts, sizes, etc. to deliver a different user experience with the same functionality.&lt;/p&gt;
+
+&lt;p&gt;But theming can be extended to a single app, with a single theme, where different interface builder (nib/xib) files are backed by a single class. This might be as simple as having a different interface file (or nib) for iPad as opposed to iPhone, where each nib is backed by the same class.&lt;/p&gt;
+
+&lt;p&gt;Theming is often even more complex. For example, I might have an app that can display the same content in various forms. A news app, for example, might have a timeline in which it displays article teasers as either: a small widget with headline only; a double-height, more-impactful widget with headline and thumbnail image; a double-height widget with headline and article summary. That’s three nibs, and I’ll also need each one styled slightly differently whether it’s on iPad or iPhone. So that’s six nibs all backed by a single class!&lt;/p&gt;
+
+&lt;p&gt;In this article, I’ll discuss my latest solution to “theming” using &lt;a href=&quot;/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder/&quot;&gt;User Defined Runtime Attributes&lt;/a&gt;. &lt;!--more--&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;theming-with-user-defined-runtime-attributes&quot;&gt;Theming with User Defined Runtime Attributes&lt;/h1&gt;
+
+&lt;p&gt;Using user defined runtime attributes, you can specify the aesthetic settings of a user interface exactly at the point at which it matters, in Interface Builder. I’m a firm believer in the &lt;a href=&quot;http://effectivesoftwaredesign.com/2012/02/05/separation-of-concerns/&quot;&gt;separation of concerns&lt;/a&gt;, and therefore I think the best place to configure an interface is in Interface Builder.&lt;/p&gt;
+
+&lt;p&gt;The objective is to be able to do something like so to specify how the app should display my view:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/interface-builder-guidance.png&quot; align=&quot;center&quot; alt=&quot;Configuring a themed view in Interface Builder&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the example above, I’ve set the value of the “themeTextAttributes” key to &lt;code class=&quot;highlighter-rouge&quot;&gt;articleWidgetTitle.iPhone.large&lt;/code&gt;. I’ll use this key-value pair later, but what’s important at this stage is that this can be configured differently for each nib.&lt;/p&gt;
+
+&lt;p&gt;The ultimate objective is a project that requires no changes in code to change the aesthetics of a view.&lt;/p&gt;
+
+&lt;h1 id=&quot;reading-a-theme-from-a-property-list&quot;&gt;Reading a Theme from a Property List&lt;/h1&gt;
+
+&lt;p&gt;One of the traditional theming methods I’ve come across is the use of a property list (.plist file) or other resource containing keys and values for fonts, colours, etc. for a particular theme.&lt;/p&gt;
+
+&lt;p&gt;I first came across this approach from the &lt;a href=&quot;http://twinlogix.com/en/blog/how-create-multiple-themes-ios-apps&quot;&gt;Twinlogix blog post&lt;/a&gt; written by Alex Reggiani, in which he uses a plist file to reference each of his interface elements. His plist appears to contain one huge list of keys for various UI elements – of which there may be hundreds in a larger app – and I think this makes it very difficult to find the element you’re looking for when you want to modify something. In the &lt;a href=&quot;http://twinlogix.com/en/blog/how-create-multiple-themes-ios-apps-part-ii&quot;&gt;second part&lt;/a&gt; of Alex’s article, he concludes that the best approach is to specify in the nib’s user defined runtime attributes the font name and size for a UI element. I personally don’t think this approach provides any benefit over using Interface Builder’s attribute inspector.&lt;/p&gt;
+
+&lt;p&gt;I have also seen a very good implementation of the plist approach by &lt;a href=&quot;https://twitter.com/shaps&quot;&gt;Shaps &lt;/a&gt;, but again this results in a very long list of keys in a dictionary, which I personally find hard to maintain. And the technique I will describe below means that all this configuration can come from inside Interface Builder, rather than in view or view controller code.&lt;/p&gt;
+
+&lt;p&gt;Now consider the fictional apps &lt;em&gt;Sam’s Mega Lucky Bingo&lt;/em&gt; and &lt;em&gt;Jurassic Bingo Legends&lt;/em&gt;, which are both built from the same codebase with exactly the same user interface. Their only difference is the colour scheme and fonts used throughout each app. For these apps, I would create a different plist for each app and compile the corresponding plist into the bundle at build time, resulting in a different look and feel. An example plist file might look like so:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/plist-example.png&quot; align=&quot;center&quot; alt=&quot;Example Theme Plist&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I think this is a realy nicely structured plist, in which I can group components at various levels, so they can be easily located, along with the device type on which it will appear, and the form it will take.&lt;/p&gt;
+
+&lt;p&gt;Now I would likely have a helper class from which I can request the font, text colour and line spacing for a particular user interface element. For example, in the &lt;code class=&quot;highlighter-rouge&quot;&gt;-awakeFromNib&lt;/code&gt; method of my &lt;code class=&quot;highlighter-rouge&quot;&gt;ArticleWidgetView&lt;/code&gt; class, I would setup the view as follows:&lt;/p&gt;
+
+&lt;p&gt;``` objc ArticleWidgetView.m&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;(void)awakeFromNib
+{
+  NSString *element = @”articleWidgetTitle.iPhone.large”;
+self.titleLabel.font = [Theme fontForElement:element];
+self.titleLabel.textColour = [Theme colorForElement:element];
+// line-spacing will be used when setting the attributedText property.
+}
+```&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;Theme&lt;/code&gt; class helper methods will look up the values for the relevant properties in the plist dictionary. The implementation of the &lt;code class=&quot;highlighter-rouge&quot;&gt;+fontForElement:&lt;/code&gt; method might look like so (after having read the plist into a dictionary on app launch):&lt;/p&gt;
+
+&lt;p&gt;```objc Theme.m&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;(UIFont *)fontForElement:(NSString *)element
+{
+  NSDictionary *textAttributes = [[Theme sharedInstance] plistDictionary][@”Text Attributes”];
+  NSDictionary *elementDictionary = [textAttributes valueForKeyPath:element];&lt;/p&gt;
+
+    &lt;p&gt;NSString *fontName = elementDictionary[@”fontName”];
+  CGFloat fontSize = [elementDictionary[@”fontSize”] floatValue];&lt;/p&gt;
+
+    &lt;p&gt;NSAssert(fontName, @”Font not found for element %@”, element);&lt;/p&gt;
+
+    &lt;p&gt;return fontName ? [UIFont fontWithName:fontName size:fontSize] : nil;
+}
+```&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Because the &lt;code class=&quot;highlighter-rouge&quot;&gt;element&lt;/code&gt; string passed into the method takes the form of a key path (keys separated by dots), I can pass this directly to the dictionary to get the object at the end of the path. So in my &lt;code class=&quot;highlighter-rouge&quot;&gt;-awakeFromNib&lt;/code&gt; method, I pass in the string &lt;code class=&quot;highlighter-rouge&quot;&gt;@&quot;articleWidgetTitle.iPhone.large&quot;&lt;/code&gt;, which I use as the string in &lt;code class=&quot;highlighter-rouge&quot;&gt;-valueForKeyPath:&lt;/code&gt; method above. This is effectively the same as doing &lt;code class=&quot;highlighter-rouge&quot;&gt;textAttributes[@&quot;articleWidgetTitle&quot;][@&quot;iPhone&quot;][@&quot;large&quot;]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The downside to what we’ve seen so far is that in your class implementation you need to know the “element name” that you will pass to the &lt;code class=&quot;highlighter-rouge&quot;&gt;Theme&lt;/code&gt; class helper methods.&lt;/p&gt;
+
+&lt;h1 id=&quot;separating-concerns&quot;&gt;Separating Concerns&lt;/h1&gt;
+
+&lt;p&gt;Now the objective is to strip out any interface-configuration logic from the view class. I don’t really want the &lt;code class=&quot;highlighter-rouge&quot;&gt;ArticleWidgetView&lt;/code&gt; class to care about the theme at all. It is loaded from a nib, so why should there be any further configuration required in the implementation?&lt;/p&gt;
+
+&lt;p&gt;That’s when we get back to user defined runtime attributes. As shown before, I’ve configured my view in Interface Builder with the following runtime attributes:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/runtime-attributes.png&quot; align=&quot;center&quot; alt=&quot;Runtime Attributes in Interface Builder&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now as soon as I run this project, it’s going to crash:&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;***&lt;/span&gt; Terminating app due to uncaught exception &lt;span class=&quot;s1&quot;&gt;'NSUnknownKeyException'&lt;/span&gt;,
+reason: &lt;span class=&quot;s1&quot;&gt;'[&amp;lt;UILabel 0x993b840&amp;gt; setValue:forUndefinedKey:]:
+this class is not key value coding-compliant for the key themeTextAttributes.'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can easily fix this by implementing the necessary method in a category on UILabel, as follows:&lt;/p&gt;
+
+&lt;p&gt;```objc UILabel+Theme.m&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;(void)setThemeTextAttributes:(NSString *)element
+{
+self.font = [Theme fontForElement:element];
+self.textColor = [Theme colorForElement:element];
+CGFloat lineSpacing = [Theme lineSpacingForElement:element];
+objc_setAssociatedObject(self, @selector(themeLineSpacing), @(lineSpacing), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;(CGFloat)themeLineSpacing
+{
+  return [objc_getAssociatedObject(self, _cmd) floatValue];
+}
+```&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By simply having this category exist in the project, all instances of &lt;code class=&quot;highlighter-rouge&quot;&gt;UILabel&lt;/code&gt; will be able to respond the &lt;code class=&quot;highlighter-rouge&quot;&gt;setThemeTextAttributes:&lt;/code&gt; method, which means I can use the key &lt;code class=&quot;highlighter-rouge&quot;&gt;themeTextAttributes&lt;/code&gt; in Interface Builder’s user defined runtime attributes.&lt;/p&gt;
+
+&lt;p&gt;In the code snippet above, I’m also setting an associated object on the UILabel instance, which will hold the line spacing as specified in the theming plist. I can use this property when setting attributed text on the label in the view’s implementation. I will define the category header as follows:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;objc UILabel+Theme.h
+@interface UILabel (Theme)
+@property (nonatomic, readonly) CGFloat themeLineSpacing;
+@end
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that I do not need to publicly expose the &lt;code class=&quot;highlighter-rouge&quot;&gt;setThemeTextAttributes:&lt;/code&gt; method in the interface.&lt;/p&gt;
+
+&lt;p&gt;Now I can configure all my labels in Interface Builder with no need to clutter the view or view controller code with unnecessary aesthetics code. I can add further categories for &lt;code class=&quot;highlighter-rouge&quot;&gt;UITextView&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt; and other UIKit classes so that I can set the keys for their aesthetic properties in Interface Builder - where interface configuration belongs!&lt;/p&gt;
+
+&lt;h1 id=&quot;demo-project&quot;&gt;Demo Project&lt;/h1&gt;
+
+&lt;p&gt;A demo project is &lt;a href=&quot;https://github.com/samdods/DZLThemer&quot;&gt;available on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I’m really keen to hear how other people have tackled theming, so &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;talk to me on twitter&lt;/a&gt;! Or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same!&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 26 Jul 2014 08:03:03 +0100</pubDate>
+        <link>http://localhost:4000/blog/2014/07/26/theming.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/07/26/theming.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Collection Operators Done Properly</title>
+        <description>&lt;h1 id=&quot;the-problem&quot;&gt;The Problem&lt;/h1&gt;
+
+&lt;p&gt;Foundation’s &lt;a href=&quot;https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html&quot;&gt;KVC Collection Operators&lt;/a&gt; are often overlooked and underused, but for those in the know they are a powerful tool to have in your Cocoa shed.
+The obvious advantage is their consicion, but the big disadvantage is that we don’t get compile-time errors when we misuse them and nor do we get code-completion. And herein lies the problem.
+In this article I’ll discuss KVC Collection Operators in more detail and propose a solution to this problem.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h1 id=&quot;the-desirables&quot;&gt;The Desirables&lt;/h1&gt;
+
+&lt;p&gt;Firstly, we should be explicit about what types of objects we expect to be in the collection. This should give us code-completion on the key path and an error if the key path doesn’t exist on objects of the pre-specified type.&lt;/p&gt;
+
+&lt;p&gt;Secondly, some collection operators demand that the key path leads to a specific type of object. For example, &lt;code class=&quot;highlighter-rouge&quot;&gt;@maximum&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;@minimum&lt;/code&gt; require the objects to implement the &lt;code class=&quot;highlighter-rouge&quot;&gt;-compare:&lt;/code&gt; method. In these cases, we should get a compile-time error if the key path leads to an object of an invalid type.&lt;/p&gt;
+
+&lt;p&gt;Finally, we should only be allowed to use the documented collection operators, and we should get compile-time errors if we try to use an undefined operator.&lt;/p&gt;
+
+&lt;h1 id=&quot;some-background&quot;&gt;Some Background&lt;/h1&gt;
+
+&lt;p&gt;Collection operators have been talked about a lot, but still I see them rarely used. Do people just forget about them? &lt;a href=&quot;http://nshipster.com/kvc-collection-operators/&quot;&gt;NSHipster&lt;/a&gt; has given an overview of them and Nicolas Bouilleaud has gone into tremendous detail and even &lt;a href=&quot;http://bou.io/KVCCustomOperators.html&quot;&gt;implemented his own&lt;/a&gt;, albeit using an undocumented ‘feature’ of Cocoa.&lt;/p&gt;
+
+&lt;p&gt;I’m not going to repeat what everyone else has written about, and I’m not going to compete with NSHipster :)&lt;/p&gt;
+
+&lt;p&gt;As always &lt;a href=&quot;https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html&quot;&gt;the documentation&lt;/a&gt; is a great place to read up on the topic.&lt;/p&gt;
+
+&lt;h1 id=&quot;proposing-a-solution&quot;&gt;Proposing A Solution&lt;/h1&gt;
+
+&lt;h2 id=&quot;attempt-1&quot;&gt;&lt;strong&gt;Attempt #1&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;I had a few different ideas about how I would like to make this more explicit and achieve what I set out in The Desirables.&lt;/p&gt;
+
+&lt;p&gt;The first approach was using a proxy object and a category on &lt;code class=&quot;highlighter-rouge&quot;&gt;NSArray&lt;/code&gt; like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;NSArray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// traditional way&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSNumber&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;valueForKeyPath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;@sum.amount&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// my new way:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DZLCollectionProxy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sumProxy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSNumber&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sumProxy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;amount&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// or more simply:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSNumber&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;amount&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// and we could get all the payees' distinct accounts like so:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NSArray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payees&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transactions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;distinctUnionOfObjects&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;payee.account&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This requires &lt;code class=&quot;highlighter-rouge&quot;&gt;-sum&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;-unionOfObjects&lt;/code&gt; and all other collection operators to be defined in the category on &lt;code class=&quot;highlighter-rouge&quot;&gt;NSArray&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;NSSet&lt;/code&gt;, etc.&lt;/p&gt;
+
+&lt;p&gt;These methods return a proxy object which internally knows which collection operator to perform. The proxy class implements &lt;code class=&quot;highlighter-rouge&quot;&gt;-objectForKeyedSubscript:&lt;/code&gt;, which allows us to pass the key path in square brackets. See NSHipster’s explanation of &lt;a href=&quot;http://nshipster.com/object-subscripting/&quot;&gt;Custom Object Subscripting&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The nice thing about this is that it is explicit in its use of the collection operator and for that we will get a compile-time error. But the key path can still be undefined.&lt;/p&gt;
+
+&lt;h2 id=&quot;attempt-2&quot;&gt;&lt;strong&gt;Attempt #2&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;I want the key path to be written outside of a string so that we can get code-completion and compile-time errors if the key path is undefined on the objects of a pre-specified type.&lt;/p&gt;
+
+&lt;p&gt;Assuming I create my proxy object with the &lt;code class=&quot;highlighter-rouge&quot;&gt;-each&lt;/code&gt; method, what about if we cast the proxy object to the type of object inside the collection? Then we can specify at the end of the key path which operator to use. Something like so:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NSArray *payees = [(id)((Transaction *)transactions.each).payee unionOfObjects];
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I convert to &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; here so that the compiler will allow me to send &lt;code class=&quot;highlighter-rouge&quot;&gt;-unionOfObjects&lt;/code&gt; to a &lt;code class=&quot;highlighter-rouge&quot;&gt;Payee *&lt;/code&gt;, but I could also declare this method in a category on &lt;code class=&quot;highlighter-rouge&quot;&gt;NSObject&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This approach would return a new proxy object for each key in the path, storing the original collection object and keeping a track of the key path. It achieves this by implementing &lt;code class=&quot;highlighter-rouge&quot;&gt;-resolveInstanceMethod:&lt;/code&gt;, and methods for all collection operators: &lt;code class=&quot;highlighter-rouge&quot;&gt;-unionOfObjects&lt;/code&gt;, etc.&lt;/p&gt;
+
+&lt;p&gt;I like this solution, because it provides code-completion and compile-time errors. But it has a major disadvantage…&lt;/p&gt;
+
+&lt;p&gt;Collection operators treat methods (including property getters) that return &lt;code class=&quot;highlighter-rouge&quot;&gt;NSNumber *&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;double&lt;/code&gt; as if they were the same. For example, if the &lt;code class=&quot;highlighter-rouge&quot;&gt;Transaction *&lt;/code&gt; class had the following properties:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@property (nonatomic, assign) CGFloat amount;
+@property (nonatomic, strong) NSNumber *value;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I could use collection operators on a group of transactions like so:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NSNumber *totalAmount = [transactions valueForKeyPath:@&quot;@sum.amount&quot;];
+NSNumber *totalValue = [transactions valueForKeyPath:@&quot;@sum.value&quot;];
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now if I want to use my new solution on the &lt;code class=&quot;highlighter-rouge&quot;&gt;value&lt;/code&gt; object I can do so like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NSNumber *totalValue = ((Transaction *)transactions.each).value.sum;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Looks great right? Simple, explicit, consice. Does what it says on the tin.&lt;/p&gt;
+
+&lt;p&gt;But this won’t work with the &lt;code class=&quot;highlighter-rouge&quot;&gt;amount&lt;/code&gt; property. Even though at runtime it would be fine (because the &lt;code class=&quot;highlighter-rouge&quot;&gt;value&lt;/code&gt; method would be implemented dynamically by my proxy object and return another proxy object), the compiler is never going to let me send the &lt;code class=&quot;highlighter-rouge&quot;&gt;-sum&lt;/code&gt; message to something of type &lt;code class=&quot;highlighter-rouge&quot;&gt;CGFloat&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;I can get around this by having another class that does the operations and takes proxy objects as parameters to its methods. For example:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NSNumber *totalValue = [DZLCollectionOperator sumNumber:((Transaction *)transactions.each).value];
+NSNumber *totalAmount = [DZLCollectionOperator sumDouble:((Transaction *)transactions.each).amount];
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;At runtime, the pointer for the proxy object returned by the &lt;code class=&quot;highlighter-rouge&quot;&gt;-amount&lt;/code&gt; method will be passed to the &lt;code class=&quot;highlighter-rouge&quot;&gt;-sumFloat:&lt;/code&gt; method as a &lt;code class=&quot;highlighter-rouge&quot;&gt;double&lt;/code&gt;. But it can be used by converting it as so, although admittedly it’s massively hacky!&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;id proxyObj = (__bridge id)(void *)(long long)aDouble;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This solution now also has the advantage of checking at compile-time that the properties are of the correct type for these methods.&lt;/p&gt;
+
+&lt;p&gt;But it’s a really hacky approach and we still don’t get validation on objects that must implement the &lt;code class=&quot;highlighter-rouge&quot;&gt;-compare:&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;h2 id=&quot;attempt-3-final&quot;&gt;&lt;strong&gt;Attempt #3 (Final)&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Macros. It’s simple, all we need to do is define some macros that do all the validation and are written in such a way that Xcode will give us code-completion on the key path.&lt;/p&gt;
+
+&lt;p&gt;We can use the fact that Xcode is constantly compiling your code as you write it to check for errors. This means that as we use a macro, its already going through the preprocessor as we write it.&lt;/p&gt;
+
+&lt;p&gt;My finally proposed solution looks like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;NSNumber *average = DZLAverage(transactions, Transaction *, amount);
+NSDate *latestDate = DZLMaximum(transactions, Transaction *, date);
+NSArray *accounts = DZLUnionOfObjects(transactions, Transaction *, payee.account);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Checks are automatically carried out on &lt;code class=&quot;highlighter-rouge&quot;&gt;DZLMinimum&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;DZLMaximum&lt;/code&gt;. But I provide extra macros for extra checks for the operators that can process numeric values:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DZLSumDouble(self.transactions, Transaction *, amount);
+DZLSumNumber(self.transactions, Transaction *, value);
+
+DZLAverageDouble(self.transactions, Transaction *, amount);
+DZLAverageNumber(self.transactions, Transaction *, value);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Because of the way the macros are written, we get code-completion, nice syntax highlighting in Xcode, warnings and errors as we write the code, and it is simple, explicit and consice.&lt;/p&gt;
+
+&lt;h1 id=&quot;adopt-these-macros-in-your-project&quot;&gt;Adopt these macros in your project&lt;/h1&gt;
+
+&lt;p&gt;These macros are &lt;a href=&quot;https://github.com/samdods/DZLCollectionOperators&quot;&gt;avilable on GitHub here&lt;/a&gt;, they come as a single header file, so they’re super easy to install in your own project.&lt;/p&gt;
+
+&lt;p&gt;You can also install it as &lt;a href=&quot;http://cocoapods.org/?q=dzlcollectionoperators&quot;&gt;a cocoapod&lt;/a&gt;!&lt;/p&gt;
+
+&lt;p&gt;As always, I love discussing things like this in more depth, so &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;tweet me&lt;/a&gt;, &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;follow me&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same :)&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 25 Jul 2014 21:33:59 +0100</pubDate>
+        <link>http://localhost:4000/blog/2014/07/25/collection-operators-done-properly.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/07/25/collection-operators-done-properly.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Pushing the Limits of User-Defined Runtime Attributes in Interface Builder</title>
+        <description>&lt;p&gt;User-defined runtimes attributes in Xcode’s Interface Builder are a great way to keep view controller and view code clean, while obeying Separation of Concerns.
+They allow you to configure properties on the view or view controller that you are unable to configure from within Interface Builder’s &lt;em&gt;Attributes Inspector&lt;/em&gt; or &lt;em&gt;Size Inspector&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;But sometimes you may want to setup from Interface Builder a scenario which you can’t do from simple KVC-compliant property manipulation.&lt;/p&gt;
+
+&lt;p&gt;One example I ran into recently was trying to set the content insets on a collection view in a normal view controller in an iPhone-specific storyboard. In Xcode 5.1 you are unable to set the content insets of a collection view (I’m not sure in which Xcode version this was first missing - I’m sure you used to be able to do it).
+So with this feature missinh, it would be nice to be able to do the same thing using user-defined runtime attributes.&lt;/p&gt;
+
+&lt;p&gt;Because contentInset is of &lt;code class=&quot;highlighter-rouge&quot;&gt;UIEdgeInsets&lt;/code&gt; type, this isn’t possible with any of the types defined in Interface Builder under user-defined runtime attributes. But it can be done!&lt;/p&gt;
+
+&lt;p&gt;Another example I will show below is how to set the borderColor property of a &lt;code class=&quot;highlighter-rouge&quot;&gt;CALayer&lt;/code&gt;, even though the runtime attributes don’t support &lt;code class=&quot;highlighter-rouge&quot;&gt;CGColorRef&lt;/code&gt; type. All will be explained!&lt;/p&gt;
+
+&lt;!-- More --&gt;
+
+&lt;h1 id=&quot;runtime-attributes-explained&quot;&gt;Runtime Attributes Explained&lt;/h1&gt;
+
+&lt;p&gt;First a bit of background: user-defined runtime attributes can be set from the &lt;em&gt;Identity Inspector&lt;/em&gt; tab in Interface Builder utilities, as shown below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/user-defined-runtime-attributes.png&quot; align=&quot;center&quot; alt=&quot;User-defined runtime attributes in Xcode's Interface Builder&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;They are defined as a set of key-value pairs. The key is actually a &lt;em&gt;key path&lt;/em&gt;, which is a powerful, especially in Interface Builder where you don’t have direct access to the underlying &lt;code class=&quot;highlighter-rouge&quot;&gt;CALayer&lt;/code&gt; of a &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt; (more on this below).&lt;/p&gt;
+
+&lt;p&gt;The limitation is that the object’s class must be KVC-compliant for the key (or key path) defined in the set of runtime attributes. To be &lt;em&gt;KVC-compliant&lt;/em&gt; for a key &lt;code class=&quot;highlighter-rouge&quot;&gt;foo&lt;/code&gt; simply means instances of the class must respond to the selector &lt;code class=&quot;highlighter-rouge&quot;&gt;setFoo:&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Really, being KVC-compliant for a property means the class should implement the methods required for &lt;code class=&quot;highlighter-rouge&quot;&gt;valueForKey:&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;setValue:forKey:&lt;/code&gt; to work for that property. For user-defined runtime attributes, that means implementing the setter for the property (key).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The following property types available for runtime attributes in Interface Builder:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Boolean&lt;/strong&gt; - translates to a &lt;code class=&quot;highlighter-rouge&quot;&gt;BOOL&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Number&lt;/strong&gt; - can translate to any numeric scalar property or a property of type &lt;code class=&quot;highlighter-rouge&quot;&gt;NSNumber *&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;String&lt;/strong&gt; - translates to a property of type &lt;code class=&quot;highlighter-rouge&quot;&gt;NSString *&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Localized String&lt;/strong&gt; - the value here is a key to look up in the &lt;code class=&quot;highlighter-rouge&quot;&gt;strings&lt;/code&gt; file for the current locale.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Point&lt;/strong&gt; - translates to a &lt;code class=&quot;highlighter-rouge&quot;&gt;CGPoint&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Size&lt;/strong&gt; - translates to a &lt;code class=&quot;highlighter-rouge&quot;&gt;CGSize&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Rect&lt;/strong&gt; - translates to a &lt;code class=&quot;highlighter-rouge&quot;&gt;CGRect&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Range&lt;/strong&gt; - translates to an &lt;code class=&quot;highlighter-rouge&quot;&gt;NSRange&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Color&lt;/strong&gt; - translates to a property of type &lt;code class=&quot;highlighter-rouge&quot;&gt;UIColor *&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Nil&lt;/strong&gt; - this spectial type doesn’t allow you to set a value, it is just a way of specifying that the value should be set to &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The types &lt;strong&gt;Point&lt;/strong&gt; and &lt;strong&gt;Size&lt;/strong&gt; can be used interchangeably, because they both map to the same type of C structure (&lt;code class=&quot;highlighter-rouge&quot;&gt;struct {CGFloat v1; CGFloat v2;}&lt;/code&gt;).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&quot;some-examples&quot;&gt;Some Examples&lt;/h1&gt;
+
+&lt;h3 id=&quot;configuring-a-calayer&quot;&gt;Configuring a CALayer&lt;/h3&gt;
+
+&lt;p&gt;A great example of using runtime attributes is to configure a &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt;’s underlying &lt;code class=&quot;highlighter-rouge&quot;&gt;CALayer&lt;/code&gt;. For example, we can set the layer’s border width and corner radius as follows:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/calayer-setup.png&quot; align=&quot;center&quot; alt=&quot;Configuring a view's underlying layer&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, Interface Builder doesn’t allow us to set the color of a CALayer, because the &lt;strong&gt;Color&lt;/strong&gt; type doesn’t translate to properties of &lt;code class=&quot;highlighter-rouge&quot;&gt;CGColorRef *&lt;/code&gt; type (workaround discussed below).&lt;/p&gt;
+
+&lt;h3 id=&quot;configuring-custom-controls&quot;&gt;Configuring Custom Controls&lt;/h3&gt;
+
+&lt;p&gt;Another example is if you are using a custom &lt;code class=&quot;highlighter-rouge&quot;&gt;UIControl&lt;/code&gt; object such as a range slider. A range slider is similar to the built-in slider, but has two thumbs, or knobs: one to specify the minimum value and one to specify the maximum value.
+This kind of control would be useful for setting a minimum price and maximum price in a search query. There are &lt;a href=&quot;https://github.com/muZZkat/NMRangeSlider&quot;&gt;various&lt;/a&gt; &lt;a href=&quot;http://www.sitepoint.com/wicked-ios-range-slider-part-one/&quot;&gt;implementations&lt;/a&gt; &lt;a href=&quot;https://github.com/barrettj/BJRangeSliderWithProgress&quot;&gt;available&lt;/a&gt; in the community.&lt;/p&gt;
+
+&lt;p&gt;Using user-defined runtime attributes, you can configure such a control right from within Interface Builder. Taking the example of &lt;a href=&quot;https://github.com/muZZkat/NMRangeSlider&quot;&gt;NMRangeSlider&lt;/a&gt;, you could configure the minimum and maximum values for the slider as follows:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/custom-control-setup.png&quot; align=&quot;center&quot; alt=&quot;Configuring a custom control&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The main benefit of Interface Builder in my opinion is that it keeps all the UI configuration logic in one place outside of the view controller. By configuring your controls in Interface Builder, this is yet more code that can be removed from your view controller. After all, you would configure your &lt;code class=&quot;highlighter-rouge&quot;&gt;UIButton&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;UISlider&lt;/code&gt; controls in Interface Builder, so why not configure your custom controls too?&lt;/p&gt;
+
+&lt;h1 id=&quot;the-limitations&quot;&gt;The Limitations&lt;/h1&gt;
+
+&lt;p&gt;As discussed above, the class must be KVC-compliant for each key you specify in the runtime attributes. If you specify a key path, then the object returned for each key must be KVC-compliant for the following key in the path.&lt;/p&gt;
+
+&lt;p&gt;For example, the list of types shown above means that we can’t set the content inset on a &lt;code class=&quot;highlighter-rouge&quot;&gt;UICollectionView&lt;/code&gt; because there is no &lt;code class=&quot;highlighter-rouge&quot;&gt;UIEdgeInset&lt;/code&gt; type (and no type that uses the exact same C structure type).&lt;/p&gt;
+
+&lt;p&gt;We also already discussed the fact that we can’t set the border color of a &lt;code class=&quot;highlighter-rouge&quot;&gt;CALayer&lt;/code&gt;. Wouldn’t it be nice if anything you can think of, you could configure in Interface Builder without adding logic to your view or view controller?&lt;/p&gt;
+
+&lt;h1 id=&quot;the-workaround&quot;&gt;The Workaround&lt;/h1&gt;
+
+&lt;p&gt;Define a category on the object you wish to configure. Comply to KVC in the category and put the configuration logic in the setter method. You don’t even need to &lt;code class=&quot;highlighter-rouge&quot;&gt;#import&lt;/code&gt; the category header anywhere - just by having it in the project, the runtime will call the setter method.&lt;/p&gt;
+
+&lt;h3 id=&quot;define-a-category&quot;&gt;Define a Category&lt;/h3&gt;
+
+&lt;p&gt;For example, by defining a category on &lt;code class=&quot;highlighter-rouge&quot;&gt;UICollectionView&lt;/code&gt;, we can make the class KVC-compliant for any key we choose. To set the content inset, we can define the following category implementation:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UICollectionView&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;ContentInset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;setContentInsetFromString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSString&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;string&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contentInset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIEdgeInsetsFromString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;There’s no need to define anything in the category header.&lt;/p&gt;
+
+&lt;p&gt;This particular example is especailly simple because of the &lt;code class=&quot;highlighter-rouge&quot;&gt;UIEdgeInsetsFromString&lt;/code&gt; mathod, which could it seems have been created specifically for this purpose!&lt;/p&gt;
+
+&lt;h3 id=&quot;configure-the-interface&quot;&gt;Configure the Interface&lt;/h3&gt;
+
+&lt;p&gt;Now we can set the user-defined runtime attributes in Interface Builder like so:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/content-inset-from-string.png&quot; align=&quot;center&quot; alt=&quot;Configuring content inset&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;Key Path&lt;/strong&gt; must match the name of the setter method in the category, but without the &lt;strong&gt;set&lt;/strong&gt; prefix and with lowercase first letter.&lt;/p&gt;
+
+&lt;p&gt;Now you’ve configured your interface in Interface Builder - the correct place - and you can avoid having clutter in your code!&lt;/p&gt;
+
+&lt;p&gt;An added bonus of doing things in Interface Builder is that if you use separate nibs or storyboards for iPad/iPhone then you can configure your view differently for each device without cluttering your code checking the user interface idiom.&lt;/p&gt;
+
+&lt;h1 id=&quot;another-example&quot;&gt;Another Example&lt;/h1&gt;
+
+&lt;p&gt;Now we can define the border color of a &lt;code class=&quot;highlighter-rouge&quot;&gt;CALayer&lt;/code&gt; by simply mapping it from a &lt;code class=&quot;highlighter-rouge&quot;&gt;UIColor&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;define-a-category-1&quot;&gt;Define a Category&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@implementation CALayer (Additions)
+
+- (void)setBorderColorFromUIColor:(UIColor *)color
+{
+  self.borderColor = color.CGColor;
+}
+
+@end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;configure-the-interface-1&quot;&gt;Configure the Interface&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/calayer-border-color.png&quot; align=&quot;center&quot; alt=&quot;Configuring a layer's border color&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;considerations&quot;&gt;Considerations&lt;/h1&gt;
+
+&lt;p&gt;I think this is the right way to configure a user interface. Given that we have Interface Builder, we should use it to its full potential. But… there’s always a “but” isn’t there?&lt;/p&gt;
+
+&lt;p&gt;Many people wouldn’t think to look in Interface Builder at the user-defined runtime attributes, so they could be left very puzzled if they come to maintain your code at a later date. They could be left with a seemingly random border to their view, unable to figure out why it’s there.&lt;/p&gt;
+
+&lt;p&gt;So like anything of this nature – and by that I mean a more-advanced use of a programming language or development evironment – we should use it with caution. Use it only if it is necessary and simplifies logic elsewhere in your code.&lt;/p&gt;
+
+&lt;p&gt;Setting up a view in a view controller isn’t necessarily messy. The most valid reason for using user-defined runtime attributes is to configure a view differently whether the Interface Builder file is for iPhone or iPad. Because you already have a separate nib or storyboard file specifically for each device, that should be the place that you do any device-specific configuration.&lt;/p&gt;
+
+&lt;p&gt;I hope you enjoyed reading this article. If so, please &lt;a href=&quot;https://twitter.com/dodsios&quot;&gt;follow me on twitter&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 08 Apr 2014 19:16:47 +0100</pubDate>
+        <link>http://localhost:4000/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/04/08/user-defined-runtime-attributes-in-interface-builder.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Modal View In Front of the Status Bar</title>
+        <description>&lt;p&gt;This post is based on a really cool effect I saw in the Facebook Paper app released last week. In this app, the user can drag a photo up to the top of the screen to view it full-screen. In doing this, the photo actually appears to be in front of the status bar.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;p&gt;&lt;strong&gt;Edit&lt;/strong&gt; Thanks to &lt;a href=&quot;https://twitter.com/EricHoracek&quot;&gt;@EricHoracek&lt;/a&gt; for pointing out that this can be done without the use of private API methods. I had originally been adding the top (in-front) view controller’s view to the &lt;code class=&quot;highlighter-rouge&quot;&gt;UIStatusBarWindow&lt;/code&gt; which contains the status bar. But the solution below is much cleaner and uses only public API methods, so is guaranteed for App Store approval.&lt;/p&gt;
+
+&lt;p&gt;It’s nice to discuss things like this with the never-ending endeavour of finding cleaner approaches and learning something along the way!&lt;/p&gt;
+
+&lt;h1 id=&quot;the-effect&quot;&gt;The Effect&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/samdods/StatusBarDemo/blob/master/statusBarDemo.gif?raw=true&quot; title=&quot;made at imgflip.com&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;What I really like about this is that you can display content full-screen, with no status bar, but allow the user to simply drag down slightly to see the time and other activity shown in the status bar. As we all know with the arrival of iOS 7, content is king! And I think it looks great to show images and other full-screen content without the status bar. But it’s nice to know that it’s only a slight drag away.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-secret&quot;&gt;The Secret&lt;/h1&gt;
+
+&lt;p&gt;It’s actually very easy. &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindow&lt;/code&gt; has the &lt;code class=&quot;highlighter-rouge&quot;&gt;windowLevel&lt;/code&gt; property, which is of type &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindowLevel&lt;/code&gt; (i.e. &lt;code class=&quot;highlighter-rouge&quot;&gt;CGFloat&lt;/code&gt;). There are a few predefined window levels that we can take advantage of for this trick. The predefined values are as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;UIKIT_EXTERN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevelNormal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;UIKIT_EXTERN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevelAlert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;UIKIT_EXTERN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevelStatusBar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When displaying a new window, it appears in front of all other existing windows at the same level. The higher the &lt;code class=&quot;highlighter-rouge&quot;&gt;windowLevel&lt;/code&gt; value, the closer to the front of the screen the window appears.&lt;/p&gt;
+
+&lt;p&gt;Below is how to create a new window and add it above the status bar.&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// 1.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topWindow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIWindow&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;alloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initWithFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bounds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 2.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topWindow&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setRootViewController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;overlayViewController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 3.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topWindow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;windowLevel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UIWindowLevelStatusBar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 4.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topWindow&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;makeKeyAndVisible&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a new window. Although &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindow&lt;/code&gt; is a subclass of &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt;, instances of this class don’t generally have a superview. You don’t need to add the window to anything else in order for it to be displayed.&lt;/li&gt;
+  &lt;li&gt;Specify the root view controller for the window. This is the view controller who’s view you want to appear in front of the status bar.&lt;/li&gt;
+  &lt;li&gt;Specify the window level. By specifying &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindowLevelStatusBar&lt;/code&gt;, the new window will appear above the status bar. Other windows with a higher &lt;code class=&quot;highlighter-rouge&quot;&gt;windowLevel&lt;/code&gt;, for example &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindowLevelAlert&lt;/code&gt; will appear in front of your new window still.&lt;/li&gt;
+  &lt;li&gt;Show the window. By invoking &lt;code class=&quot;highlighter-rouge&quot;&gt;makeKeyAndVisible&lt;/code&gt;, the window is added to the application. You could also write &lt;code class=&quot;highlighter-rouge&quot;&gt;self.topWindow.hidden = NO;&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;the-demo&quot;&gt;The Demo&lt;/h1&gt;
+
+&lt;p&gt;I created a demo project &lt;a href=&quot;https://github.com/samdods/StatusBarDemo&quot;&gt;available on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I’d be happy to talk about this, so feel free to &lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;tweet me&lt;/a&gt;. I’d love to hear if anyone else has tried this and maybe taken a different approach. Subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same!&lt;/p&gt;
+</description>
+        <pubDate>Mon, 10 Feb 2014 07:55:28 +0000</pubDate>
+        <link>http://localhost:4000/blog/2014/02/10/modal-view-in-front-of-the-status-bar.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/02/10/modal-view-in-front-of-the-status-bar.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Enumerated Types and Checking Their Values</title>
+        <description>&lt;p&gt;Enumerated types are very useful and widely-used. Foundation framework gives us two macros to help give definition to an enumerated type: &lt;a href=&quot;http://nshipster.com/ns_enum-ns_options/&quot;&gt;NS_ENUM and NS_OPTIONS&lt;/a&gt;. But their intended use – and correct use – isn’t immediately obvious.&lt;/p&gt;
+
+&lt;p&gt;First a bit of background: Enumerated types are a part of the ANSI C standard and, if I was a gambler, I would bet my entire future life’s earnings on the fact that every single iOS or OS X programmer has encountered them and is very likely to use them daily, even if they are unaware of it. They are defined in a similar way to a struct and it’s very common to &lt;code class=&quot;highlighter-rouge&quot;&gt;typedef&lt;/code&gt; an enumerated type for easier use.&lt;/p&gt;
+
+&lt;p&gt;In this post I will discuss the Objective-C macros &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_ENUM&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt;, their origins and, most importantly, the correct way to check the value of a variable of an enumerated type.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;h1 id=&quot;enumerated-types&quot;&gt;Enumerated Types&lt;/h1&gt;
+&lt;p&gt;An enumerated type is a data type that consists of named integer values. They are frequently used to represent options. For example, you could define the following enumerated type:&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AnimationOptions&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+ &lt;span class=&quot;c1&quot;&gt;// 1.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;AllowUserInteraction&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//   1&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;Repeat&lt;/span&gt;                    &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//   2&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;Autoreverse&lt;/span&gt;               &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//   4&lt;/span&gt;
+
+ &lt;span class=&quot;c1&quot;&gt;// 2.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TransitionFlipFromLeft&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//  16&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TransitionFlipFromRight&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//  32&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TransitionCurlUp&lt;/span&gt;          &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//  48&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TransitionCurlDown&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;//  64&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TransitionCrossDissolve&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;//  80&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;The first 3 options defined in the above enumerated type, 1, 2 and 4 are distinct bits, i.e. &lt;code class=&quot;highlighter-rouge&quot;&gt;0001&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;0010&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;0100&lt;/code&gt; respectively. This allows none, one, some or all of these options to be used at the same time. For example &lt;code class=&quot;highlighter-rouge&quot;&gt;0110&lt;/code&gt; (i.e. 6) means the animation will repeat and auto-reverse.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The second set of constants are not distinct bits. This is intentional so that only a single transition type can be used. If I try to set both the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionFlipFromRight&lt;/code&gt; option and the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCurlUp&lt;/code&gt; option at the same time, I’ll end up with the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCrossDissolve&lt;/code&gt; option (because 32 + 48 = 80).&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You could &lt;code class=&quot;highlighter-rouge&quot;&gt;typedef&lt;/code&gt; this enumerated type and use it as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;typedef enum AnimationOptions AnimationOptions;
+
+@interface MyAnimation : NSObject
+- (instancetype)animationWithOptions:(AnimationOptions)options;
+@end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;sized-enumerated-types&quot;&gt;Sized Enumerated Types&lt;/h1&gt;
+
+&lt;p&gt;C++ extends the ANSI C definition of &lt;code class=&quot;highlighter-rouge&quot;&gt;enum&lt;/code&gt; allowing you to specify the size of your enumerated type. You can use any integer type, for example &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;char&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;unsigned long&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We could inline &lt;code class=&quot;highlighter-rouge&quot;&gt;typedef&lt;/code&gt; and specify a size for the the &lt;code class=&quot;highlighter-rouge&quot;&gt;AnimationOptions&lt;/code&gt; enumerated type as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;typedef enum AnimationOptions : unsigned int {
+  AllowUserInteraction    = 1,
+ // etc.
+} AnimationOptions;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;ns_enum-and-ns_options&quot;&gt;NS_ENUM and NS_OPTIONS&lt;/h1&gt;
+
+&lt;p&gt;Foundation introduced these macros in OS X 10.8 and iOS 6. Since then they have been the preferred way to declare enumerated types, because each macro implies the intended use of its underlying integer values. They are both defined in exactly the same way. They are identical to each other in all ways but one – their intended use:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_ENUM&lt;/code&gt; to describe a type of variable that may only be set to a single option at any time. An example is &lt;code class=&quot;highlighter-rouge&quot;&gt;UIInterfaceOrientation&lt;/code&gt;, because the device can only be held in one orientation at any time.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; to describe a type of variable that may contain multiple options at the same time. Some of these options may apply at the same time as others; some may not be used in conjunction with any others in the same set. This is referred to as a bitmask, where each bit–or set of bits–represents an option. An example is &lt;code class=&quot;highlighter-rouge&quot;&gt;UIInterfaceOrientationMask&lt;/code&gt; – this is used when multiple orientation options may be stored in a single variable, such as &lt;code class=&quot;highlighter-rouge&quot;&gt;unsigned int supportedInterfaceOptions&lt;/code&gt; – we can support more than one interface orientation at the same time.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Both of these macros are defined in &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;Foundation/NSObjCRuntime.h&amp;gt;&lt;/code&gt;, and what they boil down to is the following:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#define NS_OPTIONS(_type, _name) enum _name : _type _name; enum _name : _type
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This isn’t immediately obvious in Xcode because it doens’t allow you to “Jump to Definition”. But it is evident when inspecting the result of the preprocessor. The following is an example of using &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;typedef NS_OPTIONS(NSUInteger, AnimationOptions) {
+  AllowUserInteraction = 1,
+ // etc.
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The above example results in the following output from the preprocessor:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;typedef enum AnimationOptions : NSUInteger AnimationOptions; enum AnimationOptions : NSUInteger {
+  AllowUserInteraction = 1,
+ // etc.
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note it is up to you to enter &lt;code class=&quot;highlighter-rouge&quot;&gt;typedef&lt;/code&gt; before the &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_ENUM&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; macro.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Because &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; can hold multiple options at the same time, variables of these types can be set with multiple values using the bitwise OR operator &lt;code class=&quot;highlighter-rouge&quot;&gt;|&lt;/code&gt;, as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AnimationOptions options = Repeat | Autoreverse | TransitionCrossDissolve;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that in C a variable of an enumerated type can hold a value that is not defined in its underlying enumerated type. With Objective-C (and more specifically the GDB and LLDB compilers), we are warned at compile-time if we set the value of an &lt;code class=&quot;highlighter-rouge&quot;&gt;enum&lt;/code&gt;-type variable to anything other than what is defined in its underlying enumerated type definition.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt;, a set of bits is used as one option when the option has multiple possible values. In &lt;code class=&quot;highlighter-rouge&quot;&gt;UIViewAnimationOptions&lt;/code&gt; bit 3 specifies that the animation should repeat indefinitely. This is a binary option and can only be on or off. However, bits 16-19 are used to hold the animation curve option, which can be one–but only one–of several options. This is like an NS_ENUM (one option at a time) embedded within the options of an &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; type.&lt;/p&gt;
+
+&lt;h1 id=&quot;checking-the-value-of-an-enumerated-type-variable&quot;&gt;Checking the Value of an Enumerated Type Variable&lt;/h1&gt;
+
+&lt;h2 id=&quot;ns_enum&quot;&gt;NS_ENUM&lt;/h2&gt;
+&lt;p&gt;Checking the value of an &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_ENUM&lt;/code&gt;-type variable is simple. It is an integer value and it can only contain one option at a time, so it can be checked for equality like any other integer, for example:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;UIInterfaceOrientation orientation = device.orientation;
+BOOL isPortrait = (orientation == UIDeviceOrientationPortrait);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;ns_options&quot;&gt;NS_OPTIONS&lt;/h2&gt;
+&lt;p&gt;As mentioned above, &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; is intended to hold a list of options that may be used at the same time. Therefore variables of this type are referred to as bitmasks.&lt;/p&gt;
+
+&lt;p&gt;Checking the value of a bitmask can’t be done by checking for equality, because multiple options are stored in the same variable by setting different bits. So checking for an option is done using the bitwise AND operator. In C this is &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;It might be assumed safe to check as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return (options &amp;amp; TransitionCrossDissolve);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;but-this-is-wrong&quot;&gt;But This is Wrong!&lt;/h1&gt;
+
+&lt;p&gt;Consider the scenario where my animation is created as follows:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;MyAnimation *animation = [MyAnimation animationWithOptions:TransitionCurlUp];
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This passes in the &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCurlUp&lt;/code&gt; option (i.e. 48). When this option is passed into the &lt;code class=&quot;highlighter-rouge&quot;&gt;-isCrossDisolveUsedInAnimationOptions:&lt;/code&gt; method above, it returns &lt;code class=&quot;highlighter-rouge&quot;&gt;YES&lt;/code&gt;, which is WRONG!&lt;/p&gt;
+
+&lt;p&gt;It returns &lt;code class=&quot;highlighter-rouge&quot;&gt;YES&lt;/code&gt; because the following are equivalent:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCurlUp &amp;amp; TransitionCrossDissolve&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;48 &amp;amp; 80&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;0011 0000&lt;/code&gt; bitwise AND &lt;code class=&quot;highlighter-rouge&quot;&gt;0101 0000&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;0001 0000&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;non-zero&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;YES&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It is wrong because my animation options were specified with &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCurlUp&lt;/code&gt; option, but this method says it is a &lt;code class=&quot;highlighter-rouge&quot;&gt;TransitionCrossDissolve&lt;/code&gt; animation.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-correct-way&quot;&gt;The Correct Way&lt;/h1&gt;
+&lt;p&gt;The correct way to check for this value is to first bitwise AND the values and then check for equality to the required value, as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return ((options &amp;amp; TransitionCrossDissolve) == TransitionCrossDissolve);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Or more generally:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#define OptionsHasValue(options, value) (((options) &amp;amp; (value)) == (value))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;With this macro, I can change my method above, as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (BOOL)isCrossDisolveUsedInAnimationOptions:(AnimationOptions)options
+{
+  return OptionsHasValue(options, TransitionCrossDissolve);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So go forth and use &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_ENUM&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;NS_OPTIONS&lt;/code&gt; how they were intended to be used. But just be sure that you are checking their values in the correct way!&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://twitter.com/dodsios&quot;&gt;Follow me on twitter&lt;/a&gt; or subscribe to my &lt;a href=&quot;http://octopress.dev/atom.xml&quot;&gt;RSS feed&lt;/a&gt; for more of the same!&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 01 Feb 2014 11:06:27 +0000</pubDate>
+        <link>http://localhost:4000/blog/2014/02/01/checking-for-a-value-in-a-bit-mask.html</link>
+        <guid isPermaLink="true">http://localhost:4000/blog/2014/02/01/checking-for-a-value-in-a-bit-mask.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+  </channel>
+</rss>

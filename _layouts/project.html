@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body>
+      <div>
+        <header class="site-header">
+
+          <div class="wrapper">
+
+            <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}</a>
+            
+          </div>
+
+          <div class="header-badge">
+            <a href="{{ site.baseurl }}/">
+                <img src="{{ site.baseurl }}/assets/headshot.jpg" />
+            </a>
+          </div>
+            
+        </header>
+
+        <div class="page-content">
+          <div class="wrapper">
+            {{ content }}
+          </div>
+        </div>
+
+        {% include footer.html %}
+      </div>
+  </body>
+  
+</html>
