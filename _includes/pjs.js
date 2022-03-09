@@ -832,7 +832,7 @@ var ee = {
     system: [{ fontFamily: "system-ui" }],
 };
 var te = {
-  /*  fonts: function () {
+    fonts: function () {
         return E(function (e, t) {
             var n = t.document,
                 r = n.body;
@@ -877,8 +877,8 @@ var te = {
                 var t;
             });
         });
-    },*/
-   /* domBlockers: function (e) {
+    },
+    domBlockers: function (e) {
         var r = (void 0 === e ? {} : e).debug;
         return t(this, void 0, void 0, function () {
             var e, t, a, o;
@@ -1319,7 +1319,7 @@ var te = {
                 return Z.pow(Z.PI, e);
             })(-100),
         };
-    },*/
+    },
 };
 function ne(e) {
     var t = (function (e) {
