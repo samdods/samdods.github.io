@@ -5,6 +5,7 @@
  * This software contains code from open-source projects:
  * MurmurHash3 by Karan Lyons (https://github.com/karanlyons/murmurHash3.js)
  */
+
 var e = function () {
     return (
         (e =
