@@ -20,9 +20,10 @@
       .then(fp => fp.get())
       .then(result => {
         // This is the visitor identifier:
-        const visitorId = result.components
+        const components = result.components
+        const visitorId = result.visitorId
         console.log(visitorId)
-        document.getElementById('OUTPUT').innerHTML = JSON.stringify(visitorId)
+        document.getElementById('OUTPUT').innerHTML = visitorId
       })
       .catch(error => {
          console.error(error)
