@@ -16,11 +16,11 @@
 
     // Get the visitor identifier when you need it.
     fpPromise
-//       .then(fp => fp.load())
-//       .then(fp => fp.get())
+      .then(fp => fp.load())
+      .then(fp => fp.get())
       .then(result => {
         // This is the visitor identifier:
-        const visitorId = result.load().get().visitorId
+        const visitorId = result.visitorId
         console.log(visitorId)
         document.getElementById('OUTPUT').innerHTML = visitorId
       })
