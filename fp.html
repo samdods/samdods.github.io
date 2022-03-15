@@ -20,7 +20,7 @@
       .then(fp => fp.get())
       .then(result => {
         // This is the visitor identifier:
-        const visitorId = result.visitorId
+        const visitorId = result.components
         console.log(visitorId)
         document.getElementById('OUTPUT').innerHTML = visitorId
       })
