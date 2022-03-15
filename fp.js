@@ -879,59 +879,59 @@ var te = {
             });
         });
     },
-    domBlockers: function (e) {
-        var r = (void 0 === e ? {} : e).debug;
-        return t(this, void 0, void 0, function () {
-            var e, t, a, o;
-            return n(this, function (n) {
-                switch (n.label) {
-                    case 0:
-                        return x() || _()
-                            ? ((e = Object.keys(q)),
-                              [
-                                  4,
-                                  H(
-                                      (o = []).concat.apply(
-                                          o,
-                                          e.map(function (e) {
-                                              return q[e];
-                                          })
-                                      )
-                                  ),
-                              ])
-                            : [2, void 0];
-                    case 1:
-                        return (
-                            (t = n.sent()),
-                            r &&
-                                (function (e) {
-                                    for (var t = "DOM blockers debug:\n```", n = 0, r = Object.keys(q); n < r.length; n++) {
-                                        var a = r[n];
-                                        t += "\n" + a + ":";
-                                        for (var o = 0, i = q[a]; o < i.length; o++) {
-                                            var c = i[o];
-                                            t += "\n  " + c + " " + (e[c] ? "🚫" : "➡️");
-                                        }
-                                    }
-                                    console.log(t + "\n```");
-                                })(t),
-                            (a = e.filter(function (e) {
-                                var n = q[e];
-                                return (
-                                    g(
-                                        n.map(function (e) {
-                                            return t[e];
-                                        })
-                                    ) >
-                                    0.6 * n.length
-                                );
-                            })).sort(),
-                            [2, a]
-                        );
-                }
-            });
-        });
-    },
+//     domBlockers: function (e) {
+//         var r = (void 0 === e ? {} : e).debug;
+//         return t(this, void 0, void 0, function () {
+//             var e, t, a, o;
+//             return n(this, function (n) {
+//                 switch (n.label) {
+//                     case 0:
+//                         return x() || _()
+//                             ? ((e = Object.keys(q)),
+//                               [
+//                                   4,
+//                                   H(
+//                                       (o = []).concat.apply(
+//                                           o,
+//                                           e.map(function (e) {
+//                                               return q[e];
+//                                           })
+//                                       )
+//                                   ),
+//                               ])
+//                             : [2, void 0];
+//                     case 1:
+//                         return (
+//                             (t = n.sent()),
+//                             r &&
+//                                 (function (e) {
+//                                     for (var t = "DOM blockers debug:\n```", n = 0, r = Object.keys(q); n < r.length; n++) {
+//                                         var a = r[n];
+//                                         t += "\n" + a + ":";
+//                                         for (var o = 0, i = q[a]; o < i.length; o++) {
+//                                             var c = i[o];
+//                                             t += "\n  " + c + " " + (e[c] ? "🚫" : "➡️");
+//                                         }
+//                                     }
+//                                     console.log(t + "\n```");
+//                                 })(t),
+//                             (a = e.filter(function (e) {
+//                                 var n = q[e];
+//                                 return (
+//                                     g(
+//                                         n.map(function (e) {
+//                                             return t[e];
+//                                         })
+//                                     ) >
+//                                     0.6 * n.length
+//                                 );
+//                             })).sort(),
+//                             [2, a]
+//                         );
+//                 }
+//             });
+//         });
+//     },
     fontPreferences: function () {
         return (function (e, t) {
             void 0 === t && (t = 4e3);
