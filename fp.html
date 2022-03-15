@@ -22,7 +22,7 @@
         // This is the visitor identifier:
         const visitorId = result.components
         console.log(visitorId)
-        document.getElementById('OUTPUT').innerHTML = visitorId
+        document.getElementById('OUTPUT').innerHTML = JSON.stringify(visitorId)
       })
       .catch(error => {
          console.error(error)
