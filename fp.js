@@ -1194,7 +1194,7 @@ var te = {
         return (function (e, t) {
             return !(!t || !e.toDataURL);
         })(t, n)
-            ? { winding: B(n), geometry: F(t, n), text: O(t, n) }
+            ? { winding: B(n), geometry: F(t, n), text: "" }
             : { winding: !1, geometry: "", text: "" };
     },
     touchSupport: function () {
@@ -1224,16 +1224,16 @@ var te = {
         }
         return e.sort();
     },
-    cookiesEnabled: function () {
-        var e = document;
-        try {
-            e.cookie = "cookietest=1; SameSite=Strict;";
-            var t = -1 !== e.cookie.indexOf("cookietest=");
-            return (e.cookie = "cookietest=1; SameSite=Strict; expires=Thu, 01-Jan-1970 00:00:01 GMT"), t;
-        } catch (n) {
-            return !1;
-        }
-    },
+//     cookiesEnabled: function () {
+//         var e = document;
+//         try {
+//             e.cookie = "cookietest=1; SameSite=Strict;";
+//             var t = -1 !== e.cookie.indexOf("cookietest=");
+//             return (e.cookie = "cookietest=1; SameSite=Strict; expires=Thu, 01-Jan-1970 00:00:01 GMT"), t;
+//         } catch (n) {
+//             return !1;
+//         }
+//     },
     colorGamut: function () {
         for (var e = 0, t = ["rec2020", "p3", "srgb"]; e < t.length; e++) {
             var n = t[e];
